@@ -16,7 +16,11 @@ export default function App({ Component, pageProps }: AppProps) {
           <meta name='description' content='description' />
           <meta name='viewport' content='initial-scale=1, width=device-width' />
         </Head>
-        {router.pathname !== '/' && <Header />}
+        {router.pathname === '/' || router.pathname === '/register' ? (
+          ''
+        ) : (
+          <Header />
+        )}
         <Component {...pageProps} />
       </>
     </NextUIProvider>
