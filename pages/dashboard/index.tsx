@@ -34,39 +34,41 @@ const Dashboard = () => {
     <main>
       <Card className='min-h-[90vh]'>
         <CardHeader>
-          <p className='uppercase text-center w-full md:text-[36px] '>
+          <p className='uppercase text-center w-full md:text-[36px] font-bold '>
             Wassce Results Analyser {year}
           </p>
         </CardHeader>
         <CardBody>
-          <p className='text-[24px] pb-2 border-b-1'>
+          <p className='text-[24px] pb-2 border-b-2 font-bold'>
             This software helps the user to be able to :
           </p>
-          <ul>
-            <li>
+          <ul className='flex flex-col gap-2 text-[20px] pb-2 border-b-2'>
+            <li className='pb-2 hover:border-b-1'>
               Determine the candidates whose total aggregate (Best Six) is less
               than or equal to 24.
             </li>
-            <li>
+            <li className='pb-2 hover:border-b-1'>
               Determine the candidates whose total aggregate (Best Six) is less
               than or equal to 36.
             </li>
-            <li>Determine the total number of male and female candidates.</li>
-            <li>
+            <li className='pb-2 hover:border-b-1'>
+              Determine the total number of male and female candidates.
+            </li>
+            <li className='pb-2 hover:border-b-1'>
               Determine the number of candidates who failed to appear for a
               paper.
             </li>
-            <li>
+            <li className='pb-2 hover:border-b-1'>
               Determine the number of candidates whose results were cancelled.
             </li>
-            <li>
+            <li className='pb-2 hover:border-b-1'>
               Determine the number of candidates whose results were withheld.
             </li>
-            <li>
+            <li className='pb-2 hover:border-b-1'>
               Determine male & female candidates who had A1 - F9 in each subject
               written.
             </li>
-            <li>
+            <li className='pb-2 hover:border-b-1'>
               Determine the number of candidates who had passes in all subjects
               to passes in no subject.
             </li>
