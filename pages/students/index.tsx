@@ -14,11 +14,27 @@ import {
   TableRow,
   getKeyValue,
 } from '@nextui-org/react'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
+import CreateModal from '@/components/CreateModal'
+
+interface createStudentSProps {
+  year: string
+  indexNo: string
+  firstname: string
+  lastname: string
+  othername: string
+  sex: string
+  course: string
+  subjects: string[]
+}
 
 const Students = () => {
   const [year, setYear] = useState<string>('')
+  const [open, setOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   let list = useAsyncList({
@@ -56,18 +72,49 @@ const Students = () => {
       }
     },
   })
+
+  const createStudentSchema = yup.object().shape({
+    year: yup.string().required('Select student year of completion'),
+    indexNo: yup.string().required('Index Number is required'),
+    firstname: yup.string().required('First Name is required'),
+    lastname: yup.string().required('Last Name is required'),
+    othername: yup.string(),
+    sex: yup.string().required('Sex is required'),
+    course: yup.string().required('Select student course'),
+    subjects: yup
+      .string()
+      .required('Select student core and elective subjects'),
+  })
+
+  const { register, handleSubmit, reset, formState } = useForm({
+    reValidateMode: 'onBlur',
+    resolver: yupResolver(createStudentSchema),
+  })
+
+  const { errors } = formState
+
+  const handleCreateStudent = (data: createStudentSProps) => {
+    console.log(data)
+    reset()
+    setOpen(false)
+  }
+
   return (
-    <main className='p-2'>
+    <main className='px-2 pt-2'>
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
             Students {year ? `(${year}/${year + 1})` : ''}
           </p>
         </CardHeader>
-        <CardBody className='py-5 px-1 md:px-3'>
+        <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
           <div className='flex flex-col md:flex-row md:justify-between gap-2 justify-end'>
             <div className='flex justify-end'>
-              <Button color='primary' startContent={<FaPlus />}>
+              <Button
+                color='primary'
+                onPress={(e) => setOpen(true)}
+                startContent={<FaPlus />}
+              >
                 Add Student
               </Button>
             </div>
@@ -98,16 +145,19 @@ const Students = () => {
           >
             <TableHeader>
               <TableColumn key='name' allowsSorting>
-                Name
+                Index No.
               </TableColumn>
               <TableColumn key='height' allowsSorting>
-                Height
+                Student Name
               </TableColumn>
               <TableColumn key='mass' allowsSorting>
-                Mass
+                Sex
               </TableColumn>
               <TableColumn key='birth_year' allowsSorting>
-                Birth year
+                Course
+              </TableColumn>
+              <TableColumn key='' allowsSorting>
+                Elective Subjects
               </TableColumn>
             </TableHeader>
             <TableBody
@@ -126,6 +176,14 @@ const Students = () => {
           </Table>
         </CardBody>
       </Card>
+      <CreateModal
+        open={open}
+        setOpen={setOpen}
+        handleCreate={handleCreateStudent}
+        register={register}
+        handleSubmit={handleSubmit}
+        errors={errors}
+      />
     </main>
   )
 }
