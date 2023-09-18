@@ -103,8 +103,12 @@ const CreateModal = (props: CreateModalProps) => {
                     orientation='horizontal'
                     {...register('sex')}
                   >
-                    <Radio value='male'>Male</Radio>
-                    <Radio value='female'>Female</Radio>
+                    <Radio value='male' {...register('sex')}>
+                      Male
+                    </Radio>
+                    <Radio value='female' {...register('sex')}>
+                      Female
+                    </Radio>
                   </RadioGroup>
                   <span className='px-2 text-danger'>
                     {errors.sex?.message}
@@ -162,6 +166,9 @@ const CreateModal = (props: CreateModalProps) => {
               </div>
             </ModalBody>
             <ModalFooter>
+              <Button color='danger' onPress={(e) => setOpen(false)}>
+                Close
+              </Button>
               <Button type='submit' color='primary'>
                 Save Student
               </Button>
