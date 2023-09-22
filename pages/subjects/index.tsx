@@ -21,13 +21,13 @@ import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
 
-interface createCoursesProps {
+interface createSubjectsProps {
   code: number
-  coursename: string
-  electiveSubjects: string[]
+  type: string
+  subjectname: string
 }
 
-const Courses = () => {
+const Subjects = () => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -68,20 +68,20 @@ const Courses = () => {
     },
   })
 
-  const createCourseSchema = yup.object().shape({
-    code: yup.number().required('Course code is required'),
-    coursename: yup.string().required('Name of course is required'),
-    electiveSubjects: yup.string().required('Select course subjects'),
+  const createSubjectSchema = yup.object().shape({
+    code: yup.number().required('Subject code is required'),
+    type: yup.string().required('Select type of subject'),
+    subjectname: yup.string().required('Name of sunject is required'),
   })
 
   const { register, handleSubmit, reset, formState } = useForm({
     reValidateMode: 'onBlur',
-    resolver: yupResolver(createCourseSchema),
+    resolver: yupResolver(createSubjectSchema),
   })
 
   const { errors } = formState
 
-  const handleCreateCourse = (data: createCoursesProps) => {
+  const handleCreateSubject = (data: createSubjectsProps) => {
     console.log(data)
     reset()
     setOpen(false)
@@ -92,7 +92,7 @@ const Courses = () => {
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
-            Courses {year ? `(${year}/${year + 1})` : ''}
+            Subjects {year ? `(${year}/${year + 1})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
@@ -103,7 +103,7 @@ const Courses = () => {
                 onPress={(e) => setOpen(true)}
                 startContent={<FaPlus />}
               >
-                Add Course
+                Add Subject
               </Button>
             </div>
             <form className='flex'>
@@ -116,7 +116,7 @@ const Courses = () => {
                     'md:min-w-[300px]',
                   ],
                 }}
-                placeholder='Search for a Course (Course Name)'
+                placeholder='Search for a Subject (Subject Name)'
               />
               <Button type='submit' color='primary' className='rounded-l-none'>
                 Search
@@ -136,13 +136,10 @@ const Courses = () => {
                 Code
               </TableColumn>
               <TableColumn key='height' allowsSorting>
-                Course
+                Subject
               </TableColumn>
               <TableColumn key='mass' allowsSorting>
                 Number of Students
-              </TableColumn>
-              <TableColumn key='' allowsSorting>
-                Elective Subjects
               </TableColumn>
             </TableHeader>
             <TableBody
@@ -164,16 +161,16 @@ const Courses = () => {
       <CreateModal
         open={open}
         setOpen={setOpen}
-        handleCreate={handleCreateCourse}
+        handleCreate={handleCreateSubject}
         register={register}
         handleSubmit={handleSubmit}
         errors={errors}
-        headerName='Create Course'
-        name='Courses'
-        buttonName='Submit'
+        headerName='Create Subject'
+        name='Subjects'
+        buttonName='Add Subject'
       />
     </main>
   )
 }
 
-export default Courses
+export default Subjects

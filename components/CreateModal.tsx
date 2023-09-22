@@ -20,6 +20,11 @@ const yearRange = Array.from(
   (_, i) => currentYear + 2 + i * -1
 ).reverse()
 
+const subjectType = [
+  { index: 1, value: 'core', name: 'Core Subject' },
+  { index: 2, value: 'elective', name: 'Elective Subject' },
+]
+
 interface CreateModalProps {
   open: boolean
   setOpen: (value: boolean) => void
@@ -190,6 +195,19 @@ const CreateModal = (props: CreateModalProps) => {
               <ModalBody className='flex flex-col gap-5'>
                 <div className='flex flex-col w-full items-center'>
                   <Input
+                    type='number'
+                    max={999}
+                    min={100}
+                    {...register('code')}
+                    placeholder='Course code'
+                  />
+                  <span className='px-2 text-danger'>
+                    {errors.code?.message}
+                  </span>
+                </div>
+
+                <div className='flex flex-col w-full items-center'>
+                  <Input
                     {...register('coursename')}
                     placeholder='Name of Course'
                   />
@@ -227,6 +245,44 @@ const CreateModal = (props: CreateModalProps) => {
                   </Select>
                   <span className='px-2 text-danger'>
                     {errors.electiveSubjects?.message}
+                  </span>
+                </div>
+              </ModalBody>
+            )}
+            {name === 'Subjects' && (
+              <ModalBody className='flex flex-col gap-5'>
+                <div className='flex flex-col w-full items-center'>
+                  <Input
+                    type='number'
+                    max={999}
+                    min={100}
+                    {...register('code')}
+                    placeholder='Subject code'
+                  />
+                  <span className='px-2 text-danger'>
+                    {errors.code?.message}
+                  </span>
+                </div>
+                <div className='flex flex-col w-full items-center'>
+                  <Select label='Subject type' {...register('type')}>
+                    {subjectType.map((subject) => (
+                      <SelectItem key={subject.index} value={subject.value}>
+                        {subject.name}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <span className='px-2 text-danger'>
+                    {errors.type?.message}
+                  </span>
+                </div>
+
+                <div className='flex flex-col w-full items-center'>
+                  <Input
+                    {...register('subjectname')}
+                    placeholder='Name of Subject'
+                  />
+                  <span className='px-2 text-danger'>
+                    {errors.subjectname?.message}
                   </span>
                 </div>
               </ModalBody>
