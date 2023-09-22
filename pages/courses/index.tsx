@@ -166,6 +166,9 @@ const Courses = () => {
         register={register}
         handleSubmit={handleSubmit}
         errors={errors}
+        headerName='Create Course'
+        name='Courses'
+        buttonName='Submit'
       />
     </main>
   )

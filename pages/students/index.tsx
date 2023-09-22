@@ -183,6 +183,9 @@ const Students = () => {
         register={register}
         handleSubmit={handleSubmit}
         errors={errors}
+        headerName='Register Students'
+        name='Students'
+        buttonName='Save Student'
       />
     </main>
   )

@@ -27,10 +27,23 @@ interface CreateModalProps {
   register: any
   handleSubmit: any
   errors: any
+  headerName: string
+  name: string
+  buttonName: string
 }
 
 const CreateModal = (props: CreateModalProps) => {
-  const { open, setOpen, handleCreate, handleSubmit, register, errors } = props
+  const {
+    open,
+    setOpen,
+    handleCreate,
+    handleSubmit,
+    register,
+    errors,
+    headerName,
+    name,
+    buttonName,
+  } = props
   const { onOpenChange } = useDisclosure()
   return (
     <Modal
@@ -42,99 +55,152 @@ const CreateModal = (props: CreateModalProps) => {
       <ModalContent>
         <>
           <ModalHeader className='flex flex-col gap-1 items-center text-[24px]'>
-            Register Student
+            {headerName}
           </ModalHeader>
           <form onSubmit={handleSubmit(handleCreate)}>
-            <ModalBody className='flex flex-col gap-5'>
-              <div className='flex flex-col md:flex-row items-center gap-5'>
-                <div className='md:w-1/2 flex flex-col w-full items-center'>
-                  <Select label='Year completed eg. 2019' {...register('year')}>
-                    {yearRange.map((yearValue) => (
-                      <SelectItem
-                        key={yearValue.toString()}
-                        value={yearValue.toString()}
-                      >
-                        {yearValue.toString()}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                  <span className='px-2 text-danger'>
-                    {errors.year?.message}
-                  </span>
+            {name === 'Students' && (
+              <ModalBody className='flex flex-col gap-5'>
+                <div className='flex flex-col md:flex-row items-center gap-5'>
+                  <div className='md:w-1/2 flex flex-col w-full items-center'>
+                    <Select
+                      label='Year completed eg. 2019'
+                      {...register('year')}
+                    >
+                      {yearRange.map((yearValue) => (
+                        <SelectItem
+                          key={yearValue.toString()}
+                          value={yearValue.toString()}
+                        >
+                          {yearValue.toString()}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    <span className='px-2 text-danger'>
+                      {errors.year?.message}
+                    </span>
+                  </div>
+                  <div className='md:w-1/2 flex flex-col w-full items-center'>
+                    <Input
+                      {...register('indexNo')}
+                      placeholder='Index No. eg 0050308001'
+                      size='lg'
+                    />
+                    <span className='px-2 text-danger'>
+                      {errors.indexNo?.message}
+                    </span>
+                  </div>
                 </div>
-                <div className='md:w-1/2 flex flex-col w-full items-center'>
+                <div className='flex flex-col md:flex-row items-center gap-5'>
+                  <div className='md:w-1/2 flex flex-col w-full items-center'>
+                    <Input
+                      {...register('firstname')}
+                      placeholder='First Name'
+                    />
+                    <span className='px-2 text-danger'>
+                      {errors.firstname?.message}
+                    </span>
+                  </div>
+                  <div className='md:w-1/2 flex flex-col w-full items-center'>
+                    <Input {...register('lastname')} placeholder='Last Name' />
+                    <span className='px-2 text-danger'>
+                      {errors.lastname?.message}
+                    </span>
+                  </div>
+                </div>
+                <div className='flex flex-col md:flex-row items-center gap-5'>
+                  <div className='md:w-1/2 flex flex-col w-full items-center'>
+                    <Input
+                      {...register('othername')}
+                      placeholder='Other Name(s)'
+                    />
+                    <span className='px-2 text-danger'>
+                      {errors.othername?.message}
+                    </span>
+                  </div>
+                  <div className='w-full md:w-1/2'>
+                    <RadioGroup
+                      label='Sex:'
+                      orientation='horizontal'
+                      {...register('sex')}
+                    >
+                      <Radio value='male' {...register('sex')}>
+                        Male
+                      </Radio>
+                      <Radio value='female' {...register('sex')}>
+                        Female
+                      </Radio>
+                    </RadioGroup>
+                    <span className='px-2 text-danger'>
+                      {errors.sex?.message}
+                    </span>
+                  </div>
+                </div>
+                <div className='flex flex-col md:flex-row items-center gap-5'>
+                  <div className='md:w-1/2 flex flex-col w-full items-center'>
+                    <Select label='Select Course' {...register('course')}>
+                      {yearRange.map((yearValue) => (
+                        <SelectItem
+                          key={yearValue.toString()}
+                          value={yearValue.toString()}
+                        >
+                          {yearValue.toString()}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    <span className='px-2 text-danger'>
+                      {errors.course?.message}
+                    </span>
+                  </div>
+                  <div className='md:w-1/2 flex flex-col w-full items-center'>
+                    <Select
+                      {...register('subjects')}
+                      label='Subjects:'
+                      items={yearRange}
+                      labelPlacement='outside'
+                      placeholder='Select subjects'
+                      selectionMode='multiple'
+                      isMultiline={true}
+                      renderValue={(items) => {
+                        return (
+                          <div className='flex flex-wrap gap-2'>
+                            {items.map((item: any) => (
+                              <Chip key={item.key}>{item.textValue}</Chip>
+                            ))}
+                          </div>
+                        )
+                      }}
+                    >
+                      {yearRange.map((yearValue) => (
+                        <SelectItem
+                          key={yearValue.toString()}
+                          value={yearValue.toString()}
+                        >
+                          {yearValue.toString()}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    <span className='px-2 text-danger'>
+                      {errors.subjects?.message}
+                    </span>
+                  </div>
+                </div>
+              </ModalBody>
+            )}
+            {name === 'Courses' && (
+              <ModalBody className='flex flex-col gap-5'>
+                <div className='flex flex-col w-full items-center'>
                   <Input
-                    {...register('indexNo')}
-                    placeholder='Index No. eg 0050308001'
-                    size='lg'
+                    {...register('coursename')}
+                    placeholder='Name of Course'
                   />
                   <span className='px-2 text-danger'>
-                    {errors.indexNo?.message}
+                    {errors.coursename?.message}
                   </span>
                 </div>
-              </div>
-              <div className='flex flex-col md:flex-row items-center gap-5'>
-                <div className='md:w-1/2 flex flex-col w-full items-center'>
-                  <Input {...register('firstname')} placeholder='First Name' />
-                  <span className='px-2 text-danger'>
-                    {errors.firstname?.message}
-                  </span>
-                </div>
-                <div className='md:w-1/2 flex flex-col w-full items-center'>
-                  <Input {...register('lastname')} placeholder='Last Name' />
-                  <span className='px-2 text-danger'>
-                    {errors.lastname?.message}
-                  </span>
-                </div>
-              </div>
-              <div className='flex flex-col md:flex-row items-center gap-5'>
-                <div className='md:w-1/2 flex flex-col w-full items-center'>
-                  <Input
-                    {...register('othername')}
-                    placeholder='Other Name(s)'
-                  />
-                  <span className='px-2 text-danger'>
-                    {errors.othername?.message}
-                  </span>
-                </div>
-                <div className='w-full md:w-1/2'>
-                  <RadioGroup
-                    label='Sex:'
-                    orientation='horizontal'
-                    {...register('sex')}
-                  >
-                    <Radio value='male' {...register('sex')}>
-                      Male
-                    </Radio>
-                    <Radio value='female' {...register('sex')}>
-                      Female
-                    </Radio>
-                  </RadioGroup>
-                  <span className='px-2 text-danger'>
-                    {errors.sex?.message}
-                  </span>
-                </div>
-              </div>
-              <div className='flex flex-col md:flex-row items-center gap-5'>
-                <div className='md:w-1/2 flex flex-col w-full items-center'>
-                  <Select label='Select Course' {...register('course')}>
-                    {yearRange.map((yearValue) => (
-                      <SelectItem
-                        key={yearValue.toString()}
-                        value={yearValue.toString()}
-                      >
-                        {yearValue.toString()}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                  <span className='px-2 text-danger'>
-                    {errors.course?.message}
-                  </span>
-                </div>
-                <div className='md:w-1/2 flex flex-col w-full items-center'>
+                <div className='flex flex-col w-full items-center'>
                   <Select
-                    {...register('subjects')}
-                    label='Subjects:'
+                    {...register('electiveSubjects')}
+                    label='Elective Subjects:'
                     items={yearRange}
                     labelPlacement='outside'
                     placeholder='Select subjects'
@@ -160,17 +226,17 @@ const CreateModal = (props: CreateModalProps) => {
                     ))}
                   </Select>
                   <span className='px-2 text-danger'>
-                    {errors.subjects?.message}
+                    {errors.electiveSubjects?.message}
                   </span>
                 </div>
-              </div>
-            </ModalBody>
+              </ModalBody>
+            )}
             <ModalFooter>
               <Button color='danger' onPress={(e) => setOpen(false)}>
                 Close
               </Button>
               <Button type='submit' color='primary'>
-                Save Student
+                {buttonName}
               </Button>
             </ModalFooter>
           </form>
