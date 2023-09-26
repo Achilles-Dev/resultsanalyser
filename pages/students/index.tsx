@@ -21,6 +21,8 @@ import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
 import { fetchStudents } from '@/components/api'
+import EditModal from '@/components/EditModat'
+import { useRouter } from 'next/router'
 
 interface createStudentSProps {
   year: string
@@ -30,26 +32,34 @@ interface createStudentSProps {
   othername: string
   sex: string
   course: string
-  subjects: string[]
+  subjects: string
 }
 
 const Students = () => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
+  const [editOpen, setEditOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const router = useRouter()
 
-  const editDelete = () => (
+  const handleEdit = (id: number) => {
+    router.push({
+      pathname: router.pathname,
+      query: { id },
+    })
+    setEditOpen(true)
+  }
+
+  const editDelete = (id: number) => (
     <div>
-      <Button color='primary'>Edit</Button>
+      <Button onPress={() => handleEdit(id)} color='primary'>
+        Edit
+      </Button>
     </div>
   )
 
   let list = useAsyncList({
-    async load({ signal }) {
-      // let res = await fetch('https://swapi.py4e.com/api/people/?search', {
-      //   signal,
-      // })
-      // let json = await res.json()
+    async load() {
       const { response } = await fetchStudents()
       setIsLoading(false)
       const students = response.map((student: any) => ({
@@ -57,7 +67,7 @@ const Students = () => {
         name: `${student.lastname} ${student.firstname} ${student?.othername}`,
         year: student.year.toString(),
         subjects: student.subjects.join(', '),
-        edit: editDelete(),
+        edit: editDelete(student.id),
       }))
       return {
         items: students,
@@ -109,8 +119,14 @@ const Students = () => {
 
   const handleCreateStudent = (data: createStudentSProps) => {
     console.log(data)
-    reset()
     setOpen(false)
+    reset()
+  }
+
+  const handleEditStudent = (data: createStudentSProps) => {
+    console.log(data)
+    setEditOpen(false)
+    reset()
   }
 
   return (
@@ -201,6 +217,17 @@ const Students = () => {
         headerName='Register Students'
         name='Students'
         buttonName='Save Student'
+      />
+      <EditModal
+        open={editOpen}
+        setOpen={setEditOpen}
+        handleEdit={handleEditStudent}
+        register={register}
+        handleSubmit={handleSubmit}
+        errors={errors}
+        headerName='Update Student'
+        name='Students'
+        buttonName='Update Student'
       />
     </main>
   )
