@@ -1,0 +1,228 @@
+{ 
+  "students": [
+    {
+      "id": 1,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 2,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 3,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 4,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 5,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 6,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 7,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 8,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 9,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 10,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    }, 
+    {
+      "id": 11,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 12,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 13,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 14,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    }
+  ]
+}

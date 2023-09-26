@@ -20,6 +20,7 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
+import { fetchStudents } from '@/components/api'
 
 interface createStudentSProps {
   year: string
@@ -37,16 +38,29 @@ const Students = () => {
   const [open, setOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
+  const editDelete = () => (
+    <div>
+      <Button color='primary'>Edit</Button>
+    </div>
+  )
+
   let list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch('https://swapi.py4e.com/api/people/?search', {
-        signal,
-      })
-      let json = await res.json()
+      // let res = await fetch('https://swapi.py4e.com/api/people/?search', {
+      //   signal,
+      // })
+      // let json = await res.json()
+      const { response } = await fetchStudents()
       setIsLoading(false)
-
+      const students = response.map((student: any) => ({
+        ...student,
+        name: `${student.lastname} ${student.firstname} ${student?.othername}`,
+        year: student.year.toString(),
+        subjects: student.subjects.join(', '),
+        edit: editDelete(),
+      }))
       return {
-        items: json.results,
+        items: students,
       }
     },
     async sort({
@@ -144,21 +158,22 @@ const Students = () => {
             }}
           >
             <TableHeader>
-              <TableColumn key='name' allowsSorting>
+              <TableColumn key='indexNo' allowsSorting>
                 Index No.
               </TableColumn>
-              <TableColumn key='height' allowsSorting>
+              <TableColumn key='name' allowsSorting>
                 Student Name
               </TableColumn>
-              <TableColumn key='mass' allowsSorting>
+              <TableColumn key='sex' allowsSorting>
                 Sex
               </TableColumn>
-              <TableColumn key='birth_year' allowsSorting>
+              <TableColumn key='course' allowsSorting>
                 Course
               </TableColumn>
-              <TableColumn key='' allowsSorting>
+              <TableColumn key='subjects' allowsSorting>
                 Elective Subjects
               </TableColumn>
+              <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
               items={list.items}
@@ -166,7 +181,7 @@ const Students = () => {
               loadingContent={<Spinner label='Loading...' />}
             >
               {(item: any) => (
-                <TableRow key={item.name}>
+                <TableRow key={item.id}>
                   {(columnKey) => (
                     <TableCell>{getKeyValue(item, columnKey)}</TableCell>
                   )}
