@@ -50,6 +50,7 @@ const EditModal = (props: EditModalProps) => {
     buttonName,
   } = props
   const { onOpenChange } = useDisclosure()
+
   return (
     <Modal
       isOpen={open}

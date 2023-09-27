@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Button,
   Card,
@@ -20,11 +20,11 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { fetchStudents } from '@/components/api'
-import EditModal from '@/components/EditModat'
+import { fetchStudent, fetchStudents } from '@/components/api'
 import { useRouter } from 'next/router'
+import EditModal from '@/components/EditModal'
 
-interface createStudentSProps {
+interface studentSProps {
   year: string
   indexNo: string
   firstname: string
@@ -40,6 +40,7 @@ const Students = () => {
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [student, setStudent] = useState<any>()
   const router = useRouter()
 
   const handleEdit = (id: number) => {
@@ -97,7 +98,7 @@ const Students = () => {
     },
   })
 
-  const createStudentSchema = yup.object().shape({
+  const studentSchema = yup.object().shape({
     year: yup.string().required('Select student year of completion'),
     indexNo: yup.string().required('Index Number is required'),
     firstname: yup.string().required('First Name is required'),
@@ -110,24 +111,48 @@ const Students = () => {
       .required('Select student core and elective subjects'),
   })
 
-  const { register, handleSubmit, reset, formState } = useForm({
+  const { register, setValue, handleSubmit, reset, formState } = useForm({
     reValidateMode: 'onBlur',
-    resolver: yupResolver(createStudentSchema),
+    resolver: yupResolver(studentSchema),
   })
 
   const { errors } = formState
 
-  const handleCreateStudent = (data: createStudentSProps) => {
+  const handleCreateStudent = (data: studentSProps) => {
     console.log(data)
     setOpen(false)
     reset()
   }
 
-  const handleEditStudent = (data: createStudentSProps) => {
+  const handleEditStudent = (data: studentSProps) => {
     console.log(data)
     setEditOpen(false)
     reset()
   }
+
+  useEffect(() => {
+    if (router.query?.id) {
+      const { id } = router.query
+      fetchStudent(Number(id)).then((res) => {
+        setStudent(res.response)
+        const stud = res.response
+        setValue('year', stud.year)
+        setValue('indexNo', stud.indexNo)
+        setValue('firstname', stud.firstname)
+        setValue('lastname', stud.lastname)
+        setValue('othername', stud.othername)
+        setValue('sex', stud.sex)
+        setValue('course', stud.course)
+        setValue('subjects', stud.subjects)
+      })
+    }
+    if (!editOpen) {
+      router.push({
+        pathname: router.pathname,
+      })
+      reset()
+    }
+  }, [editOpen, router.query?.id])
 
   return (
     <main className='px-2 pt-2'>
@@ -218,6 +243,7 @@ const Students = () => {
         name='Students'
         buttonName='Save Student'
       />
+
       <EditModal
         open={editOpen}
         setOpen={setEditOpen}

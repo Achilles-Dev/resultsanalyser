@@ -19,31 +19,30 @@
     {
       "id": 2,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
+      "indexNo": "0050308002",
+      "firstname": "Obedia",
       "lastname": "Ababio",
-      "othername": "Daliasor",
-      "sex": "Female",
-      "course": "General Arts",
+      "sex": "Male",
+      "course": "Technical",
       "subjects": [
         "Elective Mathematics",
-        "Geography",
-        "Government",
-        "Economics"
+        "Physics",
+        "Applied Electricity",
+        "Technical drawing"
       ]
     },
     {
       "id": 3,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
-      "sex": "Female",
+      "indexNo": "0050308003",
+      "firstname": "Nurudeen",
+      "lastname": "Abdul Aziz",
+      
+      "sex": "Male",
       "course": "General Arts",
       "subjects": [
-        "Elective Mathematics",
-        "Geography",
+        "Christian Religious Studies",
+        "Twi",
         "Government",
         "Economics"
       ]
@@ -51,11 +50,11 @@
     {
       "id": 4,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
-      "sex": "Female",
+      "indexNo": "0050308004",
+      "firstname": "Bushara",
+      "lastname": "Abdul",
+      "othername": "Salam",
+      "sex": "Male",
       "course": "General Arts",
       "subjects": [
         "Elective Mathematics",
@@ -67,10 +66,9 @@
     {
       "id": 5,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
+      "indexNo": "0050308005",
+      "firstname": "Nafisatu",
+      "lastname": "Abdulamid",
       "sex": "Female",
       "course": "General Arts",
       "subjects": [
@@ -83,11 +81,10 @@
     {
       "id": 6,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
-      "sex": "Female",
+      "indexNo": "0050308006",
+      "firstname": "Manasseh",
+      "lastname": "Aboagye",
+      "sex": "Male",
       "course": "General Arts",
       "subjects": [
         "Elective Mathematics",
@@ -99,11 +96,10 @@
     {
       "id": 7,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
-      "sex": "Female",
+      "indexNo": "0050308007",
+      "firstname": "Saeed",
+      "lastname": "Abubakari",
+      "sex": "Male",
       "course": "General Arts",
       "subjects": [
         "Elective Mathematics",
@@ -115,7 +111,7 @@
     {
       "id": 8,
       "year": 2022,
-      "indexNo": "0050308001",
+      "indexNo": "0050308008",
       "firstname": "Matilda",
       "lastname": "Ababio",
       "othername": "Daliasor",
@@ -131,10 +127,9 @@
     {
       "id": 9,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
+      "indexNo": "0050308009",
+      "firstname": "Charlotte",
+      "lastname": "Abugire",
       "sex": "Female",
       "course": "General Arts",
       "subjects": [
@@ -147,11 +142,10 @@
     {
       "id": 10,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
-      "sex": "Female",
+      "indexNo": "0050308010",
+      "firstname": "Samuel",
+      "lastname": "Abugre",
+      "sex": "Male",
       "course": "General Arts",
       "subjects": [
         "Elective Mathematics",
@@ -163,10 +157,9 @@
     {
       "id": 11,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
+      "indexNo": "0050308011",
+      "firstname": "Ruth",
+      "lastname": "Acheampomaah",
       "sex": "Female",
       "course": "General Arts",
       "subjects": [
@@ -179,11 +172,10 @@
     {
       "id": 12,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
-      "sex": "Female",
+      "indexNo": "0050308012",
+      "firstname": "Godfred",
+      "lastname": "Acheampong",
+      "sex": "Male",
       "course": "General Arts",
       "subjects": [
         "Elective Mathematics",
@@ -195,11 +187,10 @@
     {
       "id": 13,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
-      "sex": "Female",
+      "indexNo": "0050308013",
+      "firstname": "Kelly",
+      "lastname": "Acheampong",
+      "sex": "Male",
       "course": "General Arts",
       "subjects": [
         "Elective Mathematics",
@@ -211,10 +202,24 @@
     {
       "id": 14,
       "year": 2022,
-      "indexNo": "0050308001",
-      "firstname": "Matilda",
-      "lastname": "Ababio",
-      "othername": "Daliasor",
+      "indexNo": "0050308014",
+      "firstname": "Samuel",
+      "lastname": "Acheampong",
+      "sex": "Male",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 15,
+      "year": 2022,
+      "indexNo": "0050308015",
+      "firstname": "Yvonne",
+      "lastname": "Acquah",
       "sex": "Female",
       "course": "General Arts",
       "subjects": [
