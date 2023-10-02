@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { fetchCourses, fetchStudent, fetchStudents } from '@/components/api'
+import { fetchCourses, fetchStudent, fetchStudents } from '@/libs/api'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
 

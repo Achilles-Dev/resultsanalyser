@@ -35,7 +35,7 @@ interface CreateModalProps {
   headerName: string
   name: string
   buttonName: string
-  courses: any[]
+  courses?: any[]
 }
 
 const CreateModal = (props: CreateModalProps) => {
@@ -145,11 +145,12 @@ const CreateModal = (props: CreateModalProps) => {
                 <div className='flex flex-col md:flex-row items-center gap-5'>
                   <div className='md:w-1/2 flex flex-col w-full items-center'>
                     <Select label='Select Course' {...register('course')}>
-                      {courses.map((course) => (
-                        <SelectItem key={course.id} value={course.name}>
-                          {course.name}
-                        </SelectItem>
-                      ))}
+                      {courses &&
+                        courses.map((course) => (
+                          <SelectItem key={course.id} value={course.name}>
+                            {course.name}
+                          </SelectItem>
+                        ))}
                     </Select>
                     <span className='px-2 text-danger'>
                       {errors.course?.message}

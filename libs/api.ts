@@ -1,4 +1,8 @@
-import data from '@/data.json'
+export const initDb = async () => {
+  const response = await fetch('api/dbInit')
+  return response.json()
+}
+
 export const fetchStudents = async () => {
   const results = await fetch('/api/students')
   return results.json()
