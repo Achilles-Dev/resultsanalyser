@@ -13,6 +13,7 @@ import {
   SelectItem,
   useDisclosure,
 } from '@nextui-org/react'
+import { Controller } from 'react-hook-form'
 
 const currentYear = new Date().getFullYear()
 const yearRange = Array.from(
@@ -35,6 +36,9 @@ interface EditModalProps {
   headerName: string
   name: string
   buttonName: string
+  control: any
+  getValues: (value: string) => any
+  courses: any[]
 }
 
 const EditModal = (props: EditModalProps) => {
@@ -48,8 +52,13 @@ const EditModal = (props: EditModalProps) => {
     headerName,
     name,
     buttonName,
+    control,
+    getValues,
+    courses,
   } = props
   const { onOpenChange } = useDisclosure()
+
+  console.log(getValues('subjects'))
 
   return (
     <Modal
@@ -68,19 +77,27 @@ const EditModal = (props: EditModalProps) => {
               <ModalBody className='flex flex-col gap-5'>
                 <div className='flex flex-col md:flex-row items-center gap-5'>
                   <div className='md:w-1/2 flex flex-col w-full items-center'>
-                    <Select
-                      label='Year completed eg. 2019'
-                      {...register('year')}
-                    >
-                      {yearRange.map((yearValue) => (
-                        <SelectItem
-                          key={yearValue.toString()}
-                          value={yearValue.toString()}
+                    <Controller
+                      control={control}
+                      name='year'
+                      render={({ field: { onChange, value } }) => (
+                        <Select
+                          label='Year completed eg. 2019'
+                          onChange={onChange}
+                          selectedKeys={new Set([value.toString()])}
                         >
-                          {yearValue.toString()}
-                        </SelectItem>
-                      ))}
-                    </Select>
+                          {yearRange.map((yearValue) => (
+                            <SelectItem
+                              key={yearValue.toString()}
+                              value={yearValue.toString()}
+                            >
+                              {yearValue.toString()}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      )}
+                    />
+
                     <span className='px-2 text-danger'>
                       {errors.year?.message}
                     </span>
@@ -124,18 +141,21 @@ const EditModal = (props: EditModalProps) => {
                     </span>
                   </div>
                   <div className='w-full md:w-1/2'>
-                    <RadioGroup
-                      label='Sex:'
-                      orientation='horizontal'
-                      {...register('sex')}
-                    >
-                      <Radio value='male' {...register('sex')}>
-                        Male
-                      </Radio>
-                      <Radio value='female' {...register('sex')}>
-                        Female
-                      </Radio>
-                    </RadioGroup>
+                    <Controller
+                      control={control}
+                      name='sex'
+                      render={({ field: { onChange, value } }) => (
+                        <RadioGroup
+                          label='Sex:'
+                          orientation='horizontal'
+                          value={value}
+                          onValueChange={onChange}
+                        >
+                          <Radio value='Male'>Male</Radio>
+                          <Radio value='Female'>Female</Radio>
+                        </RadioGroup>
+                      )}
+                    />
                     <span className='px-2 text-danger'>
                       {errors.sex?.message}
                     </span>
@@ -143,48 +163,62 @@ const EditModal = (props: EditModalProps) => {
                 </div>
                 <div className='flex flex-col md:flex-row items-center gap-5'>
                   <div className='md:w-1/2 flex flex-col w-full items-center'>
-                    <Select label='Select Course' {...register('course')}>
-                      {yearRange.map((yearValue) => (
-                        <SelectItem
-                          key={yearValue.toString()}
-                          value={yearValue.toString()}
+                    <Controller
+                      control={control}
+                      name='course'
+                      render={({ field: { onChange, value } }) => (
+                        <Select
+                          label='Select Course'
+                          onChange={onChange}
+                          selectedKeys={new Set([value])}
                         >
-                          {yearValue.toString()}
-                        </SelectItem>
-                      ))}
-                    </Select>
+                          {courses.map((course) => (
+                            <SelectItem key={course.name} value={course.name}>
+                              {course.name}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      )}
+                    />
                     <span className='px-2 text-danger'>
                       {errors.course?.message}
                     </span>
                   </div>
                   <div className='md:w-1/2 flex flex-col w-full items-center'>
-                    <Select
-                      {...register('subjects')}
-                      label='Subjects:'
-                      items={yearRange}
-                      labelPlacement='outside'
-                      placeholder='Select subjects'
-                      selectionMode='multiple'
-                      isMultiline={true}
-                      renderValue={(items) => {
-                        return (
-                          <div className='flex flex-wrap gap-2'>
-                            {items.map((item: any) => (
-                              <Chip key={item.key}>{item.textValue}</Chip>
-                            ))}
-                          </div>
-                        )
-                      }}
-                    >
-                      {yearRange.map((yearValue) => (
-                        <SelectItem
-                          key={yearValue.toString()}
-                          value={yearValue.toString()}
+                    <Controller
+                      control={control}
+                      name='subjects'
+                      render={({ field: { onChange, value } }) => (
+                        <Select
+                          label='Subjects:'
+                          items={yearRange}
+                          labelPlacement='outside'
+                          placeholder='Select subjects'
+                          selectionMode='multiple'
+                          selectedKeys={new Set([...value])}
+                          onChange={onChange}
+                          isMultiline={true}
+                          renderValue={(items) => {
+                            return (
+                              <div className='flex flex-wrap gap-2'>
+                                {items.map((item: any) => (
+                                  <Chip key={item.key}>{item.textValue}</Chip>
+                                ))}
+                              </div>
+                            )
+                          }}
                         >
-                          {yearValue.toString()}
-                        </SelectItem>
-                      ))}
-                    </Select>
+                          {yearRange.map((yearValue) => (
+                            <SelectItem
+                              key={yearValue.toString()}
+                              value={yearValue.toString()}
+                            >
+                              {yearValue.toString()}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      )}
+                    />
                     <span className='px-2 text-danger'>
                       {errors.subjects?.message}
                     </span>

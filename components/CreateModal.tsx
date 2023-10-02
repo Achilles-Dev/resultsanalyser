@@ -35,6 +35,7 @@ interface CreateModalProps {
   headerName: string
   name: string
   buttonName: string
+  courses: any[]
 }
 
 const CreateModal = (props: CreateModalProps) => {
@@ -48,6 +49,7 @@ const CreateModal = (props: CreateModalProps) => {
     headerName,
     name,
     buttonName,
+    courses,
   } = props
   const { onOpenChange } = useDisclosure()
   return (
@@ -143,12 +145,9 @@ const CreateModal = (props: CreateModalProps) => {
                 <div className='flex flex-col md:flex-row items-center gap-5'>
                   <div className='md:w-1/2 flex flex-col w-full items-center'>
                     <Select label='Select Course' {...register('course')}>
-                      {yearRange.map((yearValue) => (
-                        <SelectItem
-                          key={yearValue.toString()}
-                          value={yearValue.toString()}
-                        >
-                          {yearValue.toString()}
+                      {courses.map((course) => (
+                        <SelectItem key={course.id} value={course.name}>
+                          {course.name}
                         </SelectItem>
                       ))}
                     </Select>

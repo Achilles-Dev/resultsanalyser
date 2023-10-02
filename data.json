@@ -229,5 +229,114 @@
         "Economics"
       ]
     }
+  ],
+  
+  "courses": [
+    {
+      "id": 1,
+      "name": "Agric Science"
+    },
+    {
+      "id": 2,
+      "name": "Business"
+    },
+    {
+      "id": 3,
+      "name": "General Arts"
+    },
+    {
+      "id": 4,
+      "name": "General Science"
+    },
+    {
+      "id": 5,
+      "name": "Home Economics"
+    },
+    {
+      "id": 6,
+      "name": "Technical"
+    }
+  ],
+
+  "subjects": [
+    {
+      "id": 1,
+      "code": "",
+      "name": "English Language",
+      "type": "core"
+    },
+    {
+      "id": 2,
+      "code": "",
+      "name": "Core Mathematics",
+      "type": "core"
+    },
+    {
+      "id": 3,
+      "code": "",
+      "name": "Social Studies",
+      "type": "core"
+    },
+    {
+      "id": 4,
+      "code": "",
+      "name": "Integrated Science",
+      "type": "core"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Economics",
+      "type": "elective"
+    },
+    {
+      "id": 6,
+      "code": "",
+      "name": "Government",
+      "type": "elective"
+    },
+    {
+      "id": 7,
+      "code": "",
+      "name": "Elective Mathematics",
+      "type": "elective"
+    },
+    {
+      "id": 8,
+      "code": "",
+      "name": "Twi",
+      "type": "elective"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Christian Religious Studies",
+      "type": "elective"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Geography",
+      "type": "elective"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Applied Electricity",
+      "type": "elective"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Physics",
+      "type": "elective"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Technical Drawing",
+      "type": "elective"
+    }
+
   ]
 }

@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { fetchStudent, fetchStudents } from '@/components/api'
+import { fetchCourses, fetchStudent, fetchStudents } from '@/components/api'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
 
@@ -41,6 +41,8 @@ const Students = () => {
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [student, setStudent] = useState<any>()
+  const [courses, setCourses] = useState<any>([])
+  const [isFetched, setIsFetched] = useState<boolean>(false)
   const router = useRouter()
 
   const handleEdit = (id: number) => {
@@ -65,7 +67,9 @@ const Students = () => {
       setIsLoading(false)
       const students = response.map((student: any) => ({
         ...student,
-        name: `${student.lastname} ${student.firstname} ${student?.othername}`,
+        name: `${student.lastname} ${student.firstname} ${
+          student.othername !== undefined ? student.othername : ''
+        }`,
         year: student.year.toString(),
         subjects: student.subjects.join(', '),
         edit: editDelete(student.id),
@@ -111,9 +115,26 @@ const Students = () => {
       .required('Select student core and elective subjects'),
   })
 
-  const { register, setValue, handleSubmit, reset, formState } = useForm({
+  const {
+    register,
+    setValue,
+    getValues,
+    handleSubmit,
+    reset,
+    control,
+    formState,
+  } = useForm({
     reValidateMode: 'onBlur',
     resolver: yupResolver(studentSchema),
+    // defaultValues: {
+    //   othername: student ? student?.othername : '',
+    //   year: student ? student?.year : '',
+    //   indexNo: student ? student?.indexNo : '',
+    //   firstname: student ? student?.firstname : '',
+    //   lastname: student ? student?.lastname : '',
+    //   sex: student ? student?.sex : '',
+    //   course: student ? student?.course : '',
+    // },
   })
 
   const { errors } = formState
@@ -131,6 +152,12 @@ const Students = () => {
   }
 
   useEffect(() => {
+    fetchCourses().then((res) => {
+      setCourses(res.response)
+    })
+  }, [])
+
+  useEffect(() => {
     if (router.query?.id) {
       const { id } = router.query
       fetchStudent(Number(id)).then((res) => {
@@ -144,13 +171,13 @@ const Students = () => {
         setValue('sex', stud.sex)
         setValue('course', stud.course)
         setValue('subjects', stud.subjects)
+        setIsFetched(true)
       })
     }
     if (!editOpen) {
       router.push({
         pathname: router.pathname,
       })
-      reset()
     }
   }, [editOpen, router.query?.id])
 
@@ -242,19 +269,24 @@ const Students = () => {
         headerName='Register Students'
         name='Students'
         buttonName='Save Student'
+        courses={courses}
       />
-
-      <EditModal
-        open={editOpen}
-        setOpen={setEditOpen}
-        handleEdit={handleEditStudent}
-        register={register}
-        handleSubmit={handleSubmit}
-        errors={errors}
-        headerName='Update Student'
-        name='Students'
-        buttonName='Update Student'
-      />
+      {isFetched && (
+        <EditModal
+          open={editOpen}
+          setOpen={setEditOpen}
+          handleEdit={handleEditStudent}
+          register={register}
+          handleSubmit={handleSubmit}
+          errors={errors}
+          headerName='Update Student'
+          name='Students'
+          buttonName='Update Student'
+          control={control}
+          getValues={getValues}
+          courses={courses}
+        />
+      )}
     </main>
   )
 }
