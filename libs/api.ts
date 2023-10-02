@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid'
+
 export const initDb = async () => {
   const response = await fetch('api/dbInit')
   return response.json()
@@ -20,5 +22,52 @@ export const fetchCourses = async () => {
 
 export const fetchSubjects = async () => {
   const results = await fetch('/api/subjects')
+  return results.json()
+}
+
+export const createCourse = async ({
+  code,
+  name,
+}: {
+  code: number
+  name: string
+}) => {
+  const data = {
+    id: uuidv4(),
+    code,
+    name,
+  }
+  const results = await fetch('/api/courses/add', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}
+
+export const createSubject = async ({
+  code,
+  type,
+  name,
+}: {
+  code: number
+  type: string
+  name: string
+}) => {
+  const data = {
+    id: uuidv4(),
+    code,
+    type,
+    name,
+  }
+  const results = await fetch('/api/subjects/add', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
   return results.json()
 }
