@@ -20,14 +20,35 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
+import { createCourse } from '@/libs/api'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { Subject } from '@/libs/models'
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const subjects = JSON.stringify(
+    await Subject.findAll({
+      where: {
+        type: 'elective',
+      },
+    })
+  )
+
+  return {
+    props: {
+      subjects: JSON.parse(subjects),
+    },
+  }
+}
 
 interface createCoursesProps {
   code: number
-  coursename: string
-  electiveSubjects: string[]
+  name: string
+  electiveSubjects?: string[]
 }
 
-const Courses = () => {
+const Courses = ({
+  subjects,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -70,8 +91,8 @@ const Courses = () => {
 
   const createCourseSchema = yup.object().shape({
     code: yup.number().required('Course code is required'),
-    coursename: yup.string().required('Name of course is required'),
-    electiveSubjects: yup.string().required('Select course subjects'),
+    name: yup.string().required('Name of course is required'),
+    electiveSubjects: yup.string(),
   })
 
   const { register, handleSubmit, reset, formState } = useForm({
@@ -81,8 +102,9 @@ const Courses = () => {
 
   const { errors } = formState
 
-  const handleCreateCourse = (data: createCoursesProps) => {
+  const handleCreateCourse = async (data: createCoursesProps) => {
     console.log(data)
+    await createCourse({ code: data.code, name: data.name })
     reset()
     setOpen(false)
   }
@@ -171,6 +193,7 @@ const Courses = () => {
         headerName='Create Course'
         name='Courses'
         buttonName='Submit'
+        subjects={subjects}
       />
     </main>
   )

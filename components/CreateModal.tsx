@@ -36,6 +36,7 @@ interface CreateModalProps {
   name: string
   buttonName: string
   courses?: any[]
+  subjects?: any[]
 }
 
 const CreateModal = (props: CreateModalProps) => {
@@ -50,8 +51,10 @@ const CreateModal = (props: CreateModalProps) => {
     name,
     buttonName,
     courses,
+    subjects,
   } = props
   const { onOpenChange } = useDisclosure()
+
   return (
     <Modal
       isOpen={open}
@@ -207,19 +210,16 @@ const CreateModal = (props: CreateModalProps) => {
                 </div>
 
                 <div className='flex flex-col w-full items-center'>
-                  <Input
-                    {...register('coursename')}
-                    placeholder='Name of Course'
-                  />
+                  <Input {...register('name')} placeholder='Name of Course' />
                   <span className='px-2 text-danger'>
-                    {errors.coursename?.message}
+                    {errors.name?.message}
                   </span>
                 </div>
                 <div className='flex flex-col w-full items-center'>
                   <Select
                     {...register('electiveSubjects')}
                     label='Elective Subjects:'
-                    items={yearRange}
+                    items={subjects}
                     labelPlacement='outside'
                     placeholder='Select subjects'
                     selectionMode='multiple'
@@ -228,20 +228,18 @@ const CreateModal = (props: CreateModalProps) => {
                       return (
                         <div className='flex flex-wrap gap-2'>
                           {items.map((item: any) => (
-                            <Chip key={item.key}>{item.textValue}</Chip>
+                            <Chip key={item.id}>{item.textValue}</Chip>
                           ))}
                         </div>
                       )
                     }}
                   >
-                    {yearRange.map((yearValue) => (
-                      <SelectItem
-                        key={yearValue.toString()}
-                        value={yearValue.toString()}
-                      >
-                        {yearValue.toString()}
-                      </SelectItem>
-                    ))}
+                    {subjects &&
+                      subjects.map((subject) => (
+                        <SelectItem key={subject.id} value={subject.id}>
+                          {subject.name}
+                        </SelectItem>
+                      ))}
                   </Select>
                   <span className='px-2 text-danger'>
                     {errors.electiveSubjects?.message}
@@ -266,7 +264,7 @@ const CreateModal = (props: CreateModalProps) => {
                 <div className='flex flex-col w-full items-center'>
                   <Select label='Subject type' {...register('type')}>
                     {subjectType.map((subject) => (
-                      <SelectItem key={subject.index} value={subject.value}>
+                      <SelectItem key={subject.value} value={subject.value}>
                         {subject.name}
                       </SelectItem>
                     ))}
@@ -277,12 +275,9 @@ const CreateModal = (props: CreateModalProps) => {
                 </div>
 
                 <div className='flex flex-col w-full items-center'>
-                  <Input
-                    {...register('subjectname')}
-                    placeholder='Name of Subject'
-                  />
+                  <Input {...register('name')} placeholder='Name of Subject' />
                   <span className='px-2 text-danger'>
-                    {errors.subjectname?.message}
+                    {errors.name?.message}
                   </span>
                 </div>
               </ModalBody>

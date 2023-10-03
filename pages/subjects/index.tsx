@@ -20,28 +20,38 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
+import { createSubject } from '@/libs/api'
+import { Subject } from '@/libs/models'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const subjects = JSON.stringify(await Subject.findAll())
+
+  return {
+    props: {
+      subjects: JSON.parse(subjects),
+    },
+  }
+}
 
 interface createSubjectsProps {
   code: number
   type: string
-  subjectname: string
+  name: string
 }
 
-const Subjects = () => {
+const Subjects = ({
+  subjects,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   let list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch('https://swapi.py4e.com/api/people/?search', {
-        signal,
-      })
-      let json = await res.json()
       setIsLoading(false)
-
       return {
-        items: json.results,
+        items: subjects.sort((a: any, b: any) => a.code - b.code),
       }
     },
     async sort({
@@ -71,7 +81,7 @@ const Subjects = () => {
   const createSubjectSchema = yup.object().shape({
     code: yup.number().required('Subject code is required'),
     type: yup.string().required('Select type of subject'),
-    subjectname: yup.string().required('Name of sunject is required'),
+    name: yup.string().required('Name of sunject is required'),
   })
 
   const { register, handleSubmit, reset, formState } = useForm({
@@ -81,8 +91,8 @@ const Subjects = () => {
 
   const { errors } = formState
 
-  const handleCreateSubject = (data: createSubjectsProps) => {
-    console.log(data)
+  const handleCreateSubject = async (data: createSubjectsProps) => {
+    await createSubject({ code: data.code, type: data.type, name: data.name })
     reset()
     setOpen(false)
   }
@@ -132,13 +142,13 @@ const Subjects = () => {
             }}
           >
             <TableHeader>
-              <TableColumn key='name' allowsSorting>
+              <TableColumn key='code' allowsSorting>
                 Code
               </TableColumn>
-              <TableColumn key='height' allowsSorting>
+              <TableColumn key='name' allowsSorting>
                 Subject
               </TableColumn>
-              <TableColumn key='mass' allowsSorting>
+              <TableColumn key='number' allowsSorting>
                 Number of Students
               </TableColumn>
             </TableHeader>

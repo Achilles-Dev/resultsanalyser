@@ -126,15 +126,6 @@ const Students = () => {
   } = useForm({
     reValidateMode: 'onBlur',
     resolver: yupResolver(studentSchema),
-    // defaultValues: {
-    //   othername: student ? student?.othername : '',
-    //   year: student ? student?.year : '',
-    //   indexNo: student ? student?.indexNo : '',
-    //   firstname: student ? student?.firstname : '',
-    //   lastname: student ? student?.lastname : '',
-    //   sex: student ? student?.sex : '',
-    //   course: student ? student?.course : '',
-    // },
   })
 
   const { errors } = formState
@@ -167,7 +158,7 @@ const Students = () => {
         setValue('indexNo', stud.indexNo)
         setValue('firstname', stud.firstname)
         setValue('lastname', stud.lastname)
-        setValue('othername', stud.othername)
+        setValue('othername', stud?.othername)
         setValue('sex', stud.sex)
         setValue('course', stud.course)
         setValue('subjects', stud.subjects)
