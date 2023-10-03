@@ -25,7 +25,7 @@ export const initDB = async () => {
   try {
     await sequelize.authenticate()
     await Course.sync()
-    await Student.sync()
+    await Student.sync({ alter: true })
     await Subject.sync()
     await Grade.sync()
     await User.sync()

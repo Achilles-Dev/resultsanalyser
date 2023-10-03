@@ -20,9 +20,41 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { fetchCourses, fetchStudent, fetchStudents } from '@/libs/api'
+import {
+  createStudent,
+  createStudentSubjects,
+  fetchCourses,
+  fetchStudent,
+  fetchStudents,
+} from '@/libs/api'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { Course, Student, Subject } from '@/libs/models'
+import { v4 as uuidv4 } from 'uuid'
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const students = JSON.stringify(
+    await Student.findAll({
+      order: [['createdAt', 'ASC']],
+      include: [{ model: Subject }, { model: Course }],
+    })
+  )
+
+  const courses = JSON.stringify(
+    await Course.findAll({
+      order: [['createdAt', 'DESC']],
+      include: { model: Subject },
+    })
+  )
+
+  return {
+    props: {
+      students: JSON.parse(students),
+      allCourses: JSON.parse(courses),
+    },
+  }
+}
 
 interface studentSProps {
   year: string
@@ -35,13 +67,18 @@ interface studentSProps {
   subjects: string
 }
 
-const Students = () => {
+const Students = ({
+  students,
+  allCourses,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [student, setStudent] = useState<any>()
-  const [courses, setCourses] = useState<any>([])
+  const [courses, setCourses] = useState<any>(allCourses)
+  const [subjects, setSubjects] = useState<any>([])
+  const [selectedCourse, setSelectedCourse] = useState<string>('')
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const router = useRouter()
 
@@ -62,20 +99,25 @@ const Students = () => {
   )
 
   let list = useAsyncList({
-    async load() {
-      const { response } = await fetchStudents()
+    async load({ signal }) {
       setIsLoading(false)
-      const students = response.map((student: any) => ({
+      const myStudents = students.map((student: any) => ({
         ...student,
-        name: `${student.lastname} ${student.firstname} ${
-          student.othername !== undefined ? student.othername : ''
+        name: `${student.lastName} ${student.firstName} ${
+          student.otherName !== undefined ? student.otherName : ''
         }`,
-        year: student.year.toString(),
-        subjects: student.subjects.join(', '),
+        year: student.year,
+        course: student.Course.name,
+        subjects: student.Subjects.map((subject: any) => subject.name).join(
+          ', '
+        ),
         edit: editDelete(student.id),
       }))
+
+      console.log(myStudents)
+
       return {
-        items: students,
+        items: myStudents,
       }
     },
     async sort({
@@ -110,9 +152,7 @@ const Students = () => {
     othername: yup.string(),
     sex: yup.string().required('Sex is required'),
     course: yup.string().required('Select student course'),
-    subjects: yup
-      .string()
-      .required('Select student core and elective subjects'),
+    subjects: yup.string().required('Select student elective subjects'),
   })
 
   const {
@@ -130,8 +170,26 @@ const Students = () => {
 
   const { errors } = formState
 
-  const handleCreateStudent = (data: studentSProps) => {
+  const handleCreateStudent = async (data: studentSProps) => {
     console.log(data)
+    const id = uuidv4()
+    const subjectIds = data.subjects ? data.subjects.split(',') : []
+    await createStudent({
+      id,
+      yearGroup: data.year,
+      indexNo: data.indexNo,
+      firstName: data.firstname,
+      lastName: data.lastname,
+      otherName: data.othername,
+      sex: data.sex,
+      courseId: data.course,
+    })
+    Promise.all(
+      subjectIds.map(async (subjectId) => {
+        await createStudentSubjects({ studentId: id, subjectId })
+      })
+    )
+
     setOpen(false)
     reset()
   }
@@ -142,11 +200,18 @@ const Students = () => {
     reset()
   }
 
+  // useEffect(() => {
+  //   fetchCourses().then((res) => {
+  //     setCourses(res.response)
+  //   })
+  // }, [courses])
+
   useEffect(() => {
-    fetchCourses().then((res) => {
-      setCourses(res.response)
-    })
-  }, [])
+    if (selectedCourse) {
+      const course = courses.find((course: any) => course.id === selectedCourse)
+      setSubjects(course.Subjects)
+    }
+  }, [selectedCourse])
 
   useEffect(() => {
     if (router.query?.id) {
@@ -260,7 +325,10 @@ const Students = () => {
         headerName='Register Students'
         name='Students'
         buttonName='Save Student'
+        subjects={subjects}
         courses={courses}
+        control={control}
+        setSelectedCourse={setSelectedCourse}
       />
       {isFetched && (
         <EditModal

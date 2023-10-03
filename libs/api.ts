@@ -25,6 +25,66 @@ export const fetchSubjects = async () => {
   return results.json()
 }
 
+export const createStudent = async ({
+  id,
+  indexNo,
+  yearGroup,
+  firstName,
+  lastName,
+  otherName,
+  sex,
+  courseId,
+}: {
+  id: string
+  indexNo: string
+  yearGroup: string
+  firstName: string
+  lastName: string
+  otherName?: string
+  sex: string
+  courseId: string
+}) => {
+  const data = {
+    id,
+    indexNo,
+    yearGroup,
+    firstName,
+    lastName,
+    otherName,
+    sex,
+    courseId,
+  }
+  const results = await fetch('/api/students/add', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}
+
+export const createStudentSubjects = async ({
+  studentId,
+  subjectId,
+}: {
+  studentId: string
+  subjectId: string
+}) => {
+  const data = {
+    studentId,
+    subjectId,
+  }
+  const results = await fetch('/api/studentSubjects/add', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}
+
 export const createCourse = async ({
   id,
   code,

@@ -16,7 +16,7 @@ interface Student
   otherName: string
   sex: string
   courseId: UUID
-  yearGroup: Date
+  yearGroup: string
 }
 
 interface Course
@@ -74,6 +74,32 @@ interface User
   password: string
 }
 
+const Course = sequelize.define<Course>(
+  'Course',
+  {
+    id: {
+      primaryKey: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
+    },
+    code: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    tableName: 'courses',
+    timestamps: true,
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+  }
+)
+
 const Student = sequelize.define<Student>(
   'Student',
   {
@@ -106,40 +132,18 @@ const Student = sequelize.define<Student>(
     courseId: {
       type: DataTypes.UUID,
       allowNull: false,
+      references: {
+        model: Course,
+        key: 'id',
+      },
     },
     yearGroup: {
-      type: DataTypes.DATE,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
   },
   {
     tableName: 'students',
-    timestamps: true,
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-  }
-)
-
-const Course = sequelize.define<Course>(
-  'Course',
-  {
-    id: {
-      primaryKey: true,
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
-    },
-    code: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  },
-  {
-    tableName: 'courses',
     timestamps: true,
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -308,9 +312,11 @@ const StudentGrade = sequelize.define<StudentGrade>(
   }
 )
 
-Student.belongsTo(Course)
-
 Course.hasMany(Student, {
+  foreignKey: 'courseId',
+})
+
+Student.belongsTo(Course, {
   foreignKey: 'courseId',
 })
 

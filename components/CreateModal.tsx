@@ -13,6 +13,7 @@ import {
   SelectItem,
   useDisclosure,
 } from '@nextui-org/react'
+import { Controller } from 'react-hook-form'
 
 const currentYear = new Date().getFullYear()
 const yearRange = Array.from(
@@ -37,6 +38,8 @@ interface CreateModalProps {
   buttonName: string
   courses?: any[]
   subjects?: any[]
+  control?: any
+  setSelectedCourse?: (value: string) => void
 }
 
 const CreateModal = (props: CreateModalProps) => {
@@ -52,6 +55,8 @@ const CreateModal = (props: CreateModalProps) => {
     buttonName,
     courses,
     subjects,
+    control,
+    setSelectedCourse,
   } = props
   const { onOpenChange } = useDisclosure()
 
@@ -147,14 +152,29 @@ const CreateModal = (props: CreateModalProps) => {
                 </div>
                 <div className='flex flex-col md:flex-row items-center gap-5'>
                   <div className='md:w-1/2 flex flex-col w-full items-center'>
-                    <Select label='Select Course' {...register('course')}>
-                      {courses &&
-                        courses.map((course) => (
-                          <SelectItem key={course.id} value={course.name}>
-                            {course.name}
-                          </SelectItem>
-                        ))}
-                    </Select>
+                    <Controller
+                      control={control}
+                      name='course'
+                      render={({ field: { onChange, value } }) => {
+                        setSelectedCourse !== undefined &&
+                          setSelectedCourse(value)
+                        return (
+                          <Select
+                            label='Select Course'
+                            onChange={onChange}
+                            selectedKeys={new Set([value])}
+                          >
+                            {courses !== undefined
+                              ? courses.map((course) => (
+                                  <SelectItem key={course.id} value={course.id}>
+                                    {course.name}
+                                  </SelectItem>
+                                ))
+                              : []}
+                          </Select>
+                        )
+                      }}
+                    />
                     <span className='px-2 text-danger'>
                       {errors.course?.message}
                     </span>
@@ -163,29 +183,27 @@ const CreateModal = (props: CreateModalProps) => {
                     <Select
                       {...register('subjects')}
                       label='Subjects:'
-                      items={yearRange}
+                      items={subjects}
                       labelPlacement='outside'
                       placeholder='Select subjects'
                       selectionMode='multiple'
                       isMultiline={true}
                       renderValue={(items) => {
                         return (
-                          <div className='flex flex-wrap gap-2'>
+                          <div className='flex flex-wrap gap-2 py-2'>
                             {items.map((item: any) => (
-                              <Chip key={item.key}>{item.textValue}</Chip>
+                              <Chip key={item.id}>{item.textValue}</Chip>
                             ))}
                           </div>
                         )
                       }}
                     >
-                      {yearRange.map((yearValue) => (
-                        <SelectItem
-                          key={yearValue.toString()}
-                          value={yearValue.toString()}
-                        >
-                          {yearValue.toString()}
-                        </SelectItem>
-                      ))}
+                      {subjects !== undefined &&
+                        subjects.map((subject) => (
+                          <SelectItem key={subject.id} value={subject.id}>
+                            {subject.name}
+                          </SelectItem>
+                        ))}
                     </Select>
                     <span className='px-2 text-danger'>
                       {errors.subjects?.message}
@@ -226,7 +244,7 @@ const CreateModal = (props: CreateModalProps) => {
                     isMultiline={true}
                     renderValue={(items) => {
                       return (
-                        <div className='flex flex-wrap gap-2'>
+                        <div className='flex flex-wrap gap-2 py-2'>
                           {items.map((item: any) => (
                             <Chip key={item.id}>{item.textValue}</Chip>
                           ))}
