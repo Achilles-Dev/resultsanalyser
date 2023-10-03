@@ -1,9 +1,16 @@
+import { Course, Student, Subject } from '@/libs/models'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import studentData from '@/data.json'
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { id } = req.query
-  const studentId = Number(id) - 1
-  const response = studentData.students[studentId]
+  const response = await Student.findOne({
+    where: {
+      id: id,
+    },
+    include: [{ model: Course }, { model: Subject }],
+  })
   res.status(200).json({ response })
 }

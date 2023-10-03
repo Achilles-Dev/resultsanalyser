@@ -39,6 +39,8 @@ interface EditModalProps {
   control: any
   getValues: (value: string) => any
   courses: any[]
+  subjects?: any[]
+  setSelectedCourse?: (value: string) => void
 }
 
 const EditModal = (props: EditModalProps) => {
@@ -55,10 +57,10 @@ const EditModal = (props: EditModalProps) => {
     control,
     getValues,
     courses,
+    subjects,
+    setSelectedCourse,
   } = props
   const { onOpenChange } = useDisclosure()
-
-  console.log(getValues('subjects'))
 
   return (
     <Modal
@@ -144,17 +146,19 @@ const EditModal = (props: EditModalProps) => {
                     <Controller
                       control={control}
                       name='sex'
-                      render={({ field: { onChange, value } }) => (
-                        <RadioGroup
-                          label='Sex:'
-                          orientation='horizontal'
-                          value={value}
-                          onValueChange={onChange}
-                        >
-                          <Radio value='Male'>Male</Radio>
-                          <Radio value='Female'>Female</Radio>
-                        </RadioGroup>
-                      )}
+                      render={({ field: { onChange, value } }) => {
+                        return (
+                          <RadioGroup
+                            label='Sex:'
+                            orientation='horizontal'
+                            value={value}
+                            onValueChange={onChange}
+                          >
+                            <Radio value='Male'>Male</Radio>
+                            <Radio value='Female'>Female</Radio>
+                          </RadioGroup>
+                        )
+                      }}
                     />
                     <span className='px-2 text-danger'>
                       {errors.sex?.message}
@@ -166,19 +170,23 @@ const EditModal = (props: EditModalProps) => {
                     <Controller
                       control={control}
                       name='course'
-                      render={({ field: { onChange, value } }) => (
-                        <Select
-                          label='Select Course'
-                          onChange={onChange}
-                          selectedKeys={new Set([value])}
-                        >
-                          {courses.map((course) => (
-                            <SelectItem key={course.name} value={course.name}>
-                              {course.name}
-                            </SelectItem>
-                          ))}
-                        </Select>
-                      )}
+                      render={({ field: { onChange, value } }) => {
+                        setSelectedCourse !== undefined &&
+                          setSelectedCourse(value)
+                        return (
+                          <Select
+                            label='Select Course'
+                            onChange={onChange}
+                            selectedKeys={new Set([value])}
+                          >
+                            {courses.map((course) => (
+                              <SelectItem key={course.id} value={course.id}>
+                                {course.name}
+                              </SelectItem>
+                            ))}
+                          </Select>
+                        )
+                      }}
                     />
                     <span className='px-2 text-danger'>
                       {errors.course?.message}
@@ -188,36 +196,42 @@ const EditModal = (props: EditModalProps) => {
                     <Controller
                       control={control}
                       name='subjects'
-                      render={({ field: { onChange, value } }) => (
-                        <Select
-                          label='Subjects:'
-                          items={yearRange}
-                          labelPlacement='outside'
-                          placeholder='Select subjects'
-                          selectionMode='multiple'
-                          selectedKeys={new Set([...value])}
-                          onChange={onChange}
-                          isMultiline={true}
-                          renderValue={(items) => {
-                            return (
-                              <div className='flex flex-wrap gap-2'>
-                                {items.map((item: any) => (
-                                  <Chip key={item.key}>{item.textValue}</Chip>
-                                ))}
-                              </div>
-                            )
-                          }}
-                        >
-                          {yearRange.map((yearValue) => (
-                            <SelectItem
-                              key={yearValue.toString()}
-                              value={yearValue.toString()}
-                            >
-                              {yearValue.toString()}
-                            </SelectItem>
-                          ))}
-                        </Select>
-                      )}
+                      render={({ field: { onChange, value } }) => {
+                        let myValues = value.split(',')
+
+                        return (
+                          <Select
+                            label='Subjects:'
+                            items={subjects}
+                            labelPlacement='outside'
+                            placeholder='Select subjects'
+                            selectionMode='multiple'
+                            selectedKeys={new Set([...myValues])}
+                            onChange={onChange}
+                            isMultiline={true}
+                            renderValue={(items) => {
+                              return (
+                                <div className='flex flex-wrap gap-2 py-2'>
+                                  {items.map((item: any) => (
+                                    <Chip key={item.key}>{item.textValue}</Chip>
+                                  ))}
+                                </div>
+                              )
+                            }}
+                          >
+                            {subjects !== undefined
+                              ? subjects.map((subject) => (
+                                  <SelectItem
+                                    key={subject.id}
+                                    value={subject.id}
+                                  >
+                                    {subject.name}
+                                  </SelectItem>
+                                ))
+                              : []}
+                          </Select>
+                        )
+                      }}
                     />
                     <span className='px-2 text-danger'>
                       {errors.subjects?.message}

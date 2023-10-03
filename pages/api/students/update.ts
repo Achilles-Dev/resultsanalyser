@@ -14,18 +14,22 @@ export default async function handler(
     otherName,
     sex,
     courseId,
-    subjectIds,
   } = req.body
-  const response = await Student.create({
-    id,
-    indexNo,
-    yearGroup,
-    firstName,
-    lastName,
-    otherName,
-    sex,
-    courseId,
-  })
-
+  const response = await Student.update(
+    {
+      indexNo,
+      yearGroup,
+      firstName,
+      lastName,
+      otherName,
+      sex,
+      courseId,
+    },
+    {
+      where: {
+        id,
+      },
+    }
+  )
   res.status(200).json({ response })
 }

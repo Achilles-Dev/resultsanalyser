@@ -26,6 +26,7 @@ import {
   fetchCourses,
   fetchStudent,
   fetchStudents,
+  updateStudent,
 } from '@/libs/api'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
@@ -171,7 +172,6 @@ const Students = ({
   const { errors } = formState
 
   const handleCreateStudent = async (data: studentSProps) => {
-    console.log(data)
     const id = uuidv4()
     const subjectIds = data.subjects ? data.subjects.split(',') : []
     await createStudent({
@@ -183,19 +183,37 @@ const Students = ({
       otherName: data.othername,
       sex: data.sex,
       courseId: data.course,
+      subjectIds,
     })
-    Promise.all(
-      subjectIds.map(async (subjectId) => {
-        await createStudentSubjects({ studentId: id, subjectId })
-      })
-    )
+    // Promise.all(
+    //   subjectIds.map(async (subjectId) => {
+    //     await createStudentSubjects({ studentId: id, subjectId })
+    //   })
+    // )
 
     setOpen(false)
     reset()
   }
 
-  const handleEditStudent = (data: studentSProps) => {
+  const handleEditStudent = async (data: studentSProps) => {
     console.log(data)
+    console.log(student)
+    const subjectIds = data.subjects ? data.subjects.split(',') : []
+    await updateStudent({
+      id: student.id,
+      yearGroup: data.year,
+      indexNo: data.indexNo,
+      firstName: data.firstname,
+      lastName: data.lastname,
+      otherName: data.othername,
+      sex: data.sex,
+      courseId: data.course,
+    })
+    // Promise.all(
+    //   subjectIds.map(async (subjectId) => {
+    //     await createStudentSubjects({ studentId: student.id, subjectId })
+    //   })
+    // )
     setEditOpen(false)
     reset()
   }
@@ -216,17 +234,17 @@ const Students = ({
   useEffect(() => {
     if (router.query?.id) {
       const { id } = router.query
-      fetchStudent(Number(id)).then((res) => {
+      fetchStudent(id.toString()).then((res) => {
         setStudent(res.response)
         const stud = res.response
-        setValue('year', stud.year)
+        setValue('year', stud.yearGroup)
         setValue('indexNo', stud.indexNo)
-        setValue('firstname', stud.firstname)
-        setValue('lastname', stud.lastname)
-        setValue('othername', stud?.othername)
-        setValue('sex', stud.sex)
-        setValue('course', stud.course)
-        setValue('subjects', stud.subjects)
+        setValue('firstname', stud.firstName)
+        setValue('lastname', stud.lastName)
+        setValue('othername', stud?.otherName)
+        setValue('sex', stud.sex.charAt(0).toUpperCase() + stud.sex.slice(1))
+        setValue('course', stud.Course.id)
+        setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
         setIsFetched(true)
       })
     }
@@ -344,6 +362,8 @@ const Students = ({
           control={control}
           getValues={getValues}
           courses={courses}
+          subjects={subjects}
+          setSelectedCourse={setSelectedCourse}
         />
       )}
     </main>

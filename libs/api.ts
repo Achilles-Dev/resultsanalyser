@@ -10,7 +10,7 @@ export const fetchStudents = async () => {
   return results.json()
 }
 
-export const fetchStudent = async (id: number) => {
+export const fetchStudent = async (id: string) => {
   const results = await fetch(`/api/students/single?id=${id}`)
   return results.json()
 }
@@ -26,6 +26,69 @@ export const fetchSubjects = async () => {
 }
 
 export const createStudent = async ({
+  id,
+  indexNo,
+  yearGroup,
+  firstName,
+  lastName,
+  otherName,
+  sex,
+  courseId,
+  subjectIds,
+}: {
+  id: string
+  indexNo: string
+  yearGroup: string
+  firstName: string
+  lastName: string
+  otherName?: string
+  sex: string
+  courseId: string
+  subjectIds: string[]
+}) => {
+  const data = {
+    id,
+    indexNo,
+    yearGroup,
+    firstName,
+    lastName,
+    otherName,
+    sex,
+    courseId,
+    subjectIds,
+  }
+  const results = await fetch('/api/students/add', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}
+
+export const createStudentSubjects = async ({
+  studentId,
+  subjectId,
+}: {
+  studentId: string
+  subjectId: string
+}) => {
+  const data = {
+    studentId,
+    subjectId,
+  }
+  const results = await fetch('/api/studentSubjects/add', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}
+
+export const updateStudent = async ({
   id,
   indexNo,
   yearGroup,
@@ -54,28 +117,7 @@ export const createStudent = async ({
     sex,
     courseId,
   }
-  const results = await fetch('/api/students/add', {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-    body: JSON.stringify(data),
-  })
-  return results.json()
-}
-
-export const createStudentSubjects = async ({
-  studentId,
-  subjectId,
-}: {
-  studentId: string
-  subjectId: string
-}) => {
-  const data = {
-    studentId,
-    subjectId,
-  }
-  const results = await fetch('/api/studentSubjects/add', {
+  const results = await fetch('/api/students/update', {
     headers: {
       'Content-Type': 'application/json',
     },
