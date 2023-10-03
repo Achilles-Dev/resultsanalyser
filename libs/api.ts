@@ -26,18 +26,41 @@ export const fetchSubjects = async () => {
 }
 
 export const createCourse = async ({
+  id,
   code,
   name,
 }: {
+  id: string
   code: number
   name: string
 }) => {
   const data = {
-    id: uuidv4(),
+    id,
     code,
     name,
   }
   const results = await fetch('/api/courses/add', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}
+
+export const createCourseSubjects = async ({
+  courseId,
+  subjectId,
+}: {
+  courseId: string
+  subjectId: string
+}) => {
+  const data = {
+    courseId,
+    subjectId,
+  }
+  const results = await fetch('/api/courseSubjects/add', {
     headers: {
       'Content-Type': 'application/json',
     },

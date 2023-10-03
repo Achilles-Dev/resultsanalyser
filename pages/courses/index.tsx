@@ -20,11 +20,19 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { createCourse } from '@/libs/api'
+import { createCourse, createCourseSubjects } from '@/libs/api'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { Subject } from '@/libs/models'
+import { Course, Subject } from '@/libs/models'
+import { v4 as uuidv4 } from 'uuid'
 
 export const getServerSideProps: GetServerSideProps = async () => {
+  const courses = JSON.stringify(
+    await Course.findAll({
+      order: [['createdAt', 'DESC']],
+      include: { model: Subject },
+    })
+  )
+
   const subjects = JSON.stringify(
     await Subject.findAll({
       where: {
@@ -35,6 +43,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
   return {
     props: {
+      courses: JSON.parse(courses),
       subjects: JSON.parse(subjects),
     },
   }
@@ -43,10 +52,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
 interface createCoursesProps {
   code: number
   name: string
-  electiveSubjects?: string[]
+  electiveSubjects?: string
 }
 
 const Courses = ({
+  courses,
   subjects,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
@@ -55,14 +65,15 @@ const Courses = ({
 
   let list = useAsyncList({
     async load({ signal }) {
-      let res = await fetch('https://swapi.py4e.com/api/people/?search', {
-        signal,
-      })
-      let json = await res.json()
       setIsLoading(false)
-
+      const myCourses = courses.map((course: any) => ({
+        ...course,
+        subjects: course.Subjects.map((subject: any) => subject.name).join(
+          ', '
+        ),
+      }))
       return {
-        items: json.results,
+        items: myCourses.sort((a: any, b: any) => a.code - b.code),
       }
     },
     async sort({
@@ -103,8 +114,16 @@ const Courses = ({
   const { errors } = formState
 
   const handleCreateCourse = async (data: createCoursesProps) => {
-    console.log(data)
-    await createCourse({ code: data.code, name: data.name })
+    const id = uuidv4()
+    const subjectIds = data.electiveSubjects
+      ? data.electiveSubjects.split(',')
+      : []
+    await createCourse({ id, code: data.code, name: data.name })
+    Promise.all(
+      subjectIds.map(async (subjectId) => {
+        await createCourseSubjects({ courseId: id, subjectId })
+      })
+    )
     reset()
     setOpen(false)
   }
@@ -154,16 +173,16 @@ const Courses = ({
             }}
           >
             <TableHeader>
-              <TableColumn key='name' allowsSorting>
+              <TableColumn key='code' allowsSorting>
                 Code
               </TableColumn>
-              <TableColumn key='height' allowsSorting>
+              <TableColumn key='name' allowsSorting>
                 Course
               </TableColumn>
-              <TableColumn key='mass' allowsSorting>
+              <TableColumn key='number' allowsSorting>
                 Number of Students
               </TableColumn>
-              <TableColumn key='' allowsSorting>
+              <TableColumn key='subjects' allowsSorting>
                 Elective Subjects
               </TableColumn>
             </TableHeader>
@@ -194,6 +213,7 @@ const Courses = ({
         name='Courses'
         buttonName='Submit'
         subjects={subjects}
+        courses={courses}
       />
     </main>
   )
