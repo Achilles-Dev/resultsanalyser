@@ -40,6 +40,7 @@ interface CreateModalProps {
   subjects?: any[]
   control?: any
   setSelectedCourse?: (value: string) => void
+  saveStatus?: string
 }
 
 const CreateModal = (props: CreateModalProps) => {
@@ -57,6 +58,7 @@ const CreateModal = (props: CreateModalProps) => {
     subjects,
     control,
     setSelectedCourse,
+    saveStatus,
   } = props
   const { onOpenChange } = useDisclosure()
 
@@ -304,7 +306,11 @@ const CreateModal = (props: CreateModalProps) => {
               <Button color='danger' onPress={(e) => setOpen(false)}>
                 Close
               </Button>
-              <Button type='submit' color='primary'>
+              <Button
+                type='submit'
+                color='primary'
+                isLoading={saveStatus === 'loading' ? true : false}
+              >
                 {buttonName}
               </Button>
             </ModalFooter>

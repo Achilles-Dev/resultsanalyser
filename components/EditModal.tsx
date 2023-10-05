@@ -13,6 +13,7 @@ import {
   SelectItem,
   useDisclosure,
 } from '@nextui-org/react'
+import { useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'
 
 const currentYear = new Date().getFullYear()
@@ -40,6 +41,7 @@ interface EditModalProps {
   courses?: any[]
   subjects?: any[]
   setSelectedCourse?: (value: string) => void
+  updateStatus?: string
 }
 
 const EditModal = (props: EditModalProps) => {
@@ -57,6 +59,7 @@ const EditModal = (props: EditModalProps) => {
     courses,
     subjects,
     setSelectedCourse,
+    updateStatus,
   } = props
   const { onOpenChange } = useDisclosure()
 
@@ -353,7 +356,11 @@ const EditModal = (props: EditModalProps) => {
               <Button color='danger' onPress={(e) => setOpen(false)}>
                 Close
               </Button>
-              <Button type='submit' color='primary'>
+              <Button
+                type='submit'
+                color='primary'
+                isLoading={updateStatus === 'loading' ? true : false}
+              >
                 {buttonName}
               </Button>
             </ModalFooter>

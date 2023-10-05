@@ -19,7 +19,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
-import { useAsyncList } from '@react-stately/data'
+import { AsyncListData, useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
 import { createCourse, fetchCourse, updateCourse } from '@/libs/api'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
@@ -65,9 +65,12 @@ const Courses = ({
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
+  const [editStatus, setEditStatus] = useState<string>('idle')
   const [course, setCourse] = useState<any>([])
+  const [courseId, setCourseId] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isFetched, setIsFetched] = useState<boolean>(false)
+  const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -75,6 +78,8 @@ const Courses = ({
       pathname: router.pathname,
       query: { id },
     })
+    setCourseId(id)
+    setEditStatus('loading')
     const { response } = await fetchCourse(id)
     setCourse(response)
     const myCourse = response
@@ -86,11 +91,12 @@ const Courses = ({
     )
     setIsFetched(true)
     setEditOpen(true)
+    setEditStatus('success')
   }
 
   const editDelete = (id: string) => (
     <div>
-      <Button onPress={() => handleEdit(id)} color='primary'>
+      <Button onPress={() => handleEdit(id)} color='primary' isLoading={false}>
         Edit
       </Button>
     </div>
@@ -110,7 +116,7 @@ const Courses = ({
     </div>
   )
 
-  let list = useAsyncList({
+  let list: AsyncListData<any> = useAsyncList({
     async load({ signal }) {
       const myCourses = courses.map((course: any) => ({
         ...course,
@@ -163,6 +169,7 @@ const Courses = ({
 
   const handleCreateCourse = async (data: coursesProps) => {
     const id = uuidv4()
+    setSaveUpdateStatus('loading')
     const subjectIds = data.electiveSubjects
       ? data.electiveSubjects.split(',')
       : []
@@ -182,6 +189,7 @@ const Courses = ({
     list.items.push(newCourse)
 
     setOpen(false)
+    setSaveUpdateStatus('idle')
     reset()
   }
 
@@ -189,6 +197,7 @@ const Courses = ({
     const subjectIds = data.electiveSubjects
       ? data.electiveSubjects.split(',')
       : []
+    setSaveUpdateStatus('loading')
     await updateCourse({
       id: course.id,
       code: data.code,
@@ -205,8 +214,51 @@ const Courses = ({
     list.update(course.id, editedCourse)
 
     setEditOpen(false)
+    setSaveUpdateStatus('idle')
     reset()
   }
+
+  useEffect(() => {
+    if (editStatus === 'loading') {
+      const myList = list.getItem(courseId)
+      const myList2 = {
+        ...myList,
+        edit: {
+          ...myList.edit,
+          props: {
+            ...myList.edit.props,
+            children: {
+              ...myList.edit.props.children,
+              props: {
+                ...myList.edit.props.children.props,
+                isLoading: true,
+              },
+            },
+          },
+        },
+      }
+      list.update(courseId, myList2)
+    } else if (editStatus === 'success') {
+      const myList = list.getItem(courseId)
+      const myList2 = {
+        ...myList,
+        edit: {
+          ...myList.edit,
+          props: {
+            ...myList.edit.props,
+            children: {
+              ...myList.edit.props.children,
+              props: {
+                ...myList.edit.props.children.props,
+                isLoading: false,
+              },
+            },
+          },
+        },
+      }
+      list.update(courseId, myList2)
+    }
+  }, [editStatus])
 
   useEffect(() => {
     if (!editOpen && router.query?.id) {
@@ -306,6 +358,7 @@ const Courses = ({
         buttonName='Submit'
         subjects={subjects}
         courses={courses}
+        saveStatus={saveUpdateStatus}
       />
       {isFetched && (
         <EditModal
@@ -321,6 +374,7 @@ const Courses = ({
           control={control}
           courses={courses}
           subjects={subjects}
+          updateStatus={saveUpdateStatus}
         />
       )}
     </main>
