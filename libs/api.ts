@@ -30,6 +30,11 @@ export const fetchSubjects = async () => {
   return results.json()
 }
 
+export const fetchSubject = async (id: string) => {
+  const results = await fetch(`/api/subjects/single?id=${id}`)
+  return results.json()
+}
+
 export const createStudent = async ({
   id,
   indexNo,
@@ -169,16 +174,18 @@ export const updateCourse = async ({
 }
 
 export const createSubject = async ({
+  id,
   code,
   type,
   name,
 }: {
+  id: string
   code: number
   type: string
   name: string
 }) => {
   const data = {
-    id: uuidv4(),
+    id,
     code,
     type,
     name,

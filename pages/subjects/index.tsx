@@ -20,12 +20,19 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { createSubject } from '@/libs/api'
-import { Subject } from '@/libs/models'
+import { createSubject, fetchSubject } from '@/libs/api'
+import { Student, Subject } from '@/libs/models'
+import { v4 as uuidv4 } from 'uuid'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { useRouter } from 'next/router'
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const subjects = JSON.stringify(await Subject.findAll())
+  const subjects = JSON.stringify(
+    await Subject.findAll({
+      order: [['createdAt', 'DESC']],
+      include: { model: Student },
+    })
+  )
 
   return {
     props: {
@@ -45,13 +52,46 @@ const Subjects = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
+  const [subject, setSubject] = useState<any>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const router = useRouter()
+
+  const handleEdit = async (id: string) => {
+    router.push({
+      pathname: router.pathname,
+      query: { id },
+    })
+    const { response } = await fetchSubject(id)
+    setSubject(response)
+    const mySubject = response
+    // setValue('code', myCourse.code)
+    // setValue('name', myCourse.name)
+    // setValue(
+    //   'electiveSubjects',
+    //   myCourse.Subjects.map((val: any) => val.id).join(',')
+    // )
+    // setIsFetched(true)
+    // setEditOpen(true)
+  }
+
+  const editDelete = (id: string) => (
+    <div>
+      <Button onPress={() => handleEdit(id)} color='primary'>
+        Edit
+      </Button>
+    </div>
+  )
 
   let list = useAsyncList({
     async load({ signal }) {
+      const myStubjects = subjects.map((subject: any) => ({
+        ...subject,
+        number: subject.Students.length,
+        edit: editDelete(subject.id),
+      }))
       setIsLoading(false)
       return {
-        items: subjects.sort((a: any, b: any) => a.code - b.code),
+        items: myStubjects.sort((a: any, b: any) => a.code - b.code),
       }
     },
     async sort({
@@ -92,7 +132,21 @@ const Subjects = ({
   const { errors } = formState
 
   const handleCreateSubject = async (data: createSubjectsProps) => {
-    await createSubject({ code: data.code, type: data.type, name: data.name })
+    const id = uuidv4()
+    await createSubject({
+      id,
+      code: data.code,
+      type: data.type,
+      name: data.name,
+    })
+    const { response } = await fetchSubject(id)
+    const newSubject = {
+      ...response,
+      number: response.Students.length,
+      edit: editDelete(response.id),
+    }
+    list.items.push(newSubject)
+    list.items.sort((a: any, b: any) => a.code - b.code)
     setOpen(false)
     reset()
   }
@@ -149,8 +203,9 @@ const Subjects = ({
                 Subject
               </TableColumn>
               <TableColumn key='number' allowsSorting>
-                Number of Students
+                No. of Students
               </TableColumn>
+              <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
               items={list.items}

@@ -278,7 +278,7 @@ const Courses = ({
                 Course
               </TableColumn>
               <TableColumn key='number' allowsSorting>
-                Number of Students
+                No. of Students
               </TableColumn>
               <TableColumn key='subjects' allowsSorting>
                 Elective Subjects
