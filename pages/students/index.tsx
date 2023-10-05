@@ -4,6 +4,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Chip,
   Input,
   Spinner,
   Table,
@@ -111,6 +112,20 @@ const Students = ({
     </div>
   )
 
+  const electiveSubjects = (mySubjects: []) => (
+    <div className='flex flex-wrap gap-2 py-2'>
+      {mySubjects.map((subject: any) => (
+        <Chip
+          classNames={{ content: 'object-scale-down' }}
+          variant='dot'
+          key={subject.id}
+        >
+          {subject.name}
+        </Chip>
+      ))}
+    </div>
+  )
+
   let list = useAsyncList({
     async load({ signal }) {
       setIsLoading(false)
@@ -122,9 +137,7 @@ const Students = ({
         sex: student.sex.charAt(0).toUpperCase() + student.sex.slice(1),
         year: student.yearGroup,
         course: student.Course.name,
-        subjects: student.Subjects.map((subject: any) => subject.name).join(
-          ', '
-        ),
+        subjects: electiveSubjects(student.Subjects),
         edit: editDelete(student.id),
       }))
 
@@ -198,9 +211,7 @@ const Students = ({
       sex: response.sex.charAt(0).toUpperCase() + response.sex.slice(1),
       year: response.yearGroup,
       course: response.Course.name,
-      subjects: response.Subjects.map((subject: any) => subject.name).join(
-        ', '
-      ),
+      subjects: electiveSubjects(response.Subjects),
       edit: editDelete(response.id),
     }
     list.items.push(newStudent)
@@ -229,9 +240,7 @@ const Students = ({
       }`,
       year: response.yearGroup,
       course: response.Course.name,
-      subjects: response.Subjects.map((subject: any) => subject.name).join(
-        ', '
-      ),
+      subjects: electiveSubjects(response.Subjects),
       edit: editDelete(response.id),
     }
     list.update(student.id, editedStudent)

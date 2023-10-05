@@ -39,38 +39,21 @@ export default async function handler(
       })
     )
   )
-  const set = new Set(subjectIds)
-  console.log(set, 'first', existingStudentSubjects)
-  await existingStudentSubjects.map((item: any) => {
-    if (!set.has(item.subjectId)) {
-      return {
-        ...item,
-      }
+
+  await existingStudentSubjects.forEach((item: any) => {
+    if (!subjectIds.includes(item.subjectId)) {
+      StudentSubject.destroy({ where: { subjectId: item.subjectId } })
+    } else {
+      subjectIds.splice(subjectIds.indexOf(item.subjectId), 1)
     }
   })
-  console.log('second', existingStudentSubjects)
-  // await subjectIds.forEach((subjectId: string) => {
-  //   existingStudentSubjects.forEach((esubject: any) => {
-  //     if (esubject.subjectId !== subjectId) {
-  //       StudentSubject.update(
-  //         { studentId: id, subjectId },
-  //         {
-  //           where: {
-  //             subjectId: esubject.subjectId,
-  //             studentId: id,
-  //           },
-  //         }
-  //       )
-  //     } else {
-  //       StudentSubject.findOrCreate({
-  //         where: { studentId: id },
-  //         defaults: {
-  //           subjectId,
-  //           studentId: id,
-  //         },
-  //       })
-  //     }
-  //   })
-  // })
+
+  await subjectIds.forEach((subjectId: string) => {
+    StudentSubject.create({
+      subjectId,
+      studentId: id,
+    })
+  })
+
   res.status(200).json({ response })
 }
