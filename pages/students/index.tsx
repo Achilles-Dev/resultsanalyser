@@ -56,7 +56,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   }
 }
 
-interface studentSProps {
+interface studentsProps {
   year: string
   indexNo: string
   firstname: string
@@ -167,22 +167,15 @@ const Students = ({
     subjects: yup.string().required('Select student elective subjects'),
   })
 
-  const {
-    register,
-    setValue,
-    getValues,
-    handleSubmit,
-    reset,
-    control,
-    formState,
-  } = useForm({
-    reValidateMode: 'onBlur',
-    resolver: yupResolver(studentSchema),
-  })
+  const { register, setValue, handleSubmit, reset, control, formState } =
+    useForm({
+      reValidateMode: 'onBlur',
+      resolver: yupResolver(studentSchema),
+    })
 
   const { errors } = formState
 
-  const handleCreateStudent = async (data: studentSProps) => {
+  const handleCreateStudent = async (data: studentsProps) => {
     const id = uuidv4()
     const subjectIds = data.subjects ? data.subjects.split(',') : []
     await createStudent({
@@ -215,7 +208,7 @@ const Students = ({
     reset()
   }
 
-  const handleEditStudent = async (data: studentSProps) => {
+  const handleEditStudent = async (data: studentsProps) => {
     const subjectIds = data.subjects ? data.subjects.split(',') : []
     await updateStudent({
       id: student.id,
@@ -229,7 +222,7 @@ const Students = ({
       subjectIds,
     })
     const { response } = await fetchStudent(student.id)
-    const newStudent = {
+    const editedStudent = {
       ...response,
       name: `${response.lastName} ${response.firstName} ${
         response.otherName !== undefined ? response.otherName : ''
@@ -241,7 +234,7 @@ const Students = ({
       ),
       edit: editDelete(response.id),
     }
-    list.update(student.id, newStudent)
+    list.update(student.id, editedStudent)
 
     setEditOpen(false)
     reset()

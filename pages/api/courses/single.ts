@@ -1,4 +1,4 @@
-import { Course, Subject } from '@/libs/models'
+import { Course, Student, Subject } from '@/libs/models'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(
@@ -10,7 +10,7 @@ export default async function handler(
     where: {
       id: id,
     },
-    include: [{ model: Subject }],
+    include: [{ model: Subject }, { model: Student }],
   })
   res.status(200).json({ response })
 }

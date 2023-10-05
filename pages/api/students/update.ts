@@ -39,24 +39,38 @@ export default async function handler(
       })
     )
   )
-  existingStudentSubjects.filter(
-    (item: any) => !subjectIds.includes(item.subjectId)
-  )
-
-  await subjectIds.forEach((subjectId: string) => {
-    existingStudentSubjects.forEach((esubject: any) => {
-      if (esubject.subjectId !== subjectId) {
-        StudentSubject.update(
-          { studentId: id, subjectId },
-          {
-            where: {
-              subjectId: esubject.subjectId,
-              studentId: id,
-            },
-          }
-        )
+  const set = new Set(subjectIds)
+  console.log(set, 'first', existingStudentSubjects)
+  await existingStudentSubjects.map((item: any) => {
+    if (!set.has(item.subjectId)) {
+      return {
+        ...item,
       }
-    })
+    }
   })
+  console.log('second', existingStudentSubjects)
+  // await subjectIds.forEach((subjectId: string) => {
+  //   existingStudentSubjects.forEach((esubject: any) => {
+  //     if (esubject.subjectId !== subjectId) {
+  //       StudentSubject.update(
+  //         { studentId: id, subjectId },
+  //         {
+  //           where: {
+  //             subjectId: esubject.subjectId,
+  //             studentId: id,
+  //           },
+  //         }
+  //       )
+  //     } else {
+  //       StudentSubject.findOrCreate({
+  //         where: { studentId: id },
+  //         defaults: {
+  //           subjectId,
+  //           studentId: id,
+  //         },
+  //       })
+  //     }
+  //   })
+  // })
   res.status(200).json({ response })
 }

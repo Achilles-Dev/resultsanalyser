@@ -141,6 +141,33 @@ export const createCourse = async ({
   return results.json()
 }
 
+export const updateCourse = async ({
+  id,
+  code,
+  name,
+  subjectIds,
+}: {
+  id: string
+  code: number
+  name: string
+  subjectIds: readonly string[]
+}) => {
+  const data = {
+    id,
+    code,
+    name,
+    subjectIds,
+  }
+  const results = await fetch('/api/courses/update', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}
+
 export const createSubject = async ({
   code,
   type,

@@ -4,6 +4,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Chip,
   Input,
   Spinner,
   Table,
@@ -20,16 +21,23 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { createCourse, fetchCourse, fetchCourses } from '@/libs/api'
+import {
+  createCourse,
+  fetchCourse,
+  fetchCourses,
+  updateCourse,
+} from '@/libs/api'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { Course, Subject } from '@/libs/models'
+import { Course, Student, Subject } from '@/libs/models'
 import { v4 as uuidv4 } from 'uuid'
+import { useRouter } from 'next/router'
+import EditModal from '@/components/EditModal'
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const courses = JSON.stringify(
     await Course.findAll({
       order: [['createdAt', 'DESC']],
-      include: { model: Subject },
+      include: [{ model: Subject }, { model: Student }],
     })
   )
 
@@ -49,7 +57,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   }
 }
 
-interface createCoursesProps {
+interface coursesProps {
   code: number
   name: string
   electiveSubjects?: string
@@ -61,17 +69,61 @@ const Courses = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
+  const [editOpen, setEditOpen] = useState<boolean>(false)
   const [courses, setCourses] = useState<any>(allCourses)
+  const [course, setCourse] = useState<any>([])
   const [isCourseAdded, setIsCourseAdded] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isFetched, setIsFetched] = useState<boolean>(false)
+  const router = useRouter()
+
+  const handleEdit = async (id: string) => {
+    router.push({
+      pathname: router.pathname,
+      query: { id },
+    })
+    const { response } = await fetchCourse(id)
+    setCourse(response)
+    const myCourse = response
+    setValue('code', myCourse.code)
+    setValue('name', myCourse.name)
+    setValue(
+      'electiveSubjects',
+      myCourse.Subjects.map((val: any) => val.id).join(',')
+    )
+    setIsFetched(true)
+    setEditOpen(true)
+  }
+
+  const editDelete = (id: string) => (
+    <div>
+      <Button onPress={() => handleEdit(id)} color='primary'>
+        Edit
+      </Button>
+    </div>
+  )
+
+  const electiveSubjects = (mySubjects: []) => (
+    <div className='flex flex-wrap gap-2 py-2'>
+      {mySubjects.map((subject: any) => (
+        <Chip
+          classNames={{ content: 'object-scale-down' }}
+          variant='dot'
+          key={subject.id}
+        >
+          {subject.name}
+        </Chip>
+      ))}
+    </div>
+  )
 
   let list = useAsyncList({
     async load({ signal }) {
       const myCourses = courses.map((course: any) => ({
         ...course,
-        subjects: course.Subjects.map((subject: any) => subject.name).join(
-          ', '
-        ),
+        subjects: electiveSubjects(course.Subjects),
+        number: course.Students.length,
+        edit: editDelete(course.id),
       }))
       setIsLoading(false)
       return {
@@ -108,14 +160,15 @@ const Courses = ({
     electiveSubjects: yup.string(),
   })
 
-  const { register, handleSubmit, reset, formState } = useForm({
-    reValidateMode: 'onBlur',
-    resolver: yupResolver(createCourseSchema),
-  })
+  const { register, setValue, handleSubmit, reset, control, formState } =
+    useForm({
+      reValidateMode: 'onBlur',
+      resolver: yupResolver(createCourseSchema),
+    })
 
   const { errors } = formState
 
-  const handleCreateCourse = async (data: createCoursesProps) => {
+  const handleCreateCourse = async (data: coursesProps) => {
     const id = uuidv4()
     const subjectIds = data.electiveSubjects
       ? data.electiveSubjects.split(',')
@@ -127,17 +180,51 @@ const Courses = ({
       subjectIds,
     })
     const { response } = await fetchCourse(id)
-    const course = {
+    const newCourse = {
       ...response,
-      subjects: response.Subjects.map((subject: any) => subject.name).join(
-        ', '
-      ),
+      subjects: electiveSubjects(response.Subjects),
+      number: response.Students.length,
+      edit: editDelete(response.id),
     }
-    list.items.push(course)
+    list.items.push(newCourse)
 
     setOpen(false)
     reset()
   }
+
+  const handleEditCourse = async (data: coursesProps) => {
+    const subjectIds = data.electiveSubjects
+      ? data.electiveSubjects.split(',')
+      : []
+    await updateCourse({
+      id: course.id,
+      code: data.code,
+      name: data.name,
+      subjectIds,
+    })
+    const { response } = await fetchCourse(course.id)
+    const editedCourse = {
+      ...response,
+      subjects: electiveSubjects(response.Subjects),
+      number: response.Students.length,
+      edit: editDelete(response.id),
+    }
+    list.update(course.id, editedCourse)
+
+    setEditOpen(false)
+    reset()
+  }
+
+  useEffect(() => {
+    if (!editOpen && router.query?.id) {
+      router.push({
+        pathname: router.pathname,
+      })
+      setValue('code', 100)
+      setValue('name', '')
+      setValue('electiveSubjects', '')
+    }
+  }, [editOpen, router.query?.id])
 
   return (
     <main className='px-2 pt-2'>
@@ -196,6 +283,7 @@ const Courses = ({
               <TableColumn key='subjects' allowsSorting>
                 Elective Subjects
               </TableColumn>
+              <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
               items={list.items}
@@ -226,6 +314,22 @@ const Courses = ({
         subjects={subjects}
         courses={courses}
       />
+      {isFetched && (
+        <EditModal
+          open={editOpen}
+          setOpen={setEditOpen}
+          handleEdit={handleEditCourse}
+          register={register}
+          handleSubmit={handleSubmit}
+          errors={errors}
+          headerName='Update Course'
+          name='Courses'
+          buttonName='Update Course'
+          control={control}
+          courses={courses}
+          subjects={subjects}
+        />
+      )}
     </main>
   )
 }

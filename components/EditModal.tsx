@@ -37,7 +37,7 @@ interface EditModalProps {
   name: string
   buttonName: string
   control: any
-  courses: any[]
+  courses?: any[]
   subjects?: any[]
   setSelectedCourse?: (value: string) => void
 }
@@ -177,11 +177,13 @@ const EditModal = (props: EditModalProps) => {
                             onChange={onChange}
                             selectedKeys={new Set([value])}
                           >
-                            {courses.map((course) => (
-                              <SelectItem key={course.id} value={course.id}>
-                                {course.name}
-                              </SelectItem>
-                            ))}
+                            {courses !== undefined
+                              ? courses.map((course) => (
+                                  <SelectItem key={course.id} value={course.id}>
+                                    {course.name}
+                                  </SelectItem>
+                                ))
+                              : []}
                           </Select>
                         )
                       }}
@@ -254,42 +256,48 @@ const EditModal = (props: EditModalProps) => {
                 </div>
 
                 <div className='flex flex-col w-full items-center'>
-                  <Input
-                    {...register('coursename')}
-                    placeholder='Name of Course'
-                  />
+                  <Input {...register('name')} placeholder='Name of Course' />
                   <span className='px-2 text-danger'>
-                    {errors.coursename?.message}
+                    {errors.name?.message}
                   </span>
                 </div>
                 <div className='flex flex-col w-full items-center'>
-                  <Select
-                    {...register('electiveSubjects')}
-                    label='Elective Subjects:'
-                    items={yearRange}
-                    labelPlacement='outside'
-                    placeholder='Select subjects'
-                    selectionMode='multiple'
-                    isMultiline={true}
-                    renderValue={(items) => {
+                  <Controller
+                    control={control}
+                    name='electiveSubjects'
+                    render={({ field: { onChange, value } }) => {
+                      let myValues = value.split(',')
                       return (
-                        <div className='flex flex-wrap gap-2'>
-                          {items.map((item: any) => (
-                            <Chip key={item.key}>{item.textValue}</Chip>
-                          ))}
-                        </div>
+                        <Select
+                          label='Elective Subjects:'
+                          items={yearRange}
+                          labelPlacement='outside'
+                          placeholder='Select subjects'
+                          selectionMode='multiple'
+                          selectedKeys={new Set([...myValues])}
+                          onChange={onChange}
+                          isMultiline={true}
+                          renderValue={(items) => {
+                            return (
+                              <div className='flex flex-wrap gap-2 py-2'>
+                                {items.map((item: any) => (
+                                  <Chip key={item.key}>{item.textValue}</Chip>
+                                ))}
+                              </div>
+                            )
+                          }}
+                        >
+                          {subjects !== undefined
+                            ? subjects.map((subject) => (
+                                <SelectItem key={subject.id} value={subject.id}>
+                                  {subject.name}
+                                </SelectItem>
+                              ))
+                            : []}
+                        </Select>
                       )
                     }}
-                  >
-                    {yearRange.map((yearValue) => (
-                      <SelectItem
-                        key={yearValue.toString()}
-                        value={yearValue.toString()}
-                      >
-                        {yearValue.toString()}
-                      </SelectItem>
-                    ))}
-                  </Select>
+                  />
                   <span className='px-2 text-danger'>
                     {errors.electiveSubjects?.message}
                   </span>
