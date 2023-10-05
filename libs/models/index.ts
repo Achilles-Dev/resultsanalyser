@@ -5,7 +5,7 @@ import {
   Grade,
   Student,
   StudentGrade,
-  Student_Subject,
+  StudentSubject,
   Subject,
   User,
 } from './definitions'
@@ -16,7 +16,7 @@ export {
   CourseSubject,
   Grade,
   StudentGrade,
-  Student_Subject,
+  StudentSubject,
   Subject,
   User,
 }
@@ -29,7 +29,7 @@ export const initDB = async () => {
     await Subject.sync()
     await Grade.sync()
     await User.sync()
-    await Student_Subject.sync()
+    await StudentSubject.sync()
     await CourseSubject.sync()
     await StudentGrade.sync()
     console.log('Connection has been established successfully.')

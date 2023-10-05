@@ -37,7 +37,6 @@ interface EditModalProps {
   name: string
   buttonName: string
   control: any
-  getValues: (value: string) => any
   courses: any[]
   subjects?: any[]
   setSelectedCourse?: (value: string) => void
@@ -55,7 +54,6 @@ const EditModal = (props: EditModalProps) => {
     name,
     buttonName,
     control,
-    getValues,
     courses,
     subjects,
     setSelectedCourse,

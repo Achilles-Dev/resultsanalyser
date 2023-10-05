@@ -20,6 +20,11 @@ export const fetchCourses = async () => {
   return results.json()
 }
 
+export const fetchCourse = async (id: string) => {
+  const results = await fetch(`/api/courses/single?id=${id}`)
+  return results.json()
+}
+
 export const fetchSubjects = async () => {
   const results = await fetch('/api/subjects')
   return results.json()
@@ -44,7 +49,7 @@ export const createStudent = async ({
   otherName?: string
   sex: string
   courseId: string
-  subjectIds: string[]
+  subjectIds: readonly string[]
 }) => {
   const data = {
     id,
@@ -67,27 +72,6 @@ export const createStudent = async ({
   return results.json()
 }
 
-export const createStudentSubjects = async ({
-  studentId,
-  subjectId,
-}: {
-  studentId: string
-  subjectId: string
-}) => {
-  const data = {
-    studentId,
-    subjectId,
-  }
-  const results = await fetch('/api/studentSubjects/add', {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-    body: JSON.stringify(data),
-  })
-  return results.json()
-}
-
 export const updateStudent = async ({
   id,
   indexNo,
@@ -97,6 +81,7 @@ export const updateStudent = async ({
   otherName,
   sex,
   courseId,
+  subjectIds,
 }: {
   id: string
   indexNo: string
@@ -106,6 +91,7 @@ export const updateStudent = async ({
   otherName?: string
   sex: string
   courseId: string
+  subjectIds: readonly string[]
 }) => {
   const data = {
     id,
@@ -116,6 +102,7 @@ export const updateStudent = async ({
     otherName,
     sex,
     courseId,
+    subjectIds,
   }
   const results = await fetch('/api/students/update', {
     headers: {
@@ -131,38 +118,20 @@ export const createCourse = async ({
   id,
   code,
   name,
+  subjectIds,
 }: {
   id: string
   code: number
   name: string
+  subjectIds: readonly string[]
 }) => {
   const data = {
     id,
     code,
     name,
+    subjectIds,
   }
   const results = await fetch('/api/courses/add', {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-    body: JSON.stringify(data),
-  })
-  return results.json()
-}
-
-export const createCourseSubjects = async ({
-  courseId,
-  subjectId,
-}: {
-  courseId: string
-  subjectId: string
-}) => {
-  const data = {
-    courseId,
-    subjectId,
-  }
-  const results = await fetch('/api/courseSubjects/add', {
     headers: {
       'Content-Type': 'application/json',
     },

@@ -22,7 +22,6 @@ import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
 import {
   createStudent,
-  createStudentSubjects,
   fetchCourses,
   fetchStudent,
   fetchStudents,
@@ -78,20 +77,33 @@ const Students = ({
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [student, setStudent] = useState<any>()
   const [courses, setCourses] = useState<any>(allCourses)
-  const [subjects, setSubjects] = useState<any>([])
+  const [subjects, setSubjects] = useState<any[]>([])
   const [selectedCourse, setSelectedCourse] = useState<string>('')
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const router = useRouter()
 
-  const handleEdit = (id: number) => {
+  const handleEdit = async (id: string) => {
     router.push({
       pathname: router.pathname,
       query: { id },
     })
+    const { response } = await fetchStudent(id)
+    setStudent(response)
+    const stud = response
+    setValue('year', stud.yearGroup)
+    setValue('indexNo', stud.indexNo)
+    setValue('firstname', stud.firstName)
+    setValue('lastname', stud.lastName)
+    setValue('othername', stud?.otherName)
+    setValue('sex', stud.sex.charAt(0).toUpperCase() + stud.sex.slice(1))
+    setValue('course', stud.Course.id)
+    setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
+    setIsFetched(true)
+
     setEditOpen(true)
   }
 
-  const editDelete = (id: number) => (
+  const editDelete = (id: string) => (
     <div>
       <Button onPress={() => handleEdit(id)} color='primary'>
         Edit
@@ -107,15 +119,14 @@ const Students = ({
         name: `${student.lastName} ${student.firstName} ${
           student.otherName !== undefined ? student.otherName : ''
         }`,
-        year: student.year,
+        sex: student.sex.charAt(0).toUpperCase() + student.sex.slice(1),
+        year: student.yearGroup,
         course: student.Course.name,
         subjects: student.Subjects.map((subject: any) => subject.name).join(
           ', '
         ),
         edit: editDelete(student.id),
       }))
-
-      console.log(myStudents)
 
       return {
         items: myStudents,
@@ -185,19 +196,26 @@ const Students = ({
       courseId: data.course,
       subjectIds,
     })
-    // Promise.all(
-    //   subjectIds.map(async (subjectId) => {
-    //     await createStudentSubjects({ studentId: id, subjectId })
-    //   })
-    // )
-
+    const { response } = await fetchStudent(id)
+    const newStudent = {
+      ...response,
+      name: `${response.lastName} ${response.firstName} ${
+        response.otherName !== undefined ? response.otherName : ''
+      }`,
+      sex: response.sex.charAt(0).toUpperCase() + response.sex.slice(1),
+      year: response.yearGroup,
+      course: response.Course.name,
+      subjects: response.Subjects.map((subject: any) => subject.name).join(
+        ', '
+      ),
+      edit: editDelete(response.id),
+    }
+    list.items.push(newStudent)
     setOpen(false)
     reset()
   }
 
   const handleEditStudent = async (data: studentSProps) => {
-    console.log(data)
-    console.log(student)
     const subjectIds = data.subjects ? data.subjects.split(',') : []
     await updateStudent({
       id: student.id,
@@ -208,12 +226,23 @@ const Students = ({
       otherName: data.othername,
       sex: data.sex,
       courseId: data.course,
+      subjectIds,
     })
-    // Promise.all(
-    //   subjectIds.map(async (subjectId) => {
-    //     await createStudentSubjects({ studentId: student.id, subjectId })
-    //   })
-    // )
+    const { response } = await fetchStudent(student.id)
+    const newStudent = {
+      ...response,
+      name: `${response.lastName} ${response.firstName} ${
+        response.otherName !== undefined ? response.otherName : ''
+      }`,
+      year: response.yearGroup,
+      course: response.Course.name,
+      subjects: response.Subjects.map((subject: any) => subject.name).join(
+        ', '
+      ),
+      edit: editDelete(response.id),
+    }
+    list.update(student.id, newStudent)
+
     setEditOpen(false)
     reset()
   }
@@ -232,26 +261,18 @@ const Students = ({
   }, [selectedCourse])
 
   useEffect(() => {
-    if (router.query?.id) {
-      const { id } = router.query
-      fetchStudent(id.toString()).then((res) => {
-        setStudent(res.response)
-        const stud = res.response
-        setValue('year', stud.yearGroup)
-        setValue('indexNo', stud.indexNo)
-        setValue('firstname', stud.firstName)
-        setValue('lastname', stud.lastName)
-        setValue('othername', stud?.otherName)
-        setValue('sex', stud.sex.charAt(0).toUpperCase() + stud.sex.slice(1))
-        setValue('course', stud.Course.id)
-        setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
-        setIsFetched(true)
-      })
-    }
-    if (!editOpen) {
+    if (!editOpen && router.query?.id) {
       router.push({
         pathname: router.pathname,
       })
+      setValue('year', '')
+      setValue('indexNo', '')
+      setValue('firstname', '')
+      setValue('lastname', '')
+      setValue('othername', '')
+      setValue('sex', '')
+      setValue('course', '')
+      setValue('subjects', '')
     }
   }, [editOpen, router.query?.id])
 
@@ -360,7 +381,6 @@ const Students = ({
           name='Students'
           buttonName='Update Student'
           control={control}
-          getValues={getValues}
           courses={courses}
           subjects={subjects}
           setSelectedCourse={setSelectedCourse}

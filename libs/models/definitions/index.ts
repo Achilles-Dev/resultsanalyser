@@ -40,11 +40,32 @@ interface Grade
   name: string
 }
 
-interface Table1Table2
+interface StudentSubject
   extends Model<
-    InferAttributes<Table1Table2>,
-    InferCreationAttributes<Table1Table2>
-  > {}
+    InferAttributes<StudentSubject>,
+    InferCreationAttributes<StudentSubject>
+  > {
+  studentId: UUID | string
+  subjectId: UUID | string
+}
+
+interface CourseSubject
+  extends Model<
+    InferAttributes<CourseSubject>,
+    InferCreationAttributes<CourseSubject>
+  > {
+  courseId: UUID | string
+  subjectId: UUID | string
+}
+
+interface StudentGrade
+  extends Model<
+    InferAttributes<StudentGrade>,
+    InferCreationAttributes<StudentGrade>
+  > {
+  studentId: UUID | string
+  gradeId: UUID | string
+}
 
 interface User
   extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
@@ -207,9 +228,26 @@ const User = sequelize.define<User>(
   }
 )
 
-const Student_Subject = sequelize.define<Table1Table2>(
+const StudentSubject = sequelize.define<StudentSubject>(
   'Student_Subject',
-  {},
+  {
+    studentId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: Student,
+        key: 'id',
+      },
+    },
+    subjectId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: Subject,
+        key: 'id',
+      },
+    },
+  },
   {
     tableName: 'student_subject',
     timestamps: true,
@@ -218,9 +256,26 @@ const Student_Subject = sequelize.define<Table1Table2>(
   }
 )
 
-const CourseSubject = sequelize.define<Table1Table2>(
+const CourseSubject = sequelize.define<CourseSubject>(
   'Course_Subject',
-  {},
+  {
+    courseId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: Course,
+        key: 'id',
+      },
+    },
+    subjectId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: Subject,
+        key: 'id',
+      },
+    },
+  },
   {
     tableName: 'course_subject',
     timestamps: true,
@@ -229,9 +284,26 @@ const CourseSubject = sequelize.define<Table1Table2>(
   }
 )
 
-const StudentGrade = sequelize.define<Table1Table2>(
+const StudentGrade = sequelize.define<StudentGrade>(
   'Student_Grade',
-  {},
+  {
+    studentId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: Student,
+        key: 'id',
+      },
+    },
+    gradeId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: Grade,
+        key: 'id',
+      },
+    },
+  },
   {
     tableName: 'student_grade',
     timestamps: true,
@@ -249,12 +321,12 @@ Student.belongsTo(Course, {
 })
 
 Student.belongsToMany(Subject, {
-  through: Student_Subject,
+  through: StudentSubject,
   foreignKey: 'studentId',
 })
 
 Subject.belongsToMany(Student, {
-  through: Student_Subject,
+  through: StudentSubject,
   foreignKey: 'subjectId',
 })
 
@@ -284,7 +356,7 @@ export {
   Subject,
   User,
   Grade,
-  Student_Subject,
+  StudentSubject,
   StudentGrade,
   CourseSubject,
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Button,
   Card,
@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { createCourse, createCourseSubjects } from '@/libs/api'
+import { createCourse, fetchCourse, fetchCourses } from '@/libs/api'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { Course, Subject } from '@/libs/models'
 import { v4 as uuidv4 } from 'uuid'
@@ -43,7 +43,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
   return {
     props: {
-      courses: JSON.parse(courses),
+      allCourses: JSON.parse(courses),
       subjects: JSON.parse(subjects),
     },
   }
@@ -56,22 +56,24 @@ interface createCoursesProps {
 }
 
 const Courses = ({
-  courses,
+  allCourses,
   subjects,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
+  const [courses, setCourses] = useState<any>(allCourses)
+  const [isCourseAdded, setIsCourseAdded] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   let list = useAsyncList({
     async load({ signal }) {
-      setIsLoading(false)
       const myCourses = courses.map((course: any) => ({
         ...course,
         subjects: course.Subjects.map((subject: any) => subject.name).join(
           ', '
         ),
       }))
+      setIsLoading(false)
       return {
         items: myCourses.sort((a: any, b: any) => a.code - b.code),
       }
@@ -118,14 +120,23 @@ const Courses = ({
     const subjectIds = data.electiveSubjects
       ? data.electiveSubjects.split(',')
       : []
-    await createCourse({ id, code: data.code, name: data.name })
-    Promise.all(
-      subjectIds.map(async (subjectId) => {
-        await createCourseSubjects({ courseId: id, subjectId })
-      })
-    )
-    reset()
+    await createCourse({
+      id,
+      code: data.code,
+      name: data.name,
+      subjectIds,
+    })
+    const { response } = await fetchCourse(id)
+    const course = {
+      ...response,
+      subjects: response.Subjects.map((subject: any) => subject.name).join(
+        ', '
+      ),
+    }
+    list.items.push(course)
+
     setOpen(false)
+    reset()
   }
 
   return (

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Student } from '@/libs/models'
+import { Student, StudentSubject } from '@/libs/models'
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,7 +16,7 @@ export default async function handler(
     courseId,
     subjectIds,
   } = req.body
-  const response = await Student.create({
+  const student = await Student.create({
     id,
     indexNo,
     yearGroup,
@@ -26,6 +26,9 @@ export default async function handler(
     sex,
     courseId,
   })
+  await subjectIds.forEach((subjectId: string) => {
+    StudentSubject.create({ studentId: id, subjectId })
+  })
 
-  res.status(200).json({ response })
+  res.status(200).json({ response: student })
 }

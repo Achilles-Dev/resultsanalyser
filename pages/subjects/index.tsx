@@ -93,8 +93,8 @@ const Subjects = ({
 
   const handleCreateSubject = async (data: createSubjectsProps) => {
     await createSubject({ code: data.code, type: data.type, name: data.name })
-    reset()
     setOpen(false)
+    reset()
   }
 
   return (
