@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Button,
   Card,
@@ -20,11 +20,12 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { createSubject, fetchSubject } from '@/libs/api'
+import { createSubject, fetchSubject, updateSubject } from '@/libs/api'
 import { Student, Subject } from '@/libs/models'
 import { v4 as uuidv4 } from 'uuid'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { useRouter } from 'next/router'
+import EditModal from '@/components/EditModal'
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const subjects = JSON.stringify(
@@ -41,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   }
 }
 
-interface createSubjectsProps {
+interface subjectsProps {
   code: number
   type: string
   name: string
@@ -52,8 +53,10 @@ const Subjects = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
+  const [editOpen, setEditOpen] = useState<boolean>(false)
   const [subject, setSubject] = useState<any>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isFetched, setIsFetched] = useState<boolean>(false)
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -64,14 +67,11 @@ const Subjects = ({
     const { response } = await fetchSubject(id)
     setSubject(response)
     const mySubject = response
-    // setValue('code', myCourse.code)
-    // setValue('name', myCourse.name)
-    // setValue(
-    //   'electiveSubjects',
-    //   myCourse.Subjects.map((val: any) => val.id).join(',')
-    // )
-    // setIsFetched(true)
-    // setEditOpen(true)
+    setValue('code', mySubject.code)
+    setValue('name', mySubject.name)
+    setValue('type', mySubject.type)
+    setIsFetched(true)
+    setEditOpen(true)
   }
 
   const editDelete = (id: string) => (
@@ -124,14 +124,15 @@ const Subjects = ({
     name: yup.string().required('Name of sunject is required'),
   })
 
-  const { register, handleSubmit, reset, formState } = useForm({
-    reValidateMode: 'onBlur',
-    resolver: yupResolver(createSubjectSchema),
-  })
+  const { register, setValue, handleSubmit, reset, control, formState } =
+    useForm({
+      reValidateMode: 'onBlur',
+      resolver: yupResolver(createSubjectSchema),
+    })
 
   const { errors } = formState
 
-  const handleCreateSubject = async (data: createSubjectsProps) => {
+  const handleCreateSubject = async (data: subjectsProps) => {
     const id = uuidv4()
     await createSubject({
       id,
@@ -150,6 +151,36 @@ const Subjects = ({
     setOpen(false)
     reset()
   }
+
+  const handleEditSubject = async (data: subjectsProps) => {
+    await updateSubject({
+      id: subject.id,
+      code: data.code,
+      type: data.type,
+      name: data.name,
+    })
+    const { response } = await fetchSubject(subject.id)
+    const editedSubject = {
+      ...response,
+      number: response.Students.length,
+      edit: editDelete(response.id),
+    }
+    list.update(subject.id, editedSubject)
+
+    setEditOpen(false)
+    reset()
+  }
+
+  useEffect(() => {
+    if (!editOpen && router.query?.id) {
+      router.push({
+        pathname: router.pathname,
+      })
+      setValue('code', 100)
+      setValue('name', '')
+      setValue('type', '')
+    }
+  }, [editOpen, router.query?.id])
 
   return (
     <main className='px-2 pt-2'>
@@ -234,6 +265,21 @@ const Subjects = ({
         name='Subjects'
         buttonName='Add Subject'
       />
+      {isFetched && (
+        <EditModal
+          open={editOpen}
+          setOpen={setEditOpen}
+          handleEdit={handleEditSubject}
+          register={register}
+          handleSubmit={handleSubmit}
+          errors={errors}
+          headerName='Update Subject'
+          name='Subjects'
+          buttonName='Update Subject'
+          control={control}
+          subjects={subjects}
+        />
+      )}
     </main>
   )
 }

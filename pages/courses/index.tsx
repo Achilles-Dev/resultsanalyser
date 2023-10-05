@@ -21,12 +21,7 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import {
-  createCourse,
-  fetchCourse,
-  fetchCourses,
-  updateCourse,
-} from '@/libs/api'
+import { createCourse, fetchCourse, updateCourse } from '@/libs/api'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { Course, Student, Subject } from '@/libs/models'
 import { v4 as uuidv4 } from 'uuid'
@@ -51,7 +46,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
   return {
     props: {
-      allCourses: JSON.parse(courses),
+      courses: JSON.parse(courses),
       subjects: JSON.parse(subjects),
     },
   }
@@ -64,15 +59,13 @@ interface coursesProps {
 }
 
 const Courses = ({
-  allCourses,
+  courses,
   subjects,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
-  const [courses, setCourses] = useState<any>(allCourses)
   const [course, setCourse] = useState<any>([])
-  const [isCourseAdded, setIsCourseAdded] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const router = useRouter()

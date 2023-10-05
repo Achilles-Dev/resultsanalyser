@@ -199,3 +199,30 @@ export const createSubject = async ({
   })
   return results.json()
 }
+
+export const updateSubject = async ({
+  id,
+  code,
+  type,
+  name,
+}: {
+  id: string
+  code: number
+  type: string
+  name: string
+}) => {
+  const data = {
+    id,
+    code,
+    type,
+    name,
+  }
+  const results = await fetch('/api/subjects/update', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}

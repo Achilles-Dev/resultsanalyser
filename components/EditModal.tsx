@@ -319,25 +319,32 @@ const EditModal = (props: EditModalProps) => {
                   </span>
                 </div>
                 <div className='flex flex-col w-full items-center'>
-                  <Select label='Subject type' {...register('type')}>
-                    {subjectType.map((subject) => (
-                      <SelectItem key={subject.index} value={subject.value}>
-                        {subject.name}
-                      </SelectItem>
-                    ))}
-                  </Select>
+                  <Controller
+                    control={control}
+                    name='type'
+                    render={({ field: { onChange, value } }) => (
+                      <Select
+                        label='Subject type'
+                        onChange={onChange}
+                        selectedKeys={new Set([value])}
+                      >
+                        {subjectType.map((subject) => (
+                          <SelectItem key={subject.value} value={subject.value}>
+                            {subject.name}
+                          </SelectItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
                   <span className='px-2 text-danger'>
                     {errors.type?.message}
                   </span>
                 </div>
 
                 <div className='flex flex-col w-full items-center'>
-                  <Input
-                    {...register('subjectname')}
-                    placeholder='Name of Subject'
-                  />
+                  <Input {...register('name')} placeholder='Name of Subject' />
                   <span className='px-2 text-danger'>
-                    {errors.subjectname?.message}
+                    {errors.tname?.message}
                   </span>
                 </div>
               </ModalBody>
