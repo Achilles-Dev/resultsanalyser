@@ -35,9 +35,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
     })
   )
 
+  const students = JSON.stringify(await Student.findAll())
+
   return {
     props: {
       subjects: JSON.parse(subjects),
+      students: JSON.parse(students),
     },
   }
 }
@@ -50,6 +53,7 @@ interface subjectsProps {
 
 const Subjects = ({
   subjects,
+  students,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
@@ -92,7 +96,8 @@ const Subjects = ({
     async load({ signal }) {
       const myStubjects = subjects.map((subject: any) => ({
         ...subject,
-        number: subject.Students.length,
+        number:
+          subject.type === 'core' ? students.length : subject.Students.length,
         edit: editDelete(subject.id),
       }))
       setIsLoading(false)
@@ -124,6 +129,8 @@ const Subjects = ({
     },
   })
 
+  console
+
   const createSubjectSchema = yup.object().shape({
     code: yup.number().required('Subject code is required'),
     type: yup.string().required('Select type of subject'),
@@ -150,7 +157,8 @@ const Subjects = ({
     const { response } = await fetchSubject(id)
     const newSubject = {
       ...response,
-      number: response.Students.length,
+      number:
+        response.type === 'core' ? students.length : response.Students.length,
       edit: editDelete(response.id),
     }
     list.items.push(newSubject)
@@ -171,7 +179,8 @@ const Subjects = ({
     const { response } = await fetchSubject(subject.id)
     const editedSubject = {
       ...response,
-      number: response.Students.length,
+      number:
+        response.type === 'core' ? students.length : response.Students.length,
       edit: editDelete(response.id),
     }
     list.update(subject.id, editedSubject)
