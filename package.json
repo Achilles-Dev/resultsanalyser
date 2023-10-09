@@ -24,6 +24,7 @@
     "eslint-config-next": "13.4.19",
     "framer-motion": "^10.16.4",
     "next": "13.4.19",
+    "next-progress": "^2.3.1",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
     "react": "18.2.0",
