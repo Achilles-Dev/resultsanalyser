@@ -16,7 +16,6 @@ export default async function handler(
     sex,
     courseId,
     subjectIds,
-    gradeId,
   } = req.body
   const response = await Student.update(
     {
@@ -41,6 +40,7 @@ export default async function handler(
       })
     )
   )
+  console.log(existingStudentSubjects)
 
   await existingStudentSubjects.forEach((item: any) => {
     if (!subjectIds.includes(item.subjectId)) {

@@ -72,7 +72,7 @@ const Subjects = ({
       query: { id },
     })
     setSubjectId(id)
-    setEditStatus('loading')
+    setIsLoading(true)
     const { response } = await fetchSubject(id)
     setSubject(response)
     const mySubject = response
@@ -81,7 +81,7 @@ const Subjects = ({
     setValue('type', mySubject.type)
     setIsFetched(true)
     setEditOpen(true)
-    setEditStatus('success')
+    setIsLoading(false)
   }
 
   const editDelete = (id: string) => (
@@ -189,48 +189,6 @@ const Subjects = ({
     setSaveUpdateStatus('idle')
     reset()
   }
-
-  useEffect(() => {
-    if (editStatus === 'loading') {
-      const myList = list.getItem(subjectId)
-      const myList2 = {
-        ...myList,
-        edit: {
-          ...myList.edit,
-          props: {
-            ...myList.edit.props,
-            children: {
-              ...myList.edit.props.children,
-              props: {
-                ...myList.edit.props.children.props,
-                isLoading: true,
-              },
-            },
-          },
-        },
-      }
-      list.update(subjectId, myList2)
-    } else if (editStatus === 'success') {
-      const myList = list.getItem(subjectId)
-      const myList2 = {
-        ...myList,
-        edit: {
-          ...myList.edit,
-          props: {
-            ...myList.edit.props,
-            children: {
-              ...myList.edit.props.children,
-              props: {
-                ...myList.edit.props.children.props,
-                isLoading: false,
-              },
-            },
-          },
-        },
-      }
-      list.update(subjectId, myList2)
-    }
-  }, [editStatus])
 
   useEffect(() => {
     if (!editOpen && router.query?.id) {

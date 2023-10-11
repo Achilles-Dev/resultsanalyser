@@ -27,7 +27,7 @@ import CreateModal from '@/components/CreateModal'
 export const getServerSideProps: GetServerSideProps = async () => {
   const students = JSON.stringify(
     await Student.findAll({
-      order: [['createdAt', 'ASC']],
+      order: [['indexNo', 'ASC']],
       include: { model: Subject },
     })
   )
@@ -111,6 +111,8 @@ const Results = ({
     setIsLoading(true)
     const { response } = await fetchStudent(id)
     setStudent(response)
+    const stud = response
+    stud.Subjects.map
     setIsLoading(false)
     setOpen(true)
   }

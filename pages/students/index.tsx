@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Button,
   Card,
@@ -21,7 +21,12 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { createStudent, fetchStudent, updateStudent } from '@/libs/api'
+import {
+  createStudent,
+  fetchCourse,
+  fetchStudent,
+  updateStudent,
+} from '@/libs/api'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
@@ -31,7 +36,7 @@ import { v4 as uuidv4 } from 'uuid'
 export const getServerSideProps: GetServerSideProps = async () => {
   const students = JSON.stringify(
     await Student.findAll({
-      order: [['createdAt', 'ASC']],
+      order: [['indexNo', 'ASC']],
       include: [{ model: Subject }, { model: Course }],
     })
   )
@@ -69,14 +74,13 @@ const Students = ({
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
-  const [editStatus, setEditStatus] = useState<string>('idle')
-  const [studentId, setStudentId] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [student, setStudent] = useState<any>()
   const [subjects, setSubjects] = useState<any[]>([])
   const [selectedCourse, setSelectedCourse] = useState<string>('')
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
+  const [initialCourse, setInitialCourse] = useState()
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -84,11 +88,11 @@ const Students = ({
       pathname: router.pathname,
       query: { id },
     })
-    setStudentId(id)
-    setEditStatus('loading')
+    setIsLoading(true)
     const { response } = await fetchStudent(id)
     setStudent(response)
     const stud = response
+    setInitialCourse(stud.Course.id)
     setValue('year', stud.yearGroup)
     setValue('indexNo', stud.indexNo)
     setValue('firstname', stud.firstName)
@@ -99,7 +103,7 @@ const Students = ({
     setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
     setIsFetched(true)
     setEditOpen(true)
-    setEditStatus('success')
+    setIsLoading(false)
   }
 
   const editDelete = (id: string) => (
@@ -141,7 +145,7 @@ const Students = ({
       }))
       setIsLoading(false)
       return {
-        items: myStudents.sort((a: any, b: any) => a.indexNo - b.indexNo),
+        items: myStudents,
       }
     },
     async sort({
@@ -179,11 +183,18 @@ const Students = ({
     subjects: yup.string().required('Select student elective subjects'),
   })
 
-  const { register, setValue, handleSubmit, reset, control, formState } =
-    useForm({
-      reValidateMode: 'onBlur',
-      resolver: yupResolver(studentSchema),
-    })
+  const {
+    register,
+    setValue,
+    getValues,
+    handleSubmit,
+    reset,
+    control,
+    formState,
+  } = useForm({
+    reValidateMode: 'onBlur',
+    resolver: yupResolver(studentSchema),
+  })
 
   const { errors } = formState
 
@@ -246,57 +257,18 @@ const Students = ({
       edit: editDelete(response.id),
     }
     list.update(student.id, editedStudent)
-
     setEditOpen(false)
     setSaveUpdateStatus('idle')
     reset()
   }
 
   useEffect(() => {
-    const myList = list.getItem(studentId)
-    if (editStatus === 'loading') {
-      const myList1 = {
-        ...myList,
-        edit: {
-          ...myList.edit,
-          props: {
-            ...myList.edit.props,
-            children: {
-              ...myList.edit.props.children,
-              props: {
-                ...myList.edit.props.children.props,
-                isLoading: true,
-              },
-            },
-          },
-        },
-      }
-      list.update(studentId, myList1)
-    } else if (editStatus === 'success') {
-      const myList2 = {
-        ...myList,
-        edit: {
-          ...myList.edit,
-          props: {
-            ...myList.edit.props,
-            children: {
-              ...myList.edit.props.children,
-              props: {
-                ...myList.edit.props.children.props,
-                isLoading: false,
-              },
-            },
-          },
-        },
-      }
-      list.update(studentId, myList2)
-    }
-  }, [editStatus])
-
-  useEffect(() => {
     if (selectedCourse) {
       const course = courses.find((course: any) => course.id === selectedCourse)
       setSubjects(course.Subjects)
+    }
+    if (initialCourse !== getValues('course')) {
+      setValue('subjects', '')
     }
   }, [selectedCourse])
 

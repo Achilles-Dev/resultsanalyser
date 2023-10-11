@@ -65,9 +65,7 @@ const Courses = ({
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
-  const [editStatus, setEditStatus] = useState<string>('idle')
   const [course, setCourse] = useState<any>([])
-  const [courseId, setCourseId] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
@@ -78,8 +76,7 @@ const Courses = ({
       pathname: router.pathname,
       query: { id },
     })
-    setCourseId(id)
-    setEditStatus('loading')
+    setIsLoading(true)
     const { response } = await fetchCourse(id)
     setCourse(response)
     const myCourse = response
@@ -91,7 +88,7 @@ const Courses = ({
     )
     setIsFetched(true)
     setEditOpen(true)
-    setEditStatus('success')
+    setIsLoading(false)
   }
 
   const editDelete = (id: string) => (
@@ -218,47 +215,47 @@ const Courses = ({
     reset()
   }
 
-  useEffect(() => {
-    if (editStatus === 'loading') {
-      const myList = list.getItem(courseId)
-      const myList2 = {
-        ...myList,
-        edit: {
-          ...myList.edit,
-          props: {
-            ...myList.edit.props,
-            children: {
-              ...myList.edit.props.children,
-              props: {
-                ...myList.edit.props.children.props,
-                isLoading: true,
-              },
-            },
-          },
-        },
-      }
-      list.update(courseId, myList2)
-    } else if (editStatus === 'success') {
-      const myList = list.getItem(courseId)
-      const myList2 = {
-        ...myList,
-        edit: {
-          ...myList.edit,
-          props: {
-            ...myList.edit.props,
-            children: {
-              ...myList.edit.props.children,
-              props: {
-                ...myList.edit.props.children.props,
-                isLoading: false,
-              },
-            },
-          },
-        },
-      }
-      list.update(courseId, myList2)
-    }
-  }, [editStatus])
+  // useEffect(() => {
+  //   if (editStatus === 'loading') {
+  //     const myList = list.getItem(courseId)
+  //     const myList2 = {
+  //       ...myList,
+  //       edit: {
+  //         ...myList.edit,
+  //         props: {
+  //           ...myList.edit.props,
+  //           children: {
+  //             ...myList.edit.props.children,
+  //             props: {
+  //               ...myList.edit.props.children.props,
+  //               isLoading: true,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     }
+  //     list.update(courseId, myList2)
+  //   } else if (editStatus === 'success') {
+  //     const myList = list.getItem(courseId)
+  //     const myList2 = {
+  //       ...myList,
+  //       edit: {
+  //         ...myList.edit,
+  //         props: {
+  //           ...myList.edit.props,
+  //           children: {
+  //             ...myList.edit.props.children,
+  //             props: {
+  //               ...myList.edit.props.children.props,
+  //               isLoading: false,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     }
+  //     list.update(courseId, myList2)
+  //   }
+  // }, [editStatus])
 
   useEffect(() => {
     if (!editOpen && router.query?.id) {

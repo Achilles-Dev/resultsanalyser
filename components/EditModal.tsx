@@ -56,6 +56,7 @@ interface EditModalProps {
   subjects?: any[]
   setSelectedCourse?: (value: string) => void
   updateStatus?: string
+  ref?: any
 }
 
 const EditModal = (props: EditModalProps) => {
@@ -74,6 +75,7 @@ const EditModal = (props: EditModalProps) => {
     subjects,
     setSelectedCourse,
     updateStatus,
+    ref,
   } = props
   const { onOpenChange } = useDisclosure()
 
@@ -185,6 +187,7 @@ const EditModal = (props: EditModalProps) => {
                     <Controller
                       control={control}
                       name='course'
+                      ref={ref}
                       render={({ field: { onChange, value } }) => {
                         setSelectedCourse !== undefined &&
                           setSelectedCourse(value)
