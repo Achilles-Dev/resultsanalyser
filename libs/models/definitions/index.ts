@@ -36,17 +36,10 @@ interface Subject
 
 interface Grade
   extends Model<InferAttributes<Grade>, InferCreationAttributes<Grade>> {
-  id: UUID
-  name: string
-}
-
-interface StudentSubject
-  extends Model<
-    InferAttributes<StudentSubject>,
-    InferCreationAttributes<StudentSubject>
-  > {
+  id: UUID | string
   studentId: UUID | string
   subjectId: UUID | string
+  grade?: string
 }
 
 interface CourseSubject
@@ -56,15 +49,6 @@ interface CourseSubject
   > {
   courseId: UUID | string
   subjectId: UUID | string
-}
-
-interface StudentGrade
-  extends Model<
-    InferAttributes<StudentGrade>,
-    InferCreationAttributes<StudentGrade>
-  > {
-  studentId: UUID | string
-  gradeId: UUID | string
 }
 
 interface User
@@ -189,9 +173,25 @@ const Grade = sequelize.define<Grade>(
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
     },
-    name: {
-      type: DataTypes.STRING,
+    studentId: {
+      type: DataTypes.UUID,
       allowNull: false,
+      references: {
+        model: Student,
+        key: 'id',
+      },
+    },
+    subjectId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: Subject,
+        key: 'id',
+      },
+    },
+    grade: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
@@ -228,34 +228,6 @@ const User = sequelize.define<User>(
   }
 )
 
-const StudentSubject = sequelize.define<StudentSubject>(
-  'Student_Subject',
-  {
-    studentId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: Student,
-        key: 'id',
-      },
-    },
-    subjectId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: Subject,
-        key: 'id',
-      },
-    },
-  },
-  {
-    tableName: 'student_subject',
-    timestamps: true,
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-  }
-)
-
 const CourseSubject = sequelize.define<CourseSubject>(
   'Course_Subject',
   {
@@ -284,34 +256,6 @@ const CourseSubject = sequelize.define<CourseSubject>(
   }
 )
 
-const StudentGrade = sequelize.define<StudentGrade>(
-  'Student_Grade',
-  {
-    studentId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: Student,
-        key: 'id',
-      },
-    },
-    gradeId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: Grade,
-        key: 'id',
-      },
-    },
-  },
-  {
-    tableName: 'student_grade',
-    timestamps: true,
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-  }
-)
-
 Course.hasMany(Student, {
   foreignKey: 'courseId',
 })
@@ -321,12 +265,12 @@ Student.belongsTo(Course, {
 })
 
 Student.belongsToMany(Subject, {
-  through: StudentSubject,
+  through: Grade,
   foreignKey: 'studentId',
 })
 
 Subject.belongsToMany(Student, {
-  through: StudentSubject,
+  through: Grade,
   foreignKey: 'subjectId',
 })
 
@@ -340,23 +284,4 @@ Subject.belongsToMany(Course, {
   foreignKey: 'subjectId',
 })
 
-Student.belongsToMany(Grade, {
-  through: StudentGrade,
-  foreignKey: 'studentId',
-})
-
-Grade.belongsToMany(Student, {
-  through: StudentGrade,
-  foreignKey: 'gradeId',
-})
-
-export {
-  Student,
-  Course,
-  Subject,
-  User,
-  Grade,
-  StudentSubject,
-  StudentGrade,
-  CourseSubject,
-}
+export { Student, Course, Subject, User, Grade, CourseSubject }

@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Student, StudentSubject } from '@/libs/models'
+import { Grade, Student } from '@/libs/models'
+import { v4 as uuidv4 } from 'uuid'
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,7 +28,7 @@ export default async function handler(
     courseId,
   })
   await subjectIds.forEach((subjectId: string) => {
-    StudentSubject.create({ studentId: id, subjectId })
+    Grade.create({ id: uuidv4(), studentId: id, subjectId })
   })
 
   res.status(200).json({ response: student })

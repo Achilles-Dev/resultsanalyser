@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Student, StudentSubject } from '@/libs/models'
+import { Student, Grade } from '@/libs/models'
+import { v4 as uuidv4 } from 'uuid'
 
 export default async function handler(
   req: NextApiRequest,
@@ -15,6 +16,7 @@ export default async function handler(
     sex,
     courseId,
     subjectIds,
+    gradeId,
   } = req.body
   const response = await Student.update(
     {
@@ -34,7 +36,7 @@ export default async function handler(
   )
   const existingStudentSubjects = JSON.parse(
     JSON.stringify(
-      await StudentSubject.findAll({
+      await Grade.findAll({
         where: { studentId: id },
       })
     )
@@ -42,14 +44,15 @@ export default async function handler(
 
   await existingStudentSubjects.forEach((item: any) => {
     if (!subjectIds.includes(item.subjectId)) {
-      StudentSubject.destroy({ where: { subjectId: item.subjectId } })
+      Grade.destroy({ where: { subjectId: item.subjectId } })
     } else {
       subjectIds.splice(subjectIds.indexOf(item.subjectId), 1)
     }
   })
 
   await subjectIds.forEach((subjectId: string) => {
-    StudentSubject.create({
+    Grade.create({
+      id: uuidv4(),
       subjectId,
       studentId: id,
     })

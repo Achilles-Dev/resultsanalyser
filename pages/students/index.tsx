@@ -19,7 +19,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
-import { AsyncListData, ListData, useAsyncList } from '@react-stately/data'
+import { AsyncListData, useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
 import { createStudent, fetchStudent, updateStudent } from '@/libs/api'
 import { useRouter } from 'next/router'
@@ -99,7 +99,7 @@ const Students = ({
     setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
     setIsFetched(true)
     setEditOpen(true)
-    setEditStatus('idle')
+    setEditStatus('success')
   }
 
   const editDelete = (id: string) => (
@@ -126,7 +126,6 @@ const Students = ({
 
   let list: AsyncListData<any> = useAsyncList({
     async load({ signal }) {
-      setIsLoading(false)
       const myStudents = students.map((student: any) => ({
         ...student,
         name: `${student.lastName} ${student.firstName} ${
@@ -138,7 +137,7 @@ const Students = ({
         subjects: electiveSubjects(student.Subjects),
         edit: editDelete(student.id),
       }))
-
+      setIsLoading(false)
       return {
         items: myStudents,
       }
@@ -252,9 +251,9 @@ const Students = ({
   }
 
   useEffect(() => {
+    const myList = list.getItem(studentId)
     if (editStatus === 'loading') {
-      const myList = list.getItem(studentId)
-      const myList2 = {
+      const myList1 = {
         ...myList,
         edit: {
           ...myList.edit,
@@ -270,9 +269,8 @@ const Students = ({
           },
         },
       }
-      list.update(studentId, myList2)
+      list.update(studentId, myList1)
     } else if (editStatus === 'success') {
-      const myList = list.getItem(studentId)
       const myList2 = {
         ...myList,
         edit: {

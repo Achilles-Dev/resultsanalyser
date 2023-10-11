@@ -21,7 +21,6 @@ const menuItems = ['Dashboard', 'Courses', 'Students', 'Subjects', 'Results']
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
-  console.log(isMenuOpen)
   return (
     <Navbar
       className='bg-[#2096ffe6] flex text-[#05ffa3e6]'
