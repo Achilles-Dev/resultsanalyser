@@ -58,9 +58,7 @@ const Subjects = ({
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
-  const [editStatus, setEditStatus] = useState<string>('idle')
   const [subject, setSubject] = useState<any>([])
-  const [subjectId, setSubjectId] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
@@ -71,7 +69,6 @@ const Subjects = ({
       pathname: router.pathname,
       query: { id },
     })
-    setSubjectId(id)
     setIsLoading(true)
     const { response } = await fetchSubject(id)
     setSubject(response)
