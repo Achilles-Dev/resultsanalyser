@@ -3,7 +3,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Chip,
   Input,
   Spinner,
   Table,
@@ -15,11 +14,15 @@ import {
   getKeyValue,
 } from '@nextui-org/react'
 import { AsyncListData, useAsyncList } from '@react-stately/data'
-import { FaPlus } from 'react-icons/fa'
+import * as yup from 'yup'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Student, Subject } from '@/libs/models'
 import { useRouter } from 'next/router'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { addStudentGrades, fetchStudent } from '@/libs/api'
+import CreateModal from '@/components/CreateModal'
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const students = JSON.stringify(
@@ -29,8 +32,21 @@ export const getServerSideProps: GetServerSideProps = async () => {
     })
   )
   return {
-    props: { students: JSON.parse(students) },
+    props: {
+      students: JSON.parse(students),
+    },
   }
+}
+
+interface studentResultsProps {
+  core1: string
+  core2: string
+  core3: string
+  core4: string
+  elective5: string
+  elective6: string
+  elective7: string
+  elective8: string
 }
 
 const Results = ({
@@ -41,6 +57,8 @@ const Results = ({
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [editStatus, setEditStatus] = useState<string>('idle')
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [student, setStudent] = useState<any>({})
+  const [subjects, setSubjects] = useState<any>([])
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -50,18 +68,6 @@ const Results = ({
     })
     // setStudentId(id)
     setEditStatus('loading')
-    // const { response } = await fetchStudent(id)
-    // setStudent(response)
-    // const stud = response
-    // setValue('year', stud.yearGroup)
-    // setValue('indexNo', stud.indexNo)
-    // setValue('firstname', stud.firstName)
-    // setValue('lastname', stud.lastName)
-    // setValue('othername', stud?.otherName)
-    // setValue('sex', stud.sex.charAt(0).toUpperCase() + stud.sex.slice(1))
-    // setValue('course', stud.Course.id)
-    // setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
-    // setIsFetched(true)
     setEditOpen(true)
     setEditStatus('success')
   }
@@ -74,18 +80,65 @@ const Results = ({
     </div>
   )
 
+  const subjectWithResults = (subjects: any) => (
+    <div className='flex'>
+      {subjects
+        .sort((a: any, b: any) => {
+          let first = a.type
+          let second = b.type
+          if (first < second) {
+            return -1
+          }
+          if (first > second) {
+            return 1
+          }
+          return 0
+        })
+        .map((subject: any) => (
+          <div
+            key={subject.id}
+            className='flex flex-col justify-center gap-2 py-2 border-r-3 w-[120px]'
+          >
+            <p className='flex border-b-2 px-2'>{subject.name}</p>
+            <p className=' px-2'>{subject.Grade.grade}</p>
+          </div>
+        ))}
+    </div>
+  )
+
+  const handleNameButtonClick = async (id: string) => {
+    setSubjects([])
+    setIsLoading(true)
+    const { response } = await fetchStudent(id)
+    setStudent(response)
+    setIsLoading(false)
+    setOpen(true)
+  }
+
+  const nameButton = (student: any) => (
+    <Button
+      className='p-0 bg-transparent data-[hover=true]:bg-transparent'
+      variant='light'
+      color='primary'
+      onPress={() => handleNameButtonClick(student.id)}
+    >
+      {`${student.lastName} ${student.firstName} ${
+        student.otherName !== undefined ? student.otherName : ''
+      }`}
+    </Button>
+  )
+
   let list: AsyncListData<any> = useAsyncList({
     async load({ signal }) {
       const myStudents = students.map((student: any) => ({
         ...student,
-        name: `${student.lastName} ${student.firstName} ${
-          student.otherName !== undefined ? student.otherName : ''
-        }`,
+        name: nameButton(student),
+        subjects: subjectWithResults(student.Subjects),
         edit: editDelete(student.id),
       }))
       setIsLoading(false)
       return {
-        items: myStudents,
+        items: myStudents.sort((a: any, b: any) => a.indexNo - b.indexNo),
       }
     },
     async sort({
@@ -111,6 +164,72 @@ const Results = ({
       }
     },
   })
+
+  const studentSchema = yup.object().shape({
+    core1: yup.string().required('Grade is required'),
+    core2: yup.string().required('Grade is required'),
+    core3: yup.string().required('Grade is required'),
+    core4: yup.string().required('Grade is required'),
+    elective5: yup.string().required('Grade is required'),
+    elective6: yup.string().required('Grade is required'),
+    elective7: yup.string().required('Grade is required'),
+    elective8: yup.string().required('Grade is required'),
+  })
+
+  const { register, setValue, handleSubmit, reset, control, formState } =
+    useForm({
+      reValidateMode: 'onBlur',
+      resolver: yupResolver(studentSchema),
+    })
+
+  const { errors } = formState
+
+  const handleCreateStudentResults = async (data: studentResultsProps) => {
+    await subjects.forEach((subject: any, index: number) => {
+      if (subject.type === 'core') {
+        let name = `core${index + 1}` as keyof typeof data
+        addStudentGrades({
+          studentId: student.id,
+          subjectId: subject.id,
+          grade: data[`${name}`],
+        })
+      } else {
+        let name = `elective${index + 1}` as keyof typeof data
+        addStudentGrades({
+          studentId: student.id,
+          subjectId: subject.id,
+          grade: data[`${name}`],
+        })
+      }
+    })
+    const { response } = await fetchStudent(student.id)
+    const editedStudent = {
+      ...response,
+      name: nameButton(response),
+      subjects: subjectWithResults(response.Subjects),
+      edit: editDelete(response.id),
+    }
+    list.update(student.id, editedStudent)
+    setOpen(false)
+    reset()
+  }
+
+  useEffect(() => {
+    if (Object.keys(student).length > 0 && subjects.length < 8) {
+      const sortedSubjects = student.Subjects.sort((a: any, b: any) => {
+        let first = a.type
+        let second = b.type
+        if (first < second) {
+          return -1
+        }
+        if (first > second) {
+          return 1
+        }
+        return 0
+      })
+      setSubjects([...subjects, ...sortedSubjects])
+    }
+  }, [student])
 
   return (
     <main className='px-2 pt-2'>
@@ -175,6 +294,22 @@ const Results = ({
           </Table>
         </CardBody>
       </Card>
+      <CreateModal
+        open={open}
+        setOpen={setOpen}
+        handleCreate={handleCreateStudentResults}
+        register={register}
+        handleSubmit={handleSubmit}
+        errors={errors}
+        headerName={`Add Results for ${student.lastName} ${student.firstName} ${
+          student.otherName !== undefined ? student.otherName : ''
+        }`}
+        name='Grades'
+        buttonName='Save'
+        subjects={subjects}
+        control={control}
+        // saveStatus={saveUpdateStatus}
+      />
     </main>
   )
 }

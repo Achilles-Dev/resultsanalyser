@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Grade, Student } from '@/libs/models'
+import { Grade, Student, Subject } from '@/libs/models'
 import { v4 as uuidv4 } from 'uuid'
 
 export default async function handler(
@@ -27,6 +27,16 @@ export default async function handler(
     sex,
     courseId,
   })
+  const coreSubjects = await Subject.findAll({
+    where: {
+      type: 'core',
+    },
+  })
+
+  for (let subject of coreSubjects) {
+    await Grade.create({ id: uuidv4(), studentId: id, subjectId: subject.id })
+  }
+
   await subjectIds.forEach((subjectId: string) => {
     Grade.create({ id: uuidv4(), studentId: id, subjectId })
   })

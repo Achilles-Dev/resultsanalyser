@@ -226,3 +226,27 @@ export const updateSubject = async ({
   })
   return results.json()
 }
+
+export const addStudentGrades = async ({
+  studentId,
+  subjectId,
+  grade,
+}: {
+  studentId: string
+  subjectId: string
+  grade: string
+}) => {
+  const data = {
+    studentId,
+    subjectId,
+    grade,
+  }
+  const results = await fetch('/api/grades/add', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}

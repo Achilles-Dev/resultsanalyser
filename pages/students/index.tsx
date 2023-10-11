@@ -112,15 +112,17 @@ const Students = ({
 
   const electiveSubjects = (mySubjects: []) => (
     <div className='flex flex-wrap gap-2 py-2'>
-      {mySubjects.map((subject: any) => (
-        <Chip
-          classNames={{ content: 'object-scale-down' }}
-          variant='dot'
-          key={subject.id}
-        >
-          {subject.name}
-        </Chip>
-      ))}
+      {mySubjects
+        .filter((subject: any) => subject.type === 'elective')
+        .map((subject: any) => (
+          <Chip
+            classNames={{ content: 'object-scale-down' }}
+            variant='dot'
+            key={subject.id}
+          >
+            {subject.name}
+          </Chip>
+        ))}
     </div>
   )
 
@@ -139,7 +141,7 @@ const Students = ({
       }))
       setIsLoading(false)
       return {
-        items: myStudents,
+        items: myStudents.sort((a: any, b: any) => a.indexNo - b.indexNo),
       }
     },
     async sort({
