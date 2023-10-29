@@ -246,9 +246,34 @@ const Results = ({
 
   const handleEditStudentResults = async (data: studentResultsProps) => {
     setSaveUpdateStatus('loading')
-    setIsFetched(true)
-    setEditOpen(true)
-    setIsLoading(false)
+    await subjects.forEach((subject: any, index: number) => {
+      if (subject.type === 'core') {
+        let name = `core${index + 1}` as keyof typeof data
+        console.log(subject.name, data[`${name}`])
+        addStudentGrades({
+          studentId: student.id,
+          subjectId: subject.id,
+          grade: data[`${name}`],
+        })
+      } else {
+        let name = `elective${index + 1}` as keyof typeof data
+        console.log(subject.name, data[`${name}`])
+        addStudentGrades({
+          studentId: student.id,
+          subjectId: subject.id,
+          grade: data[`${name}`],
+        })
+      }
+    })
+    const { response } = await fetchStudent(student.id)
+    const editedStudent = {
+      ...response,
+      name: nameButton(response),
+      subjects: subjectWithResults(response.Subjects),
+      edit: editDelete(response.id),
+    }
+    list.update(student.id, editedStudent)
+    setEditOpen(false)
     setSaveUpdateStatus('idle')
     reset()
   }
