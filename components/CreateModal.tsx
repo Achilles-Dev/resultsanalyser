@@ -317,7 +317,10 @@ const CreateModal = (props: CreateModalProps) => {
                 </div>
               </ModalBody>
             )}
-            {name === 'Grades' && (
+            {name === 'Grades' &&
+            subjects &&
+            subjects.length > 0 &&
+            !subjects[0].Grade.grade ? (
               <ModalBody className='flex flex-col gap-5 p-2 md:px-6'>
                 {subjects &&
                   subjects?.map((subject, index) => (
@@ -366,18 +369,30 @@ const CreateModal = (props: CreateModalProps) => {
                     </div>
                   ))}
               </ModalBody>
+            ) : (
+              <p className='flex flex-col gap-5 p-2 md:px-6'>
+                Results already exists! Edit instead
+              </p>
             )}
             <ModalFooter>
               <Button color='danger' onPress={(e) => setOpen(false)}>
                 Close
               </Button>
-              <Button
-                type='submit'
-                color='primary'
-                isLoading={saveStatus === 'loading' ? true : false}
-              >
-                {buttonName}
-              </Button>
+              {name !== 'Grades' ||
+              (name === 'Grades' &&
+                subjects &&
+                subjects.length > 0 &&
+                !subjects[0].Grade.grade) ? (
+                <Button
+                  type='submit'
+                  color='primary'
+                  isLoading={saveStatus === 'loading' ? true : false}
+                >
+                  {buttonName}
+                </Button>
+              ) : (
+                ''
+              )}
             </ModalFooter>
           </form>
         </>

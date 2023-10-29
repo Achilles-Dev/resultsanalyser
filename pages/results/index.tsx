@@ -23,6 +23,7 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { addStudentGrades, fetchStudent } from '@/libs/api'
 import CreateModal from '@/components/CreateModal'
+import EditModal from '@/components/EditModal'
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const students = JSON.stringify(
@@ -55,10 +56,11 @@ const Results = ({
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
-  const [editStatus, setEditStatus] = useState<string>('idle')
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [student, setStudent] = useState<any>({})
   const [subjects, setSubjects] = useState<any>([])
+  const [isFetched, setIsFetched] = useState<boolean>(false)
+  const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -66,10 +68,21 @@ const Results = ({
       pathname: router.pathname,
       query: { id },
     })
-    // setStudentId(id)
-    setEditStatus('loading')
+    setSubjects([])
+    setIsLoading(true)
+    const { response } = await fetchStudent(id)
+    setStudent(response)
+    setValue('core1', response.Subjects[0].Grade.grade)
+    setValue('core2', response.Subjects[1].Grade.grade)
+    setValue('core3', response.Subjects[2].Grade.grade)
+    setValue('core4', response.Subjects[3].Grade.grade)
+    setValue('elective5', response.Subjects[4].Grade.grade)
+    setValue('elective6', response.Subjects[5].Grade.grade)
+    setValue('elective7', response.Subjects[6].Grade.grade)
+    setValue('elective8', response.Subjects[7].Grade.grade)
+    setIsFetched(true)
     setEditOpen(true)
-    setEditStatus('success')
+    setIsLoading(false)
   }
 
   const editDelete = (id: string) => (
@@ -84,6 +97,17 @@ const Results = ({
     <div className='flex'>
       {subjects
         .sort((a: any, b: any) => {
+          let first = a.name
+          let second = b.name
+          if (first < second) {
+            return -1
+          }
+          if (first > second) {
+            return 1
+          }
+          return 0
+        })
+        .sort((a: any, b: any) => {
           let first = a.type
           let second = b.type
           if (first < second) {
@@ -94,13 +118,15 @@ const Results = ({
           }
           return 0
         })
-        .map((subject: any) => (
+        .map((subject: any, index: number) => (
           <div
             key={subject.id}
-            className='flex flex-col justify-center gap-2 py-2 border-r-3 w-[120px]'
+            className={`flex flex-col justify-center gap-2 py-2 border-r-3 w-[150px] ${
+              index === 0 ? 'border-l-3' : ''
+            }`}
           >
-            <p className='flex border-b-2 px-2'>{subject.name}</p>
-            <p className=' px-2'>{subject.Grade.grade}</p>
+            <p className='flex border-b-2 px-2 h-[40px]'>{subject.name}</p>
+            <p className='h-[20px] px-2'>{subject.Grade.grade}</p>
           </div>
         ))}
     </div>
@@ -111,8 +137,6 @@ const Results = ({
     setIsLoading(true)
     const { response } = await fetchStudent(id)
     setStudent(response)
-    const stud = response
-    stud.Subjects.map
     setIsLoading(false)
     setOpen(true)
   }
@@ -187,9 +211,11 @@ const Results = ({
   const { errors } = formState
 
   const handleCreateStudentResults = async (data: studentResultsProps) => {
+    setSaveUpdateStatus('loading')
     await subjects.forEach((subject: any, index: number) => {
       if (subject.type === 'core') {
         let name = `core${index + 1}` as keyof typeof data
+        console.log(subject.name, data[`${name}`])
         addStudentGrades({
           studentId: student.id,
           subjectId: subject.id,
@@ -197,6 +223,7 @@ const Results = ({
         })
       } else {
         let name = `elective${index + 1}` as keyof typeof data
+        console.log(subject.name, data[`${name}`])
         addStudentGrades({
           studentId: student.id,
           subjectId: subject.id,
@@ -213,6 +240,16 @@ const Results = ({
     }
     list.update(student.id, editedStudent)
     setOpen(false)
+    setSaveUpdateStatus('idle')
+    reset()
+  }
+
+  const handleEditStudentResults = async (data: studentResultsProps) => {
+    setSaveUpdateStatus('loading')
+    setIsFetched(true)
+    setEditOpen(true)
+    setIsLoading(false)
+    setSaveUpdateStatus('idle')
     reset()
   }
 
@@ -310,8 +347,24 @@ const Results = ({
         buttonName='Save'
         subjects={subjects}
         control={control}
-        // saveStatus={saveUpdateStatus}
+        saveStatus={saveUpdateStatus}
       />
+      {isFetched && (
+        <EditModal
+          open={editOpen}
+          setOpen={setEditOpen}
+          handleEdit={handleEditStudentResults}
+          register={register}
+          handleSubmit={handleSubmit}
+          errors={errors}
+          headerName='Update Student Results'
+          name='Grades'
+          buttonName='Update Results'
+          control={control}
+          subjects={subjects}
+          updateStatus={saveUpdateStatus}
+        />
+      )}
     </main>
   )
 }

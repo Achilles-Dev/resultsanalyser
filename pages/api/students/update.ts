@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Student, Grade } from '@/libs/models'
+import { Student, Grade, Subject } from '@/libs/models'
 import { v4 as uuidv4 } from 'uuid'
 
 export default async function handler(
@@ -40,13 +40,15 @@ export default async function handler(
       })
     )
   )
-  console.log(existingStudentSubjects)
 
   await existingStudentSubjects.forEach((item: any) => {
-    if (!subjectIds.includes(item.subjectId)) {
-      Grade.destroy({ where: { subjectId: item.subjectId } })
-    } else {
-      subjectIds.splice(subjectIds.indexOf(item.subjectId), 1)
+    const subject = JSON.parse(JSON.stringify(Subject.findByPk(item.subjectId)))
+    if (subject.type === 'elective') {
+      if (!subjectIds.includes(item.subjectId)) {
+        Grade.destroy({ where: { subjectId: item.subjectId } })
+      } else {
+        subjectIds.splice(subjectIds.indexOf(item.subjectId), 1)
+      }
     }
   })
 

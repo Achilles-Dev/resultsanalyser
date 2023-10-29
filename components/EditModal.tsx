@@ -366,49 +366,82 @@ const EditModal = (props: EditModalProps) => {
                 </div>
               </ModalBody>
             )}
-            {name === 'Grades' && (
-              <ModalBody className='flex flex-col gap-5'>
-                <div className='flex flex-col w-full items-center'>
-                  <Input
-                    type='number'
-                    {...register('gradeValue')}
-                    placeholder='Grade value'
-                  />
-                  <span className='px-2 text-danger'>
-                    {errors.gradeValue?.message}
-                  </span>
-                </div>
-                <div className='flex flex-col w-full items-center'>
-                  <Controller
-                    control={control}
-                    name='type'
-                    render={({ field: { onChange, value } }) => (
-                      <Select label='Grade' {...register('name')}>
-                        {grades.map((grade) => (
-                          <SelectItem key={grade.value} value={grade.value}>
-                            {grade.name}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-                  <span className='px-2 text-danger'>
-                    {errors.name?.message}
-                  </span>
-                </div>
+            {name === 'Grades' &&
+            subjects &&
+            subjects.length > 0 &&
+            subjects[0].Grade.grade ? (
+              <ModalBody className='flex flex-col gap-5 p-2 md:px-6'>
+                {subjects &&
+                  subjects?.map((subject, index) => (
+                    <div
+                      key={subject.id}
+                      className='flex w-full gap-2 md:gap-4'
+                    >
+                      <div className='flex w-full items-center justify-start'>
+                        <p className='border bg-[#e5e7eb] opacity-70 text-black p-3 rounded-xl'>
+                          {subject.name}
+                        </p>
+                      </div>
+                      <div className='flex flex-col w-full items-center'>
+                        <Controller
+                          control={control}
+                          name={
+                            subject.type === 'core'
+                              ? `core${index + 1}`
+                              : `elective${index + 1}`
+                          }
+                          render={({ field: { onChange, value } }) => {
+                            return (
+                              <Select
+                                label='Grade'
+                                onChange={onChange}
+                                selectedKeys={new Set([value])}
+                              >
+                                {grades.map((grade) => (
+                                  <SelectItem
+                                    key={grade.value}
+                                    value={grade.value}
+                                  >
+                                    {grade.name}
+                                  </SelectItem>
+                                ))}
+                              </Select>
+                            )
+                          }}
+                        />
+                        <span className='px-2 text-danger'>
+                          {subject.type === 'core'
+                            ? errors[`core${index + 1}`]?.message
+                            : errors[`elective${index + 1}`]?.message}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
               </ModalBody>
+            ) : (
+              <p className='flex flex-col gap-5 p-2 md:px-6'>
+                Results has not been added! Add Student Results
+              </p>
             )}
             <ModalFooter>
               <Button color='danger' onPress={(e) => setOpen(false)}>
                 Close
               </Button>
-              <Button
-                type='submit'
-                color='primary'
-                isLoading={updateStatus === 'loading' ? true : false}
-              >
-                {buttonName}
-              </Button>
+              {name !== 'Grades' ||
+              (name === 'Grades' &&
+                subjects &&
+                subjects.length > 0 &&
+                subjects[0].Grade.grade) ? (
+                <Button
+                  type='submit'
+                  color='primary'
+                  isLoading={updateStatus === 'loading' ? true : false}
+                >
+                  {buttonName}
+                </Button>
+              ) : (
+                ''
+              )}
             </ModalFooter>
           </form>
         </>
