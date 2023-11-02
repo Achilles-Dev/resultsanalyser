@@ -1,6 +1,7 @@
 import { Card, CardBody, CardHeader } from '@nextui-org/react'
 import BestSixSubjects from '@/components/BestSixSubjects'
 import SubjectsPassed from '@/components/SubjectsPassed'
+import TotalGradeBySubject from '@/components/TotalGradeBySubject'
 
 const ResultsAnalysisPage = () => {
   return (
@@ -15,6 +16,7 @@ const ResultsAnalysisPage = () => {
           <div className='flex flex-col gap-10'>
             <BestSixSubjects />
             <SubjectsPassed />
+            <TotalGradeBySubject />
           </div>
         </CardBody>
       </Card>

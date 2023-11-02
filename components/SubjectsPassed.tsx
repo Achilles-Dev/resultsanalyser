@@ -10,7 +10,7 @@ import {
 const SubjectsPassed = () => {
   return (
     <div>
-      <Table aria-label='Example table with client side sorting'>
+      <Table aria-label='Subject passed table'>
         <TableHeader>
           <TableColumn key='item'>
             <div className='flex flex-col py-2'>
