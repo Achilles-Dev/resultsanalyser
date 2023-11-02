@@ -295,6 +295,22 @@ const Results = ({
     }
   }, [student])
 
+  useEffect(() => {
+    if (!editOpen) {
+      router.push({
+        pathname: router.pathname,
+      })
+      setValue('core1', '')
+      setValue('core2', '')
+      setValue('core3', '')
+      setValue('core4', '')
+      setValue('elective5', '')
+      setValue('elective6', '')
+      setValue('elective7', '')
+      setValue('elective8', '')
+    }
+  }, [editOpen])
+
   return (
     <main className='px-2 pt-2'>
       <Card className='min-h-[89vh] px-2'>
