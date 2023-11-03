@@ -6,21 +6,24 @@ import {
   TableRow,
   TableCell,
 } from '@nextui-org/react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const BestSixSubjects = ({ students }: { students: any[] }) => {
+  const [message, setMessage] = useState('')
   const maleNumber = students.filter((student) => student.sex === 'Male').length
   const femaleNumber = students.length - maleNumber
 
   const calculateSixSubjects = () => {
-    let bestSixMale24 = 0
-    let bestSixFemale24 = 0
-    let bestSixMale36 = 0
-    let bestSixFemale36 = 0
-    let bestSixMaleOver36 = 0
-    let bestSixFemaleOver36 = 0
-    let maleAllfail = 0
-    let femaleAllFail = 0
+    const maleFemale: { male: number; female: number } = {
+      male: 0,
+      female: 0,
+    }
+    let bestSix = {
+      bestSix24: maleFemale,
+      bestSix36: maleFemale,
+      bestSixOver36: maleFemale,
+      allFail: maleFemale,
+    }
     students.forEach((student) => {
       let studBest = 0
       let lessCore = 9
@@ -57,15 +60,36 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
           }
         }
       })
+      //Check if all Results are Recorded
+      const noResults = student.Subjects.find(
+        (subject: any) => subject.Grade.grade === null
+      )
+      if (noResults) {
+        setMessage(`Some Students have unrecorded marks`)
+      }
+
+      //Failed all subjects
       let allFail = student.Subjects.filter(
         (subject: any) =>
           subject.Grade.grade && Number(subject.Grade.grade.charAt(1)) > 6
       ).length
       if (allFail === 8) {
         if (student.sex === 'Male') {
-          maleAllfail += 1
+          bestSix = {
+            ...bestSix,
+            allFail: {
+              ...bestSix.allFail,
+              male: bestSix.allFail.male + 1,
+            },
+          }
         } else {
-          femaleAllFail += 1
+          bestSix = {
+            ...bestSix,
+            allFail: {
+              ...bestSix.allFail,
+              female: bestSix.allFail.female + 1,
+            },
+          }
         }
       }
 
@@ -76,39 +100,67 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
       studBest += elective.reduce((a, b) => a + b, 0)
       if (studBest > 0 && studBest <= 24) {
         if (student.sex === 'Male') {
-          bestSixMale24 += 1
+          bestSix = {
+            ...bestSix,
+            bestSix24: {
+              ...bestSix.bestSix24,
+              male: bestSix.bestSix24.male + 1,
+            },
+          }
         } else {
-          bestSixFemale24 += 1
+          bestSix = {
+            ...bestSix,
+            bestSix24: {
+              ...bestSix.bestSix24,
+              female: bestSix.bestSix24.female + 1,
+            },
+          }
         }
       } else if (studBest > 0 && studBest <= 36) {
         if (student.sex === 'Male') {
-          bestSixMale36 += 1
+          bestSix = {
+            ...bestSix,
+            bestSix36: {
+              ...bestSix.bestSix36,
+              male: bestSix.bestSix36.male + 1,
+            },
+          }
         } else {
-          bestSixFemale36 += 1
+          bestSix = {
+            ...bestSix,
+            bestSix36: {
+              ...bestSix.bestSix36,
+              female: bestSix.bestSix36.female + 1,
+            },
+          }
         }
       } else {
         if (studBest > 0 && student.sex === 'Male') {
-          bestSixMaleOver36 += 1
+          bestSix = {
+            ...bestSix,
+            bestSixOver36: {
+              ...bestSix.bestSixOver36,
+              male: bestSix.bestSixOver36.male + 1,
+            },
+          }
         } else if (studBest > 0) {
-          bestSixFemaleOver36 += 1
+          bestSix = {
+            ...bestSix,
+            bestSixOver36: {
+              ...bestSix.bestSixOver36,
+              female: bestSix.bestSixOver36.female + 1,
+            },
+          }
         }
       }
     })
-    return {
-      bestSixMale24,
-      bestSixFemale24,
-      bestSixMale36,
-      bestSixFemale36,
-      bestSixMaleOver36,
-      bestSixFemaleOver36,
-      maleAllfail,
-      femaleAllFail,
-    }
+    return bestSix
   }
   const bestSubjects = useMemo(() => calculateSixSubjects(), [])
 
   return (
-    <div>
+    <div className='flex flex-col gap-3'>
+      <p className='text-danger text-center'>{message}</p>
       <Table aria-label='Example table with client side sorting'>
         <TableHeader>
           <TableColumn key='item'>Item</TableColumn>
@@ -128,25 +180,27 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
               Candidates with best 6 subjects less than or equals to 24
             </TableCell>
             <TableCell className='py-4'>
-              {bestSubjects.bestSixMale24}{' '}
+              {bestSubjects.bestSix24.male}
             </TableCell>
             <TableCell className='py-4'>
-              {bestSubjects.bestSixFemale24}
+              {bestSubjects.bestSix24.female}
             </TableCell>
             <TableCell className='py-4'>
-              {bestSubjects.bestSixMale24 + bestSubjects.bestSixFemale24}
+              {bestSubjects.bestSix24.male + bestSubjects.bestSix24.female}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className='py-4'>
               Candidates with best 6 subjects less than or equals to 36
             </TableCell>
-            <TableCell className='py-4'>{bestSubjects.bestSixMale36}</TableCell>
             <TableCell className='py-4'>
-              {bestSubjects.bestSixFemale36}{' '}
+              {bestSubjects.bestSix36.male}
             </TableCell>
             <TableCell className='py-4'>
-              {bestSubjects.bestSixMale36 + bestSubjects.bestSixFemale36}
+              {bestSubjects.bestSix36.female}
+            </TableCell>
+            <TableCell className='py-4'>
+              {bestSubjects.bestSix36.male + bestSubjects.bestSix36.female}
             </TableCell>
           </TableRow>
           <TableRow>
@@ -154,26 +208,26 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
               Candidates with best 6 subjects greater than 36
             </TableCell>
             <TableCell className='py-4'>
-              {bestSubjects.bestSixMaleOver36}
+              {bestSubjects.bestSixOver36.male}
             </TableCell>
             <TableCell className='py-4'>
-              {bestSubjects.bestSixFemaleOver36}
+              {bestSubjects.bestSixOver36.female}
             </TableCell>
             <TableCell className='py-4'>
-              {bestSubjects.bestSixMaleOver36 +
-                bestSubjects.bestSixFemaleOver36}
+              {bestSubjects.bestSixOver36.male +
+                bestSubjects.bestSixOver36.female}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className='py-4'>
               Candidates who failed in all subjects
             </TableCell>
-            <TableCell className='py-4'>{bestSubjects.maleAllfail}</TableCell>
+            <TableCell className='py-4'>{bestSubjects.allFail.male}</TableCell>
             <TableCell className='py-4'>
-              {bestSubjects.femaleAllFail}{' '}
+              {bestSubjects.allFail.female}
             </TableCell>
             <TableCell className='py-4'>
-              {bestSubjects.maleAllfail + bestSubjects.femaleAllFail}{' '}
+              {bestSubjects.allFail.male + bestSubjects.allFail.female}
             </TableCell>
           </TableRow>
         </TableBody>

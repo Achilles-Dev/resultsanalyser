@@ -30,10 +30,10 @@ const ResultsAnalysisPage = ({
             Results Analysis
           </p>
         </CardHeader>
-        <CardBody>
+        <CardBody className='p-2 md:p-5'>
           <div className='flex flex-col gap-10'>
             <BestSixSubjects students={students} />
-            <SubjectsPassed />
+            <SubjectsPassed students={students} />
             <TotalGradeBySubject />
           </div>
         </CardBody>
