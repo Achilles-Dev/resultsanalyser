@@ -2,8 +2,26 @@ import { Card, CardBody, CardHeader } from '@nextui-org/react'
 import BestSixSubjects from '@/components/BestSixSubjects'
 import SubjectsPassed from '@/components/SubjectsPassed'
 import TotalGradeBySubject from '@/components/TotalGradeBySubject'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { Student, Subject } from '@/libs/models'
 
-const ResultsAnalysisPage = () => {
+export const getServerSideProps: GetServerSideProps = async () => {
+  const students = JSON.stringify(
+    await Student.findAll({
+      order: [['indexNo', 'ASC']],
+      include: { model: Subject },
+    })
+  )
+  return {
+    props: {
+      students: JSON.parse(students),
+    },
+  }
+}
+
+const ResultsAnalysisPage = ({
+  students,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <main className='px-2 pt-2 min-h-[90vh]'>
       <Card className='min-h-[88vh]'>
@@ -14,7 +32,7 @@ const ResultsAnalysisPage = () => {
         </CardHeader>
         <CardBody>
           <div className='flex flex-col gap-10'>
-            <BestSixSubjects />
+            <BestSixSubjects students={students} />
             <SubjectsPassed />
             <TotalGradeBySubject />
           </div>
