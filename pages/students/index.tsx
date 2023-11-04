@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Button,
   Card,
@@ -21,12 +21,7 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import {
-  createStudent,
-  fetchCourse,
-  fetchStudent,
-  updateStudent,
-} from '@/libs/api'
+import { createStudent, fetchStudent, updateStudent } from '@/libs/api'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'

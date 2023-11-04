@@ -222,7 +222,10 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
                   .map((_, index) => {
                     let item = 8 - index
                     return (
-                      <div className='w-[11.11%] min-w-[70px] px-1 border-x-1 text-center flex flex-col'>
+                      <div
+                        key={index}
+                        className='w-[11.11%] min-w-[70px] px-1 border-x-1 text-center flex flex-col'
+                      >
                         <p className='pt-2'>{item}</p>
                         <div className='flex w-full pt-2'>
                           <p className='w-[50%] border-e-2'>M</p>
@@ -239,7 +242,7 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
           <TableRow>
             <TableCell>Bosome SHTS</TableCell>
             <TableCell>
-              <div className='flex text-center'>
+              <div className='flex text-center border-x-1'>
                 <div className='flex w-full pt-2'>
                   <p className='w-[50%] border-e-2'>
                     {passedSubjects.passed8.male}

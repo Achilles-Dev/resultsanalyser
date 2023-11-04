@@ -6,7 +6,7 @@ import {
   TableRow,
   TableCell,
 } from '@nextui-org/react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 const BestSixSubjects = ({ students }: { students: any[] }) => {
   const [message, setMessage] = useState('')
@@ -24,6 +24,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
       bestSixOver36: maleFemale,
       allFail: maleFemale,
     }
+    let count = 0
     students.forEach((student) => {
       let studBest = 0
       let lessCore = 9
@@ -65,7 +66,12 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
         (subject: any) => subject.Grade.grade === null
       )
       if (noResults) {
-        setMessage(`Some Students have unrecorded marks`)
+        count += 1
+        setMessage(
+          `${
+            count > 1 ? `${count} Students have` : ' A Student has'
+          } unrecorded results !!!`
+        )
       }
 
       //Failed all subjects
@@ -160,7 +166,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
 
   return (
     <div className='flex flex-col gap-3'>
-      <p className='text-danger text-center'>{message}</p>
+      <p className='text-danger text-center text-[20px]'>{message}</p>
       <Table aria-label='Example table with client side sorting'>
         <TableHeader>
           <TableColumn key='item'>Item</TableColumn>

@@ -12,15 +12,23 @@ export const getServerSideProps: GetServerSideProps = async () => {
       include: { model: Subject },
     })
   )
+  const subjects = JSON.stringify(
+    await Subject.findAll({
+      order: [['code', 'ASC']],
+      include: { model: Student },
+    })
+  )
   return {
     props: {
       students: JSON.parse(students),
+      subjects: JSON.parse(subjects),
     },
   }
 }
 
 const ResultsAnalysisPage = ({
   students,
+  subjects,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <main className='px-2 pt-2 min-h-[90vh]'>
@@ -34,7 +42,7 @@ const ResultsAnalysisPage = ({
           <div className='flex flex-col gap-10'>
             <BestSixSubjects students={students} />
             <SubjectsPassed students={students} />
-            <TotalGradeBySubject />
+            <TotalGradeBySubject subjects={subjects} />
           </div>
         </CardBody>
       </Card>
