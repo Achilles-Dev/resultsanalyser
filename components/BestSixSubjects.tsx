@@ -162,10 +162,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
     })
     return bestSix
   }
-  const bestSubjects = useMemo(
-    () => calculateSixSubjects(),
-    [calculateSixSubjects]
-  )
+  const bestSubjects = useMemo(() => calculateSixSubjects(), [])
 
   return (
     <div className='flex flex-col gap-3'>

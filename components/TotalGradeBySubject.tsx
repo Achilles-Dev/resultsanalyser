@@ -293,10 +293,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
     return mySubjects
   }
 
-  const subjectsGrades: any[] = useMemo(
-    () => calculateTotalGrade(),
-    [calculateTotalGrade]
-  )
+  const subjectsGrades: any[] = useMemo(() => calculateTotalGrade(), [])
 
   return (
     <div>
