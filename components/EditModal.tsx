@@ -26,21 +26,6 @@ const subjectType = [
   { index: 2, value: 'elective', name: 'Elective Subject' },
 ]
 
-const grades = [
-  { value: 'A1', name: 'A1' },
-  { value: 'B2', name: 'B2' },
-  { value: 'B3', name: 'B3' },
-  { value: 'C4', name: 'C4' },
-  { value: 'C5', name: 'C5' },
-  { value: 'C6', name: 'C6' },
-  { value: 'D7', name: 'D7' },
-  { value: 'E8', name: 'E8' },
-  { value: 'F9', name: 'F9' },
-  { value: 'W', name: 'Withheld' },
-  { value: 'H', name: 'Canceled' },
-  { value: '*', name: 'Abscent' },
-]
-
 interface EditModalProps {
   open: boolean
   setOpen: (value: boolean) => void
@@ -56,6 +41,7 @@ interface EditModalProps {
   subjects?: any[]
   setSelectedCourse?: (value: string) => void
   updateStatus?: string
+  grades: { value: string; name: string }[]
 }
 
 const EditModal = (props: EditModalProps) => {
@@ -74,6 +60,7 @@ const EditModal = (props: EditModalProps) => {
     subjects,
     setSelectedCourse,
     updateStatus,
+    grades,
   } = props
   const { onOpenChange } = useDisclosure()
 

@@ -5,10 +5,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { studentId, subjectId, grade } = req.body
+  const { studentId, subjectId, grade, status } = req.body
   const response = await Grade.update(
     {
       grade,
+      status,
     },
     {
       where: {

@@ -40,6 +40,7 @@ interface Grade
   studentId: UUID | string
   subjectId: UUID | string
   grade?: string
+  status?: string
 }
 
 interface CourseSubject
@@ -190,6 +191,10 @@ const Grade = sequelize.define<Grade>(
       },
     },
     grade: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    status: {
       type: DataTypes.STRING,
       allowNull: true,
     },

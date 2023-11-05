@@ -167,7 +167,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
   return (
     <div className='flex flex-col gap-3'>
       <p className='text-danger text-center text-[20px]'>{message}</p>
-      <Table aria-label='Example table with client side sorting'>
+      <Table aria-label='Best six subjects table'>
         <TableHeader>
           <TableColumn key='item'>Item</TableColumn>
           <TableColumn key='Male'>Male</TableColumn>

@@ -245,8 +245,8 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
           </TableColumn>
           <TableColumn key='totalCandidates' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] w-[140px] px-2'>
-              <p className='flex w-full'>
-                Total No. of <br />
+              <p className='flex w-full text-center'>
+                No. of <br />
                 Candidates Presented
               </p>
               <div className='flex w-full pt-2 text-center'>
@@ -257,7 +257,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
           </TableColumn>
           <TableColumn key='absent' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>Total No. Absent</p>
+              <p>No. Absent</p>
               <div className='flex w-full pt-2 text-center'>
                 <p className='w-[50%] border-e-2'>M</p>
                 <p className='w-[50%]'>F</p>
@@ -266,7 +266,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
           </TableColumn>
           <TableColumn key='cancelled' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>Total No. Cancelled</p>
+              <p>No. Cancelled</p>
               <div className='flex w-full pt-2 text-center'>
                 <p className='w-[50%] border-e-2'>M</p>
                 <p className='w-[50%]'>F</p>
@@ -367,8 +367,10 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
         <TableBody>
           {subjectsGrades.map((subject, index) => (
             <TableRow className='border-x-1'>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell className='border-x-1 !px-0'>{subject.name}</TableCell>
+              <TableCell className='!px-1 text-center'>{index + 1}</TableCell>
+              <TableCell className='border-x-1 !px-1 text-center'>
+                {subject.name}
+              </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
                   <p className='w-[50%] border-e-2'>

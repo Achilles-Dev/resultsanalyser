@@ -231,15 +231,18 @@ export const addStudentGrades = async ({
   studentId,
   subjectId,
   grade,
+  status,
 }: {
   studentId: string
   subjectId: string
   grade: string
+  status: string
 }) => {
   const data = {
     studentId,
     subjectId,
     grade,
+    status,
   }
   const results = await fetch('/api/grades/add', {
     headers: {

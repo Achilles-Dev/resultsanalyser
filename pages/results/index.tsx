@@ -39,6 +39,21 @@ export const getServerSideProps: GetServerSideProps = async () => {
   }
 }
 
+const grades = [
+  { value: 'A1', name: 'A1' },
+  { value: 'B2', name: 'B2' },
+  { value: 'B3', name: 'B3' },
+  { value: 'C4', name: 'C4' },
+  { value: 'C5', name: 'C5' },
+  { value: 'C6', name: 'C6' },
+  { value: 'D7', name: 'D7' },
+  { value: 'E8', name: 'E8' },
+  { value: 'F9', name: 'F9' },
+  { value: 'Withheld', name: 'Withheld' },
+  { value: 'Canceled', name: 'Canceled' },
+  { value: 'Absent', name: 'Absent' },
+]
+
 interface studentResultsProps {
   core1: string
   core2: string
@@ -72,14 +87,41 @@ const Results = ({
     setIsLoading(true)
     const { response } = await fetchStudent(id)
     setStudent(response)
-    setValue('core1', response.Subjects[0].Grade.grade)
-    setValue('core2', response.Subjects[1].Grade.grade)
-    setValue('core3', response.Subjects[2].Grade.grade)
-    setValue('core4', response.Subjects[3].Grade.grade)
-    setValue('elective5', response.Subjects[4].Grade.grade)
-    setValue('elective6', response.Subjects[5].Grade.grade)
-    setValue('elective7', response.Subjects[6].Grade.grade)
-    setValue('elective8', response.Subjects[7].Grade.grade)
+    const sortedSubjects = response.Subjects.sort((a: any, b: any) => {
+      let first = a.type
+      let second = b.type
+      if (first < second) {
+        return -1
+      }
+      if (first > second) {
+        return 1
+      }
+      return 0
+    })
+    sortedSubjects.forEach((subject: any, index: number) => {
+      if (subject.type === 'core') {
+        let name = `core${index + 1}` as keyof studentResultsProps
+        let value = sortedSubjects[index].Grade.grade
+          ? sortedSubjects[index].Grade.grade
+          : sortedSubjects[index].Grade.status
+        setValue(name, value)
+      } else {
+        let name = `elective${index + 1}` as keyof studentResultsProps
+        let value = sortedSubjects[index].Grade.grade
+          ? sortedSubjects[index].Grade.grade
+          : sortedSubjects[index].Grade.status
+        setValue(name, value)
+        console.log(value)
+      }
+    })
+    // setValue('core1', sortedSubjects[0].Grade.grade)
+    // setValue('core2', sortedSubjects[1].Grade.grade)
+    // setValue('core3', sortedSubjects[2].Grade.grade)
+    // setValue('core4', sortedSubjects[3].Grade.grade)
+    // setValue('elective5', sortedSubjects[4].Grade.grade)
+    // setValue('elective6', sortedSubjects[5].Grade.grade)
+    // setValue('elective7', sortedSubjects[6].Grade.grade)
+    // setValue('elective8', sortedSubjects[7].Grade.grade)
     setIsFetched(true)
     setEditOpen(true)
     setIsLoading(false)
@@ -126,7 +168,11 @@ const Results = ({
             }`}
           >
             <p className='flex border-b-2 px-2 h-[40px]'>{subject.name}</p>
-            <p className='h-[20px] px-2'>{subject.Grade.grade}</p>
+            <p className='h-[20px] px-2'>
+              {subject.Grade.status
+                ? subject.Grade.status
+                : subject.Grade.grade}
+            </p>
           </div>
         ))}
     </div>
@@ -215,19 +261,39 @@ const Results = ({
     await subjects.forEach((subject: any, index: number) => {
       if (subject.type === 'core') {
         let name = `core${index + 1}` as keyof typeof data
-        console.log(subject.name, data[`${name}`])
+        let grade = data[`${name}`]
+        let status = ''
+        if (
+          data[`${name}`] === 'Withheld' ||
+          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Absent'
+        ) {
+          status = data[`${name}`]
+          grade = ''
+        }
         addStudentGrades({
           studentId: student.id,
           subjectId: subject.id,
-          grade: data[`${name}`],
+          grade,
+          status,
         })
       } else {
         let name = `elective${index + 1}` as keyof typeof data
-        console.log(subject.name, data[`${name}`])
+        let grade = data[`${name}`]
+        let status = ''
+        if (
+          data[`${name}`] === 'Withheld' ||
+          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Absent'
+        ) {
+          status = data[`${name}`]
+          grade = ''
+        }
         addStudentGrades({
           studentId: student.id,
           subjectId: subject.id,
-          grade: data[`${name}`],
+          grade,
+          status,
         })
       }
     })
@@ -249,19 +315,39 @@ const Results = ({
     await subjects.forEach((subject: any, index: number) => {
       if (subject.type === 'core') {
         let name = `core${index + 1}` as keyof typeof data
-        console.log(subject.name, data[`${name}`])
+        let grade = data[`${name}`]
+        let status = ''
+        if (
+          data[`${name}`] === 'Withheld' ||
+          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Absent'
+        ) {
+          status = data[`${name}`]
+          grade = ''
+        }
         addStudentGrades({
           studentId: student.id,
           subjectId: subject.id,
-          grade: data[`${name}`],
+          grade,
+          status,
         })
       } else {
         let name = `elective${index + 1}` as keyof typeof data
-        console.log(subject.name, data[`${name}`])
+        let grade = data[`${name}`]
+        let status = ''
+        if (
+          data[`${name}`] === 'Withheld' ||
+          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Absent'
+        ) {
+          status = data[`${name}`]
+          grade = ''
+        }
         addStudentGrades({
           studentId: student.id,
           subjectId: subject.id,
-          grade: data[`${name}`],
+          grade,
+          status,
         })
       }
     })
@@ -389,6 +475,7 @@ const Results = ({
         subjects={subjects}
         control={control}
         saveStatus={saveUpdateStatus}
+        grades={grades}
       />
       {isFetched && (
         <EditModal
@@ -398,12 +485,15 @@ const Results = ({
           register={register}
           handleSubmit={handleSubmit}
           errors={errors}
-          headerName='Update Student Results'
+          headerName={`Update Results for ${student.lastName} ${
+            student.firstName
+          } ${student.otherName !== undefined ? student.otherName : ''}`}
           name='Grades'
           buttonName='Update Results'
           control={control}
           subjects={subjects}
           updateStatus={saveUpdateStatus}
+          grades={grades}
         />
       )}
     </main>
