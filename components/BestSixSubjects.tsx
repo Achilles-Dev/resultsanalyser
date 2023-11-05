@@ -168,21 +168,31 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
     <div className='flex flex-col gap-3'>
       <p className='text-danger text-center text-[20px]'>{message}</p>
       <Table aria-label='Best six subjects table'>
-        <TableHeader>
-          <TableColumn key='item'>Item</TableColumn>
-          <TableColumn key='Male'>Male</TableColumn>
-          <TableColumn key='Female'>Female</TableColumn>
-          <TableColumn key='Total'>Total</TableColumn>
+        <TableHeader className='text-[16px]'>
+          <TableColumn className='text-[16px]' key='item'>
+            Item
+          </TableColumn>
+          <TableColumn className='text-[16px]' key='Male'>
+            Male
+          </TableColumn>
+          <TableColumn className='text-[16px]' key='Female'>
+            Female
+          </TableColumn>
+          <TableColumn className='text-[16px]' key='Total'>
+            Total
+          </TableColumn>
         </TableHeader>
         <TableBody>
           <TableRow>
-            <TableCell className='py-4'>Number of students</TableCell>
+            <TableCell className='py-4 text-[16px]'>
+              Number of students
+            </TableCell>
             <TableCell className='py-4'>{maleNumber}</TableCell>
             <TableCell className='py-4'>{femaleNumber}</TableCell>
             <TableCell className='py-4'>{students.length}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className='py-4'>
+            <TableCell className='py-4 text-[16px]'>
               Candidates with best 6 subjects less than or equals to 24
             </TableCell>
             <TableCell className='py-4'>
@@ -196,7 +206,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className='py-4'>
+            <TableCell className='py-4 text-[16px]'>
               Candidates with best 6 subjects less than or equals to 36
             </TableCell>
             <TableCell className='py-4'>
@@ -210,7 +220,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className='py-4'>
+            <TableCell className='py-4 text-[16px]'>
               Candidates with best 6 subjects greater than 36
             </TableCell>
             <TableCell className='py-4'>
@@ -225,7 +235,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className='py-4'>
+            <TableCell className='py-4 text-[16px]'>
               Candidates who failed in all subjects
             </TableCell>
             <TableCell className='py-4'>{bestSubjects.allFail.male}</TableCell>
@@ -238,6 +248,12 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
           </TableRow>
         </TableBody>
       </Table>
+      <div>
+        <p className='text-sky-600'>
+          ** NB: (Agg 6_24 & Agg 6_36) ie. 3 elective subjects + Maths + English
+          + (1 of either Science/Social)
+        </p>
+      </div>
     </div>
   )
 }

@@ -18,6 +18,9 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
       }
       let values = {
         totalCandidates: maleFemale,
+        absent: maleFemale,
+        canceled: maleFemale,
+        withheld: maleFemale,
         A1: maleFemale,
         B2: maleFemale,
         B3: maleFemale,
@@ -31,6 +34,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
 
       subject.Students.map((student: any) => {
         let grade = student.Grade.grade
+        let status = student.Grade.status
         if (student.sex === 'Male') {
           values = {
             ...values,
@@ -118,6 +122,37 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
                 F9: {
                   ...values.F9,
                   male: values.F9.male + 1,
+                },
+              }
+              break
+            default:
+              values
+          }
+          switch (status) {
+            case 'Withheld':
+              values = {
+                ...values,
+                withheld: {
+                  ...values.withheld,
+                  male: values.withheld.male + 1,
+                },
+              }
+              break
+            case 'Canceled':
+              values = {
+                ...values,
+                canceled: {
+                  ...values.canceled,
+                  male: values.canceled.male + 1,
+                },
+              }
+              break
+            case 'Absent':
+              values = {
+                ...values,
+                absent: {
+                  ...values.absent,
+                  male: values.absent.male + 1,
                 },
               }
               break
@@ -217,6 +252,37 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
             default:
               values
           }
+          switch (status) {
+            case 'Withheld':
+              values = {
+                ...values,
+                withheld: {
+                  ...values.withheld,
+                  female: values.withheld.female + 1,
+                },
+              }
+              break
+            case 'Canceled':
+              values = {
+                ...values,
+                canceled: {
+                  ...values.canceled,
+                  female: values.canceled.female + 1,
+                },
+              }
+              break
+            case 'Absent':
+              values = {
+                ...values,
+                absent: {
+                  ...values.absent,
+                  female: values.absent.female + 1,
+                },
+              }
+              break
+            default:
+              values
+          }
         }
       })
       return {
@@ -235,131 +301,132 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
         <TableHeader>
           <TableColumn key='no' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px]'>
-              <p>No.</p>
+              <span>No.</span>
             </div>
           </TableColumn>
           <TableColumn key='subject' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] w-[130px]'>
-              <p>Subject</p>
+              <span>Subject</span>
             </div>
           </TableColumn>
           <TableColumn key='totalCandidates' className='!px-0 border-x-1'>
-            <div className='flex flex-col py-2 items-center min-w-[70px] w-[140px] px-2'>
-              <p className='flex w-full text-center'>
-                No. of <br />
-                Candidates Presented
-              </p>
+            <div className='flex flex-col py-2 items-center min-w-[70px] w-[150px] px-2'>
+              <span className='flex w-full text-center'>
+                No. of Candidates
+                <br />
+                Presented
+              </span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='absent' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>No. Absent</p>
+              <span>No. Absent</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='cancelled' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>No. Cancelled</p>
+              <span>No. Cancelled</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='withheld' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>Results WithHeld</p>
+              <span>Results WithHeld</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='a1' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>A1</p>
+              <span>A1</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='b2' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>B2</p>
+              <span>B2</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='b3' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>B3</p>
+              <span>B3</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='c4' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>C4</p>
+              <span>C4</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='c5' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>C5</p>
+              <span>C5</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='c6' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>C6</p>
+              <span>C6</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='d7' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>D7</p>
+              <span>D7</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='e8' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>E8</p>
+              <span>E8</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
           <TableColumn key='f9' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <p>F9</p>
+              <span>F9</span>
               <div className='flex w-full pt-2 text-center'>
-                <p className='w-[50%] border-e-2'>M</p>
-                <p className='w-[50%]'>F</p>
+                <span className='w-[50%] border-e-2'>M</span>
+                <span className='w-[50%]'>F</span>
               </div>
             </div>
           </TableColumn>
@@ -373,84 +440,114 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>
+                  <span className='w-[50%] border-e-2'>
                     {subject.values.totalCandidates.male}
-                  </p>
-                  <p className='w-[50%]'>
+                  </span>
+                  <span className='w-[50%]'>
                     {subject.values.totalCandidates.female}
-                  </p>
+                  </span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>1</p>
-                  <p className='w-[50%]'>2</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.absent.male}
+                  </span>
+                  <span className='w-[50%]'>
+                    {subject.values.absent.female}
+                  </span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>1</p>
-                  <p className='w-[50%]'>2</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.canceled.male}
+                  </span>
+                  <span className='w-[50%]'>
+                    {subject.values.canceled.female}
+                  </span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>1</p>
-                  <p className='w-[50%]'>2</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.withheld.male}
+                  </span>
+                  <span className='w-[50%]'>
+                    {subject.values.withheld.female}
+                  </span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>{subject.values.A1.male}</p>
-                  <p className='w-[50%]'>{subject.values.A1.female}</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.A1.male}
+                  </span>
+                  <span className='w-[50%]'>{subject.values.A1.female}</span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>{subject.values.B2.male}</p>
-                  <p className='w-[50%]'>{subject.values.B2.female} </p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.B2.male}
+                  </span>
+                  <span className='w-[50%]'>{subject.values.B2.female} </span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>{subject.values.B3.male}</p>
-                  <p className='w-[50%]'>{subject.values.B3.female}</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.B3.male}
+                  </span>
+                  <span className='w-[50%]'>{subject.values.B3.female}</span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>{subject.values.C4.male}</p>
-                  <p className='w-[50%]'>{subject.values.C4.female}</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.C4.male}
+                  </span>
+                  <span className='w-[50%]'>{subject.values.C4.female}</span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>{subject.values.C5.male}</p>
-                  <p className='w-[50%]'>{subject.values.C5.female}</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.C5.male}
+                  </span>
+                  <span className='w-[50%]'>{subject.values.C5.female}</span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>{subject.values.C6.male}</p>
-                  <p className='w-[50%]'>{subject.values.C6.female}</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.C6.male}
+                  </span>
+                  <span className='w-[50%]'>{subject.values.C6.female}</span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>{subject.values.D7.male}</p>
-                  <p className='w-[50%]'>{subject.values.D7.female}</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.D7.male}
+                  </span>
+                  <span className='w-[50%]'>{subject.values.D7.female}</span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>{subject.values.E8.male}</p>
-                  <p className='w-[50%]'>{subject.values.E8.female}</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.E8.male}
+                  </span>
+                  <span className='w-[50%]'>{subject.values.E8.female}</span>
                 </div>
               </TableCell>
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
-                  <p className='w-[50%] border-e-2'>{subject.values.F9.male}</p>
-                  <p className='w-[50%]'>{subject.values.F9.female}</p>
+                  <span className='w-[50%] border-e-2'>
+                    {subject.values.F9.male}
+                  </span>
+                  <span className='w-[50%]'>{subject.values.F9.female}</span>
                 </div>
               </TableCell>
             </TableRow>

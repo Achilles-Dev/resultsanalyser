@@ -210,12 +210,12 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
         <TableHeader>
           <TableColumn key='item'>
             <div className='flex flex-col py-2'>
-              <p>Name Of School</p>
+              <span>Name Of School</span>
             </div>
           </TableColumn>
           <TableColumn key='Male'>
             <div className='flex flex-col border-b-1 py-2'>
-              <p className='pt-2'>Total number of subjects passed</p>
+              <span className='pt-2'>Total number of subjects passed</span>
               <div className='flex w-full mt-2'>
                 {Array(9)
                   .fill(0)
@@ -226,10 +226,10 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
                         key={index}
                         className='w-[11.11%] min-w-[70px] px-1 border-x-1 text-center flex flex-col'
                       >
-                        <p className='pt-2'>{item}</p>
+                        <span className='pt-2'>{item}</span>
                         <div className='flex w-full pt-2'>
-                          <p className='w-[50%] border-e-2'>M</p>
-                          <p className='w-[50%]'>F</p>
+                          <span className='w-[50%] border-e-2'>M</span>
+                          <span className='w-[50%]'>F</span>
                         </div>
                       </div>
                     )
@@ -244,58 +244,76 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
             <TableCell>
               <div className='flex text-center border-x-1'>
                 <div className='flex w-full pt-2'>
-                  <p className='w-[50%] border-e-2'>
+                  <span className='w-[50%] border-e-2'>
                     {passedSubjects.passed8.male}
-                  </p>
-                  <p className='w-[50%]'>{passedSubjects.passed8.female}</p>
+                  </span>
+                  <span className='w-[50%]'>
+                    {passedSubjects.passed8.female}
+                  </span>
                 </div>
                 <div className='flex w-full pt-2'>
-                  <p className='w-[50%] border-e-2'>
+                  <span className='w-[50%] border-e-2'>
                     {passedSubjects.passed7.male}
-                  </p>
-                  <p className='w-[50%]'>{passedSubjects.passed7.female}</p>
+                  </span>
+                  <span className='w-[50%]'>
+                    {passedSubjects.passed7.female}
+                  </span>
                 </div>
                 <div className='flex w-full pt-2'>
-                  <p className='w-[50%] border-e-2'>
+                  <span className='w-[50%] border-e-2'>
                     {passedSubjects.passed6.male}
-                  </p>
-                  <p className='w-[50%]'>{passedSubjects.passed6.female}</p>
+                  </span>
+                  <span className='w-[50%]'>
+                    {passedSubjects.passed6.female}
+                  </span>
                 </div>
                 <div className='flex w-full pt-2'>
-                  <p className='w-[50%] border-e-2'>
+                  <span className='w-[50%] border-e-2'>
                     {passedSubjects.passed5.male}
-                  </p>
-                  <p className='w-[50%]'>{passedSubjects.passed5.female}</p>
+                  </span>
+                  <span className='w-[50%]'>
+                    {passedSubjects.passed5.female}
+                  </span>
                 </div>
                 <div className='flex w-full pt-2'>
-                  <p className='w-[50%] border-e-2'>
+                  <span className='w-[50%] border-e-2'>
                     {passedSubjects.passed4.male}
-                  </p>
-                  <p className='w-[50%]'>{passedSubjects.passed4.female}</p>
+                  </span>
+                  <span className='w-[50%]'>
+                    {passedSubjects.passed4.female}
+                  </span>
                 </div>
                 <div className='flex w-full pt-2'>
-                  <p className='w-[50%] border-e-2'>
+                  <span className='w-[50%] border-e-2'>
                     {passedSubjects.passed3.male}
-                  </p>
-                  <p className='w-[50%]'>{passedSubjects.passed3.female}</p>
+                  </span>
+                  <span className='w-[50%]'>
+                    {passedSubjects.passed3.female}
+                  </span>
                 </div>
                 <div className='flex w-full pt-2'>
-                  <p className='w-[50%] border-e-2'>
+                  <span className='w-[50%] border-e-2'>
                     {passedSubjects.passed2.male}
-                  </p>
-                  <p className='w-[50%]'>{passedSubjects.passed2.female}</p>
+                  </span>
+                  <span className='w-[50%]'>
+                    {passedSubjects.passed2.female}
+                  </span>
                 </div>
                 <div className='flex w-full pt-2'>
-                  <p className='w-[50%] border-e-2'>
+                  <span className='w-[50%] border-e-2'>
                     {passedSubjects.passed1.male}
-                  </p>
-                  <p className='w-[50%]'>{passedSubjects.passed1.female}</p>
+                  </span>
+                  <span className='w-[50%]'>
+                    {passedSubjects.passed1.female}
+                  </span>
                 </div>
                 <div className='flex w-full pt-2'>
-                  <p className='w-[50%] border-e-2'>
+                  <span className='w-[50%] border-e-2'>
                     {passedSubjects.passed0.male}
-                  </p>
-                  <p className='w-[50%]'>{passedSubjects.passed0.female}</p>
+                  </span>
+                  <span className='w-[50%]'>
+                    {passedSubjects.passed0.female}
+                  </span>
                 </div>
               </div>
             </TableCell>
