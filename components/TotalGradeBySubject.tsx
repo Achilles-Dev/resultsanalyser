@@ -293,7 +293,10 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
     return mySubjects
   }
 
-  const subjectsGrades: any[] = useMemo(() => calculateTotalGrade(), [])
+  const subjectsGrades: any[] = useMemo(
+    () => calculateTotalGrade(),
+    [calculateTotalGrade]
+  )
 
   return (
     <div>
@@ -433,7 +436,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
         </TableHeader>
         <TableBody>
           {subjectsGrades.map((subject, index) => (
-            <TableRow className='border-x-1'>
+            <TableRow className='border-x-1' key={subject.id}>
               <TableCell className='!px-1 text-center'>{index + 1}</TableCell>
               <TableCell className='border-x-1 !px-1 text-center'>
                 {subject.name}

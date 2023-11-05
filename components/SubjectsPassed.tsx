@@ -202,7 +202,7 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
     return passed
   }
 
-  const passedSubjects = useMemo(() => subjectsPassed(), [])
+  const passedSubjects = useMemo(() => subjectsPassed(), [subjectsPassed])
 
   return (
     <div>

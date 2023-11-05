@@ -41,7 +41,7 @@ interface EditModalProps {
   subjects?: any[]
   setSelectedCourse?: (value: string) => void
   updateStatus?: string
-  grades: { value: string; name: string }[]
+  grades?: { value: string; name: string }[]
 }
 
 const EditModal = (props: EditModalProps) => {
@@ -384,14 +384,16 @@ const EditModal = (props: EditModalProps) => {
                                 onChange={onChange}
                                 selectedKeys={new Set([value])}
                               >
-                                {grades.map((grade) => (
-                                  <SelectItem
-                                    key={grade.value}
-                                    value={grade.value}
-                                  >
-                                    {grade.name}
-                                  </SelectItem>
-                                ))}
+                                {grades !== undefined
+                                  ? grades.map((grade) => (
+                                      <SelectItem
+                                        key={grade.value}
+                                        value={grade.value}
+                                      >
+                                        {grade.name}
+                                      </SelectItem>
+                                    ))
+                                  : []}
                               </Select>
                             )
                           }}

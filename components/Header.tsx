@@ -13,7 +13,9 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from '@nextui-org/react'
+import { signOut as signOutNextAuth } from 'next-auth/react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { FaArrowDown } from 'react-icons/fa'
 
@@ -21,6 +23,16 @@ const menuItems = ['Dashboard', 'Courses', 'Students', 'Subjects', 'Results']
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+
+  const signOut = async () => {
+    setLoading(true)
+    await signOutNextAuth()
+    setLoading(false)
+    router.push('/')
+  }
+
   return (
     <Navbar
       className='bg-[#2096ffe6] flex text-[#05ffa3e6]'
@@ -112,7 +124,9 @@ const Header = () => {
             >
               Achilles-Dev
             </Link>
-            <Button color='primary'>Logout</Button>
+            <Button color='primary' onClick={signOut}>
+              Logout
+            </Button>
           </div>
         </NavbarMenuItem>
         {menuItems.map((item, index) => (
