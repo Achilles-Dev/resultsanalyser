@@ -407,10 +407,12 @@ const EditModal = (props: EditModalProps) => {
                     </div>
                   ))}
               </ModalBody>
-            ) : (
+            ) : name === 'Grades' && subjects && subjects.length > 0 ? (
               <p className='flex flex-col gap-5 p-2 md:px-6'>
                 Results has not been added! Add Student Results
               </p>
+            ) : (
+              ''
             )}
             <ModalFooter>
               <Button color='danger' onPress={(e) => setOpen(false)}>

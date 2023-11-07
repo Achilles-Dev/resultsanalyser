@@ -358,10 +358,12 @@ const CreateModal = (props: CreateModalProps) => {
                     </div>
                   ))}
               </ModalBody>
-            ) : (
+            ) : name === 'Grades' && subjects && subjects.length > 0 ? (
               <p className='flex flex-col gap-5 p-2 md:px-6'>
                 Results already exists! Edit instead
               </p>
+            ) : (
+              ''
             )}
             <ModalFooter>
               <Button color='danger' onPress={(e) => setOpen(false)}>
