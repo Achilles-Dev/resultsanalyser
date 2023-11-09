@@ -62,6 +62,11 @@ const Dashboard = ({
           <p className='uppercase text-center w-full md:text-[36px] font-bold '>
             Wassce Results Analyser {year}
           </p>
+          {year && (
+            <Button color='primary' onPress={() => onOpen()}>
+              Change Year
+            </Button>
+          )}
         </CardHeader>
         <CardBody>
           <p className='text-[24px] pb-2 border-b-2 font-bold'>

@@ -43,11 +43,11 @@ export default function Home() {
   }
 
   return (
-    <main className='grid grid-cols-12 gap-2 min-h-screen'>
-      <div className='col-span-7 w-full flex justify-center items-center '>
+    <main className='md:grid md:grid-cols-12 md:gap-2 flex flex-col gap-10 h-screen'>
+      <div className='md:col-span-7 w-full flex justify-center items-center h-[50%] md:h-full'>
         <Image src={IndexImage} alt='Index Image' />
       </div>
-      <div className='col-span-5 w-full flex px-2 items-center'>
+      <div className='md:col-span-5 w-full md:flex px-2 md:items-center h-[50%] md:h-full pb-2'>
         <Card className='w-full'>
           <CardHeader>
             <div className='flex flex-col gap-3 items-center w-full'>
