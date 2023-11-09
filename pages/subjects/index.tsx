@@ -26,22 +26,41 @@ import { v4 as uuidv4 } from 'uuid'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
+import { getCookie } from 'cookies-next'
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const subjects = JSON.stringify(
-    await Subject.findAll({
-      order: [['createdAt', 'DESC']],
-      include: { model: Student },
-    })
-  )
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const yearGroup = getCookie('year', { req, res }) as string
+  if (yearGroup) {
+    const subjects = JSON.stringify(
+      await Subject.findAll({
+        order: [['createdAt', 'DESC']],
+        include: { model: Student, where: { yearGroup: yearGroup } },
+      })
+    )
 
-  const students = JSON.stringify(await Student.findAll())
+    const students = JSON.stringify(
+      await Student.findAll({
+        where: {
+          yearGroup: yearGroup,
+        },
+      })
+    )
 
-  return {
-    props: {
-      subjects: JSON.parse(subjects),
-      students: JSON.parse(students),
-    },
+    return {
+      props: {
+        subjects: JSON.parse(subjects),
+        students: JSON.parse(students),
+        yearGroup,
+      },
+    }
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/dashboard',
+      },
+      props: {},
+    }
   }
 }
 
@@ -54,8 +73,8 @@ interface subjectsProps {
 const Subjects = ({
   subjects,
   students,
+  yearGroup,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [subject, setSubject] = useState<any>([])
@@ -203,7 +222,8 @@ const Subjects = ({
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
-            Subjects {year ? `(${year}/${year + 1})` : ''}
+            Subjects{' '}
+            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>

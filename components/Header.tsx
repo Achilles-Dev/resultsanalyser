@@ -13,6 +13,7 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from '@nextui-org/react'
+import { deleteCookie } from 'cookies-next'
 import { signOut as signOutNextAuth } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -24,12 +25,10 @@ const menuItems = ['Dashboard', 'Courses', 'Students', 'Subjects', 'Results']
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
 
   const signOut = async () => {
-    setLoading(true)
+    deleteCookie('year')
     await signOutNextAuth()
-    setLoading(false)
     router.push('/')
   }
 
@@ -81,7 +80,7 @@ const Header = () => {
               </Button>
             </DropdownTrigger>
           </NavbarItem>
-          <DropdownMenu>
+          <DropdownMenu aria-label='Results & Results analysis pages'>
             <DropdownItem>
               <Link href='/results' className=''>
                 Student Results
@@ -104,13 +103,13 @@ const Header = () => {
               Admin
             </Button>
           </DropdownTrigger>
-          <DropdownMenu>
+          <DropdownMenu aria-label='User & Logout'>
             <DropdownItem>
               <Link href='https://solomonhagan.netlify.app' target='_blank'>
                 Achilles-Dev
               </Link>
             </DropdownItem>
-            <DropdownItem>Logout</DropdownItem>
+            <DropdownItem onPress={signOut}>Logout</DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </NavbarItem>
@@ -124,7 +123,7 @@ const Header = () => {
             >
               Achilles-Dev
             </Link>
-            <Button color='primary' onClick={signOut}>
+            <Button color='primary' onPress={signOut}>
               Logout
             </Button>
           </div>

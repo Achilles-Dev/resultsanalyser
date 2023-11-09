@@ -27,27 +27,43 @@ import EditModal from '@/components/EditModal'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { Course, Student, Subject } from '@/libs/models'
 import { v4 as uuidv4 } from 'uuid'
+import { getCookie } from 'cookies-next'
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const students = JSON.stringify(
-    await Student.findAll({
-      order: [['indexNo', 'ASC']],
-      include: [{ model: Subject }, { model: Course }],
-    })
-  )
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const yearGroup = getCookie('year', { req, res }) as string
+  if (yearGroup) {
+    const students = JSON.stringify(
+      await Student.findAll({
+        where: {
+          yearGroup: yearGroup,
+        },
+        order: [['indexNo', 'ASC']],
+        include: [{ model: Subject }, { model: Course }],
+      })
+    )
 
-  const courses = JSON.stringify(
-    await Course.findAll({
-      order: [['createdAt', 'DESC']],
-      include: { model: Subject },
-    })
-  )
+    const courses = JSON.stringify(
+      await Course.findAll({
+        order: [['createdAt', 'DESC']],
+        include: { model: Subject },
+      })
+    )
 
-  return {
-    props: {
-      students: JSON.parse(students),
-      courses: JSON.parse(courses),
-    },
+    return {
+      props: {
+        students: JSON.parse(students),
+        courses: JSON.parse(courses),
+        yearGroup,
+      },
+    }
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/dashboard',
+      },
+      props: {},
+    }
   }
 }
 
@@ -65,8 +81,8 @@ interface studentsProps {
 const Students = ({
   students,
   courses,
+  yearGroup,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -288,7 +304,8 @@ const Students = ({
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
-            Students {year ? `(${year}/${year + 1})` : ''}
+            Students{' '}
+            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>

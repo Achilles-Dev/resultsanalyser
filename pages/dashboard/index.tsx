@@ -12,7 +12,9 @@ import {
   SelectItem,
   useDisclosure,
 } from '@nextui-org/react'
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { getCookie, setCookie } from 'cookies-next'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
 const currentYear = new Date().getFullYear()
 const yearRange = Array.from(
@@ -20,14 +22,37 @@ const yearRange = Array.from(
   (_, i) => currentYear + 2 + i * -1
 ).reverse()
 
-const Dashboard = () => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const yearGroup = getCookie('year', { req, res }) as string
+  if (yearGroup) {
+    return {
+      props: {
+        yearGroup,
+      },
+    }
+  } else {
+    return {
+      props: { yearGroup: '' },
+    }
+  }
+}
+
+const Dashboard = ({
+  yearGroup,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
-  const [year, setYear] = useState<string>('')
-  const [selectValue, setSelectValue] = useState<any>('')
+  const [year, setYear] = useState<string>(yearGroup)
+  const [selectValue, setSelectValue] = useState<string>('')
+
+  const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectValue(e.target.value)
+  }
 
   useEffect(() => {
     if (year === '') {
       onOpen()
+    } else {
+      setCookie('year', year)
     }
   }, [year])
   return (
@@ -85,8 +110,8 @@ const Dashboard = () => {
               <ModalBody>
                 <Select
                   label='Year completed'
-                  selectedKeys={selectValue}
-                  onSelectionChange={setSelectValue}
+                  selectedKeys={[selectValue]}
+                  onChange={handleSelect}
                 >
                   {yearRange.map((yearValue) => (
                     <SelectItem

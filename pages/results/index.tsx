@@ -24,18 +24,34 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { addStudentGrades, fetchStudent } from '@/libs/api'
 import CreateModal from '@/components/CreateModal'
 import EditModal from '@/components/EditModal'
+import { getCookie } from 'cookies-next'
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const students = JSON.stringify(
-    await Student.findAll({
-      order: [['indexNo', 'ASC']],
-      include: { model: Subject },
-    })
-  )
-  return {
-    props: {
-      students: JSON.parse(students),
-    },
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const yearGroup = getCookie('year', { req, res }) as string
+  if (yearGroup) {
+    const students = JSON.stringify(
+      await Student.findAll({
+        where: {
+          yearGroup: yearGroup,
+        },
+        order: [['indexNo', 'ASC']],
+        include: { model: Subject },
+      })
+    )
+    return {
+      props: {
+        students: JSON.parse(students),
+        yearGroup,
+      },
+    }
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/dashboard',
+      },
+      props: {},
+    }
   }
 }
 
@@ -67,8 +83,8 @@ interface studentResultsProps {
 
 const Results = ({
   students,
+  yearGroup,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -394,7 +410,8 @@ const Results = ({
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
-            Student Results {year ? `(${year}/${year + 1})` : ''}
+            Student Results{' '}
+            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>

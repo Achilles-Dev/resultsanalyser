@@ -1,0 +1,38 @@
+# fly.toml file generated for resultsanalysis on 2023-11-08T09:02:22Z
+
+app = "resultsanalysis"
+kill_signal = "SIGINT"
+kill_timeout = 5
+mounts = []
+primary_region = "lhr"
+processes = []
+
+[build]
+  [build.args]
+    NEXT_PUBLIC_POSTGRESQL_URI ="postgresql://postgres:5W6fPlrHiIQVtUiX@db.cxtffvugljqljkahbmyp.supabase.co:5432/postgres"
+    NEXT_PUBLIC_SUPABASE_URL = "https://cxtffvugljqljkahbmyp.supabase.co"
+    NEXT_PUBLIC_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dGZmdnVnbGpxbGprYWhibXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTYyMzYxMzgsImV4cCI6MjAxMTgxMjEzOH0.mh5l0L3aVtF5jUfXeUcThsiMje35ZsnoO9cZ4ZLex4s"
+    NEXT_SUPABASE_STORAGE_URL = "https://juvxtsyifhdynkicgqhn.supabase.co/storage/v1"
+    NEXTAUTH_URL = "https://fly.io/apps/resultsanalysis"
+    NEXTAUTH_SECRET = "whrthOkq5pop7JZzC6PlgpS+JW8ZqJubjoxaSwZwbZ4="
+
+[env]
+  PORT = "8080"
+
+[[services]]
+  internal_port = 8080
+  processes = ["app"]
+  protocol = "tcp"
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+    type = "connections"
+
+  [[services.ports]]
+    force_https = true
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
