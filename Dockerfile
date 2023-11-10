@@ -4,10 +4,10 @@ FROM node:16-alpine AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY . .
-RUN yarn install --frozen-lockfile
+# RUN yarn install --frozen-lockfile
 
 # If using npm with a `package-lock.json` comment out above and use below instead
-# RUN npm ci
+RUN npm ci
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
@@ -21,13 +21,13 @@ ARG NEXT_PUBLIC_POSTGRESQL_URI="postgresql://postgres:5W6fPlrHiIQVtUiX@db.cxtffv
 ARG NEXT_PUBLIC_SUPABASE_URL="https://cxtffvugljqljkahbmyp.supabase.co"
 ARG NEXT_PUBLIC_SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dGZmdnVnbGpxbGprYWhibXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTYyMzYxMzgsImV4cCI6MjAxMTgxMjEzOH0.mh5l0L3aVtF5jUfXeUcThsiMje35ZsnoO9cZ4ZLex4s"
 ARG NEXT_SUPABASE_STORAGE_URL="https://juvxtsyifhdynkicgqhn.supabase.co/storage/v1"
-ARG NEXTAUTH_URL="https://fly.io/apps/resultsanalysis"
+ARG NEXTAUTH_URL="https://resultsanalysis.fly.dev"
 ARG NEXTAUTH_SECRET="whrthOkq5pop7JZzC6PlgpS+JW8ZqJubjoxaSwZwbZ4="
 
-RUN yarn build
+# RUN yarn build
 
 # If using npm comment out above and use below instead
-# RUN npm run build
+RUN npm run build
 
 # Production image, copy all the files and run next
 FROM node:16-alpine AS runner
@@ -43,7 +43,7 @@ COPY --from=builder /app ./
 
 USER nextjs
 
-CMD ["yarn", "start"]
+# CMD ["yarn", "start"]
 
 # If using npm comment out above and use below instead
-# CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start"]

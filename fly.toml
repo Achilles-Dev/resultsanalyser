@@ -9,15 +9,23 @@ processes = []
 
 [build]
   [build.args]
-    NEXT_PUBLIC_POSTGRESQL_URI ="postgresql://postgres:5W6fPlrHiIQVtUiX@db.cxtffvugljqljkahbmyp.supabase.co:5432/postgres"
+    BASE_URL = "https://resultsanalysis.fly.dev"
+    NEXT_PUBLIC_POSTGRESQL_URI = "postgresql://postgres:5W6fPlrHiIQVtUiX@db.cxtffvugljqljkahbmyp.supabase.co:5432/postgres"
     NEXT_PUBLIC_SUPABASE_URL = "https://cxtffvugljqljkahbmyp.supabase.co"
     NEXT_PUBLIC_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dGZmdnVnbGpxbGprYWhibXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTYyMzYxMzgsImV4cCI6MjAxMTgxMjEzOH0.mh5l0L3aVtF5jUfXeUcThsiMje35ZsnoO9cZ4ZLex4s"
     NEXT_SUPABASE_STORAGE_URL = "https://juvxtsyifhdynkicgqhn.supabase.co/storage/v1"
-    NEXTAUTH_URL = "https://fly.io/apps/resultsanalysis"
+    NEXTAUTH_URL = "https://resultsanalysis.fly.dev"
     NEXTAUTH_SECRET = "whrthOkq5pop7JZzC6PlgpS+JW8ZqJubjoxaSwZwbZ4="
 
 [env]
   PORT = "8080"
+  BASE_URL = "https://resultsanalysis.fly.dev"
+  NEXT_PUBLIC_POSTGRESQL_URI = "postgresql://postgres:5W6fPlrHiIQVtUiX@db.cxtffvugljqljkahbmyp.supabase.co:5432/postgres"
+  NEXT_PUBLIC_SUPABASE_URL = "https://cxtffvugljqljkahbmyp.supabase.co"
+  NEXT_PUBLIC_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dGZmdnVnbGpxbGprYWhibXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTYyMzYxMzgsImV4cCI6MjAxMTgxMjEzOH0.mh5l0L3aVtF5jUfXeUcThsiMje35ZsnoO9cZ4ZLex4s"
+  NEXT_SUPABASE_STORAGE_URL = "https://juvxtsyifhdynkicgqhn.supabase.co/storage/v1"
+  NEXTAUTH_URL = "https://resultsanalysis.fly.dev"
+  NEXTAUTH_SECRET = "whrthOkq5pop7JZzC6PlgpS+JW8ZqJubjoxaSwZwbZ4="
 
 [[services]]
   internal_port = 8080
