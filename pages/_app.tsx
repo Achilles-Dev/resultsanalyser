@@ -1,6 +1,7 @@
 import Header from '@/components/Header'
 import '@/styles/globals.css'
 import { NextUIProvider } from '@nextui-org/react'
+import NextProgress from 'next-progress'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -22,6 +23,13 @@ export default function App({ Component, pageProps }: AppProps) {
           <Header />
         )}
         <Component {...pageProps} />
+        <NextProgress
+          delay={100}
+          disableSameRoute={true}
+          color='#25be6480'
+          height='5px'
+          options={{ showSpinner: false }}
+        />
       </>
     </NextUIProvider>
   )

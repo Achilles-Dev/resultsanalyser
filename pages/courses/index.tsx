@@ -21,61 +21,54 @@ import { useForm } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa'
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { createStudent, fetchStudent, updateStudent } from '@/libs/api'
-import { useRouter } from 'next/router'
-import EditModal from '@/components/EditModal'
+import { createCourse, fetchCourse, updateCourse } from '@/libs/api'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { Course, Student, Subject } from '@/libs/models'
 import { v4 as uuidv4 } from 'uuid'
+import { useRouter } from 'next/router'
+import EditModal from '@/components/EditModal'
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const students = JSON.stringify(
-    await Student.findAll({
-      order: [['indexNo', 'ASC']],
-      include: [{ model: Subject }, { model: Course }],
-    })
-  )
-
   const courses = JSON.stringify(
     await Course.findAll({
       order: [['createdAt', 'DESC']],
-      include: { model: Subject },
+      include: [{ model: Subject }, { model: Student }],
+    })
+  )
+
+  const subjects = JSON.stringify(
+    await Subject.findAll({
+      where: {
+        type: 'elective',
+      },
     })
   )
 
   return {
     props: {
-      students: JSON.parse(students),
       courses: JSON.parse(courses),
+      subjects: JSON.parse(subjects),
     },
   }
 }
 
-interface studentsProps {
-  year: string
-  indexNo: string
-  firstname: string
-  lastname: string
-  othername: string
-  sex: string
-  course: string
-  subjects: string
+interface coursesProps {
+  code: number
+  name: string
+  electiveSubjects?: string
 }
 
-const Students = ({
-  students,
+const Courses = ({
   courses,
+  subjects,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
+  const [course, setCourse] = useState<any>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [student, setStudent] = useState<any>()
-  const [subjects, setSubjects] = useState<any[]>([])
-  const [selectedCourse, setSelectedCourse] = useState<string>('')
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
-  const [initialCourse, setInitialCourse] = useState()
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -84,18 +77,15 @@ const Students = ({
       query: { id },
     })
     setIsLoading(true)
-    const { response } = await fetchStudent(id)
-    setStudent(response)
-    const stud = response
-    setInitialCourse(stud.Course.id)
-    setValue('year', stud.yearGroup)
-    setValue('indexNo', stud.indexNo)
-    setValue('firstname', stud.firstName)
-    setValue('lastname', stud.lastName)
-    setValue('othername', stud?.otherName)
-    setValue('sex', stud.sex.charAt(0).toUpperCase() + stud.sex.slice(1))
-    setValue('course', stud.Course.id)
-    setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
+    const { response } = await fetchCourse(id)
+    setCourse(response)
+    const myCourse = response
+    setValue('code', myCourse.code)
+    setValue('name', myCourse.name)
+    setValue(
+      'electiveSubjects',
+      myCourse.Subjects.map((val: any) => val.id).join(',')
+    )
     setIsFetched(true)
     setEditOpen(true)
     setIsLoading(false)
@@ -111,36 +101,29 @@ const Students = ({
 
   const electiveSubjects = (mySubjects: []) => (
     <div className='flex flex-wrap gap-2 py-2'>
-      {mySubjects
-        .filter((subject: any) => subject.type === 'elective')
-        .map((subject: any) => (
-          <Chip
-            classNames={{ content: 'object-scale-down' }}
-            variant='dot'
-            key={subject.id}
-          >
-            {subject.name}
-          </Chip>
-        ))}
+      {mySubjects.map((subject: any) => (
+        <Chip
+          classNames={{ content: 'object-scale-down' }}
+          variant='dot'
+          key={subject.id}
+        >
+          {subject.name}
+        </Chip>
+      ))}
     </div>
   )
 
   let list: AsyncListData<any> = useAsyncList({
     async load({ signal }) {
-      const myStudents = students.map((student: any) => ({
-        ...student,
-        name: `${student.lastName} ${student.firstName} ${
-          student.otherName !== undefined ? student.otherName : ''
-        }`,
-        sex: student.sex.charAt(0).toUpperCase() + student.sex.slice(1),
-        year: student.yearGroup,
-        course: student.Course.name,
-        subjects: electiveSubjects(student.Subjects),
-        edit: editDelete(student.id),
+      const myCourses = courses.map((course: any) => ({
+        ...course,
+        subjects: electiveSubjects(course.Subjects),
+        number: course.Students.length,
+        edit: editDelete(course.id),
       }))
       setIsLoading(false)
       return {
-        items: myStudents,
+        items: myCourses.sort((a: any, b: any) => a.code - b.code),
       }
     },
     async sort({
@@ -167,119 +150,121 @@ const Students = ({
     },
   })
 
-  const studentSchema = yup.object().shape({
-    year: yup.string().required('Select student year of completion'),
-    indexNo: yup.string().required('Index Number is required'),
-    firstname: yup.string().required('First Name is required'),
-    lastname: yup.string().required('Last Name is required'),
-    othername: yup.string(),
-    sex: yup.string().required('Sex is required'),
-    course: yup.string().required('Select student course'),
-    subjects: yup.string().required('Select student elective subjects'),
+  const createCourseSchema = yup.object().shape({
+    code: yup.number().required('Course code is required'),
+    name: yup.string().required('Name of course is required'),
+    electiveSubjects: yup.string(),
   })
 
-  const {
-    register,
-    setValue,
-    getValues,
-    handleSubmit,
-    reset,
-    control,
-    formState,
-  } = useForm({
-    reValidateMode: 'onBlur',
-    resolver: yupResolver(studentSchema),
-  })
+  const { register, setValue, handleSubmit, reset, control, formState } =
+    useForm({
+      reValidateMode: 'onBlur',
+      resolver: yupResolver(createCourseSchema),
+    })
 
   const { errors } = formState
 
-  const handleCreateStudent = async (data: studentsProps) => {
+  const handleCreateCourse = async (data: coursesProps) => {
     const id = uuidv4()
     setSaveUpdateStatus('loading')
-    const subjectIds = data.subjects ? data.subjects.split(',') : []
-    await createStudent({
+    const subjectIds = data.electiveSubjects
+      ? data.electiveSubjects.split(',')
+      : []
+    await createCourse({
       id,
-      yearGroup: data.year,
-      indexNo: data.indexNo,
-      firstName: data.firstname,
-      lastName: data.lastname,
-      otherName: data.othername,
-      sex: data.sex,
-      courseId: data.course,
+      code: data.code,
+      name: data.name,
       subjectIds,
     })
-    const { response } = await fetchStudent(id)
-    const newStudent = {
+    const { response } = await fetchCourse(id)
+    const newCourse = {
       ...response,
-      name: `${response.lastName} ${response.firstName} ${
-        response.otherName !== undefined ? response.otherName : ''
-      }`,
-      sex: response.sex.charAt(0).toUpperCase() + response.sex.slice(1),
-      year: response.yearGroup,
-      course: response.Course.name,
       subjects: electiveSubjects(response.Subjects),
+      number: response.Students.length,
       edit: editDelete(response.id),
     }
-    list.items.push(newStudent)
+    list.items.push(newCourse)
+
     setOpen(false)
     setSaveUpdateStatus('idle')
     reset()
   }
 
-  const handleEditStudent = async (data: studentsProps) => {
-    const subjectIds = data.subjects ? data.subjects.split(',') : []
+  const handleEditCourse = async (data: coursesProps) => {
+    const subjectIds = data.electiveSubjects
+      ? data.electiveSubjects.split(',')
+      : []
     setSaveUpdateStatus('loading')
-    await updateStudent({
-      id: student.id,
-      yearGroup: data.year,
-      indexNo: data.indexNo,
-      firstName: data.firstname,
-      lastName: data.lastname,
-      otherName: data.othername,
-      sex: data.sex,
-      courseId: data.course,
+    await updateCourse({
+      id: course.id,
+      code: data.code,
+      name: data.name,
       subjectIds,
     })
-    const { response } = await fetchStudent(student.id)
-    const editedStudent = {
+    const { response } = await fetchCourse(course.id)
+    const editedCourse = {
       ...response,
-      name: `${response.lastName} ${response.firstName} ${
-        response.otherName !== undefined ? response.otherName : ''
-      }`,
-      year: response.yearGroup,
-      course: response.Course.name,
       subjects: electiveSubjects(response.Subjects),
+      number: response.Students.length,
       edit: editDelete(response.id),
     }
-    list.update(student.id, editedStudent)
+    list.update(course.id, editedCourse)
+
     setEditOpen(false)
     setSaveUpdateStatus('idle')
     reset()
   }
 
-  useEffect(() => {
-    if (selectedCourse) {
-      const course = courses.find((course: any) => course.id === selectedCourse)
-      setSubjects(course.Subjects)
-    }
-    if (initialCourse !== getValues('course')) {
-      setValue('subjects', '')
-    }
-  }, [selectedCourse])
+  // useEffect(() => {
+  //   if (editStatus === 'loading') {
+  //     const myList = list.getItem(courseId)
+  //     const myList2 = {
+  //       ...myList,
+  //       edit: {
+  //         ...myList.edit,
+  //         props: {
+  //           ...myList.edit.props,
+  //           children: {
+  //             ...myList.edit.props.children,
+  //             props: {
+  //               ...myList.edit.props.children.props,
+  //               isLoading: true,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     }
+  //     list.update(courseId, myList2)
+  //   } else if (editStatus === 'success') {
+  //     const myList = list.getItem(courseId)
+  //     const myList2 = {
+  //       ...myList,
+  //       edit: {
+  //         ...myList.edit,
+  //         props: {
+  //           ...myList.edit.props,
+  //           children: {
+  //             ...myList.edit.props.children,
+  //             props: {
+  //               ...myList.edit.props.children.props,
+  //               isLoading: false,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     }
+  //     list.update(courseId, myList2)
+  //   }
+  // }, [editStatus])
 
   useEffect(() => {
     if (!editOpen && router.query?.id) {
       router.push({
         pathname: router.pathname,
       })
-      setValue('year', '')
-      setValue('indexNo', '')
-      setValue('firstname', '')
-      setValue('lastname', '')
-      setValue('othername', '')
-      setValue('sex', '')
-      setValue('course', '')
-      setValue('subjects', '')
+      setValue('code', 100)
+      setValue('name', '')
+      setValue('electiveSubjects', '')
     }
   }, [editOpen, router.query?.id])
 
@@ -288,7 +273,7 @@ const Students = ({
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
-            Students {year ? `(${year}/${year + 1})` : ''}
+            Courses {year ? `(${year}/${year + 1})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
@@ -299,7 +284,7 @@ const Students = ({
                 onPress={(e) => setOpen(true)}
                 startContent={<FaPlus />}
               >
-                Add Student
+                Add Course
               </Button>
             </div>
             <form className='flex'>
@@ -312,7 +297,7 @@ const Students = ({
                     'md:min-w-[300px]',
                   ],
                 }}
-                placeholder='Search for a student (Name | Index No.)'
+                placeholder='Search for a Course (Course Name)'
               />
               <Button type='submit' color='primary' className='rounded-l-none'>
                 Search
@@ -328,17 +313,14 @@ const Students = ({
             }}
           >
             <TableHeader>
-              <TableColumn key='indexNo' allowsSorting>
-                Index No.
+              <TableColumn key='code' allowsSorting>
+                Code
               </TableColumn>
               <TableColumn key='name' allowsSorting>
-                Student Name
-              </TableColumn>
-              <TableColumn key='sex' allowsSorting>
-                Sex
-              </TableColumn>
-              <TableColumn key='course' allowsSorting>
                 Course
+              </TableColumn>
+              <TableColumn key='number' allowsSorting>
+                No. of Students
               </TableColumn>
               <TableColumn key='subjects' allowsSorting>
                 Elective Subjects
@@ -351,7 +333,7 @@ const Students = ({
               loadingContent={<Spinner label='Loading...' />}
             >
               {(item: any) => (
-                <TableRow key={item.id}>
+                <TableRow key={item.name}>
                   {(columnKey) => (
                     <TableCell>{getKeyValue(item, columnKey)}</TableCell>
                   )}
@@ -364,34 +346,31 @@ const Students = ({
       <CreateModal
         open={open}
         setOpen={setOpen}
-        handleCreate={handleCreateStudent}
+        handleCreate={handleCreateCourse}
         register={register}
         handleSubmit={handleSubmit}
         errors={errors}
-        headerName='Register Students'
-        name='Students'
-        buttonName='Save Student'
+        headerName='Create Course'
+        name='Courses'
+        buttonName='Submit'
         subjects={subjects}
         courses={courses}
-        control={control}
-        setSelectedCourse={setSelectedCourse}
         saveStatus={saveUpdateStatus}
       />
       {isFetched && (
         <EditModal
           open={editOpen}
           setOpen={setEditOpen}
-          handleEdit={handleEditStudent}
+          handleEdit={handleEditCourse}
           register={register}
           handleSubmit={handleSubmit}
           errors={errors}
-          headerName='Update Student'
-          name='Students'
-          buttonName='Update Student'
+          headerName='Update Course'
+          name='Courses'
+          buttonName='Update Course'
           control={control}
           courses={courses}
           subjects={subjects}
-          setSelectedCourse={setSelectedCourse}
           updateStatus={saveUpdateStatus}
         />
       )}
@@ -399,4 +378,4 @@ const Students = ({
   )
 }
 
-export default Students
+export default Courses
