@@ -41,7 +41,7 @@ interface EditModalProps {
   subjects?: any[]
   setSelectedCourse?: (value: string) => void
   updateStatus?: string
-  grades: { value: string; name: string }[]
+  grades?: { value: string; name: string }[]
 }
 
 const EditModal = (props: EditModalProps) => {
@@ -384,14 +384,16 @@ const EditModal = (props: EditModalProps) => {
                                 onChange={onChange}
                                 selectedKeys={new Set([value])}
                               >
-                                {grades.map((grade) => (
-                                  <SelectItem
-                                    key={grade.value}
-                                    value={grade.value}
-                                  >
-                                    {grade.name}
-                                  </SelectItem>
-                                ))}
+                                {grades !== undefined
+                                  ? grades.map((grade) => (
+                                      <SelectItem
+                                        key={grade.value}
+                                        value={grade.value}
+                                      >
+                                        {grade.name}
+                                      </SelectItem>
+                                    ))
+                                  : []}
                               </Select>
                             )
                           }}
@@ -405,10 +407,12 @@ const EditModal = (props: EditModalProps) => {
                     </div>
                   ))}
               </ModalBody>
-            ) : (
+            ) : name === 'Grades' && subjects && subjects.length > 0 ? (
               <p className='flex flex-col gap-5 p-2 md:px-6'>
                 Results has not been added! Add Student Results
               </p>
+            ) : (
+              ''
             )}
             <ModalFooter>
               <Button color='danger' onPress={(e) => setOpen(false)}>

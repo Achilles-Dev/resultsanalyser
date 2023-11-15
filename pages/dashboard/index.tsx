@@ -1,4 +1,3 @@
-import { initDb } from '@/libs/api'
 import {
   Button,
   Card,
@@ -27,8 +26,6 @@ const Dashboard = () => {
   const [selectValue, setSelectValue] = useState<any>('')
 
   useEffect(() => {
-    initDb()
-
     if (year === '') {
       onOpen()
     }

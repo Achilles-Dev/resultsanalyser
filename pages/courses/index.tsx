@@ -215,48 +215,6 @@ const Courses = ({
     reset()
   }
 
-  // useEffect(() => {
-  //   if (editStatus === 'loading') {
-  //     const myList = list.getItem(courseId)
-  //     const myList2 = {
-  //       ...myList,
-  //       edit: {
-  //         ...myList.edit,
-  //         props: {
-  //           ...myList.edit.props,
-  //           children: {
-  //             ...myList.edit.props.children,
-  //             props: {
-  //               ...myList.edit.props.children.props,
-  //               isLoading: true,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     }
-  //     list.update(courseId, myList2)
-  //   } else if (editStatus === 'success') {
-  //     const myList = list.getItem(courseId)
-  //     const myList2 = {
-  //       ...myList,
-  //       edit: {
-  //         ...myList.edit,
-  //         props: {
-  //           ...myList.edit.props,
-  //           children: {
-  //             ...myList.edit.props.children,
-  //             props: {
-  //               ...myList.edit.props.children.props,
-  //               isLoading: false,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     }
-  //     list.update(courseId, myList2)
-  //   }
-  // }, [editStatus])
-
   useEffect(() => {
     if (!editOpen && router.query?.id) {
       router.push({

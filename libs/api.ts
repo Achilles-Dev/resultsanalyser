@@ -1,3 +1,4 @@
+import { hash } from 'bcrypt-ts'
 import { v4 as uuidv4 } from 'uuid'
 
 export const initDb = async () => {
@@ -245,6 +246,29 @@ export const addStudentGrades = async ({
     status,
   }
   const results = await fetch('/api/grades/add', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}
+
+export const addUser = async ({
+  email,
+  password,
+}: {
+  email: string
+  password: string
+}) => {
+  const hashPassword = await hash(password, 10)
+  const data = {
+    id: uuidv4(),
+    email,
+    password: hashPassword,
+  }
+  const results = await fetch('/api/users/add', {
     headers: {
       'Content-Type': 'application/json',
     },

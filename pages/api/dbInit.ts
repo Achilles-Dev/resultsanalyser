@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { initDB } from '@/libs/models'
-import sequelize from '@/libs/db'
 
 export default async function handler(
   req: NextApiRequest,
