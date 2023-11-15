@@ -1,24 +1,10 @@
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
 # Results Analyser
 
-> the Results Analyser app is used to analyse the performance of students in a high school in Ghana after their final exams ie. the West African Senior School Certificate Examination (WAASCE). Users are able to determine the follwing after adding the results of the students in the school.
+> The Results Analyser app is used to analyze students' performance in a high school in Ghana after their final exams ie. the West African Senior School Certificate Examination (WASSCE). Users can determine the following after adding the students' results in the school.
 
 - The number of candidates whose total aggregate (Best Six) is less than or equal to 24.
 - The number of candidates whose total aggregate (Best Six) is less than or equal to 36.
-- The number of candidates who had passes in all subjects to no subject.
+- The number of candidates who had passed all subjects to no subject.
 - The number of candidates who had A1 - F9 in each subject.
 
 ## Built With
