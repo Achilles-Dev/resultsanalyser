@@ -1,0 +1,342 @@
+{ 
+  "students": [
+    {
+      "id": 1,
+      "year": 2022,
+      "indexNo": "0050308001",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 2,
+      "year": 2022,
+      "indexNo": "0050308002",
+      "firstname": "Obedia",
+      "lastname": "Ababio",
+      "sex": "Male",
+      "course": "Technical",
+      "subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Applied Electricity",
+        "Technical drawing"
+      ]
+    },
+    {
+      "id": 3,
+      "year": 2022,
+      "indexNo": "0050308003",
+      "firstname": "Nurudeen",
+      "lastname": "Abdul Aziz",
+      
+      "sex": "Male",
+      "course": "General Arts",
+      "subjects": [
+        "Christian Religious Studies",
+        "Twi",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 4,
+      "year": 2022,
+      "indexNo": "0050308004",
+      "firstname": "Bushara",
+      "lastname": "Abdul",
+      "othername": "Salam",
+      "sex": "Male",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 5,
+      "year": 2022,
+      "indexNo": "0050308005",
+      "firstname": "Nafisatu",
+      "lastname": "Abdulamid",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 6,
+      "year": 2022,
+      "indexNo": "0050308006",
+      "firstname": "Manasseh",
+      "lastname": "Aboagye",
+      "sex": "Male",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 7,
+      "year": 2022,
+      "indexNo": "0050308007",
+      "firstname": "Saeed",
+      "lastname": "Abubakari",
+      "sex": "Male",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 8,
+      "year": 2022,
+      "indexNo": "0050308008",
+      "firstname": "Matilda",
+      "lastname": "Ababio",
+      "othername": "Daliasor",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 9,
+      "year": 2022,
+      "indexNo": "0050308009",
+      "firstname": "Charlotte",
+      "lastname": "Abugire",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 10,
+      "year": 2022,
+      "indexNo": "0050308010",
+      "firstname": "Samuel",
+      "lastname": "Abugre",
+      "sex": "Male",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    }, 
+    {
+      "id": 11,
+      "year": 2022,
+      "indexNo": "0050308011",
+      "firstname": "Ruth",
+      "lastname": "Acheampomaah",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 12,
+      "year": 2022,
+      "indexNo": "0050308012",
+      "firstname": "Godfred",
+      "lastname": "Acheampong",
+      "sex": "Male",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 13,
+      "year": 2022,
+      "indexNo": "0050308013",
+      "firstname": "Kelly",
+      "lastname": "Acheampong",
+      "sex": "Male",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 14,
+      "year": 2022,
+      "indexNo": "0050308014",
+      "firstname": "Samuel",
+      "lastname": "Acheampong",
+      "sex": "Male",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    },
+    {
+      "id": 15,
+      "year": 2022,
+      "indexNo": "0050308015",
+      "firstname": "Yvonne",
+      "lastname": "Acquah",
+      "sex": "Female",
+      "course": "General Arts",
+      "subjects": [
+        "Elective Mathematics",
+        "Geography",
+        "Government",
+        "Economics"
+      ]
+    }
+  ],
+  
+  "courses": [
+    {
+      "id": 1,
+      "name": "Agric Science"
+    },
+    {
+      "id": 2,
+      "name": "Business"
+    },
+    {
+      "id": 3,
+      "name": "General Arts"
+    },
+    {
+      "id": 4,
+      "name": "General Science"
+    },
+    {
+      "id": 5,
+      "name": "Home Economics"
+    },
+    {
+      "id": 6,
+      "name": "Technical"
+    }
+  ],
+
+  "subjects": [
+    {
+      "id": 1,
+      "code": "",
+      "name": "English Language",
+      "type": "core"
+    },
+    {
+      "id": 2,
+      "code": "",
+      "name": "Core Mathematics",
+      "type": "core"
+    },
+    {
+      "id": 3,
+      "code": "",
+      "name": "Social Studies",
+      "type": "core"
+    },
+    {
+      "id": 4,
+      "code": "",
+      "name": "Integrated Science",
+      "type": "core"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Economics",
+      "type": "elective"
+    },
+    {
+      "id": 6,
+      "code": "",
+      "name": "Government",
+      "type": "elective"
+    },
+    {
+      "id": 7,
+      "code": "",
+      "name": "Elective Mathematics",
+      "type": "elective"
+    },
+    {
+      "id": 8,
+      "code": "",
+      "name": "Twi",
+      "type": "elective"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Christian Religious Studies",
+      "type": "elective"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Geography",
+      "type": "elective"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Applied Electricity",
+      "type": "elective"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Physics",
+      "type": "elective"
+    },
+    {
+      "id": 5,
+      "code": "",
+      "name": "Technical Drawing",
+      "type": "elective"
+    }
+
+  ]
+}

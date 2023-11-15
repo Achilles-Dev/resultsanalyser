@@ -5,3 +5,7 @@
 header {
   max-width: 100% !important;
 }
+
+span {
+  font-size: 16px;
+}
