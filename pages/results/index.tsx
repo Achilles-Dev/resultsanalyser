@@ -16,7 +16,7 @@ import {
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import * as yup from 'yup'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Student, Subject } from '@/libs/models'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
@@ -92,6 +92,7 @@ const Results = ({
   const [subjects, setSubjects] = useState<any>([])
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
+  const [filterValue, setFilterValue] = useState('')
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -244,6 +245,27 @@ const Results = ({
       }
     },
   })
+
+  const filteredItems = useMemo(() => {
+    let filteredStudents = [...list.items]
+    if (!isNaN(Number(filterValue))) {
+      filteredStudents = filteredStudents.filter((student: any) =>
+        student.indexNo.includes(Number(filterValue))
+      )
+    } else {
+      filteredStudents = filteredStudents.filter((student: any) => {
+        const name = `${student.lastName} ${student.firstName} ${
+          student.otherName !== undefined ? student.otherName : ''
+        }`
+        return (
+          name.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) ||
+          name.startsWith(filterValue.toLocaleLowerCase())
+        )
+      })
+    }
+
+    return filteredStudents
+  }, [list.items, filterValue])
 
   const studentSchema = yup.object().shape({
     core1: yup.string().required('Grade is required'),
@@ -426,6 +448,7 @@ const Results = ({
                     'md:min-w-[300px]',
                   ],
                 }}
+                onChange={(e) => setFilterValue(e.target.value)}
                 placeholder='Search for a student (Name | Index No.)'
               />
               <Button type='submit' color='primary' className='rounded-l-none'>
@@ -454,7 +477,7 @@ const Results = ({
               <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
-              items={list.items}
+              items={filteredItems}
               isLoading={isLoading}
               loadingContent={<Spinner label='Loading...' />}
             >
