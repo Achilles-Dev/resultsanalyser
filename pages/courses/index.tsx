@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Card,
@@ -85,6 +85,7 @@ const Courses = ({
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
+  const [filterValue, setFilterValue] = useState('')
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -165,6 +166,27 @@ const Courses = ({
       }
     },
   })
+
+  const filteredItems = useMemo(() => {
+    let filteredCourses = [...list.items]
+    if (filterValue) {
+      if (!isNaN(Number(filterValue))) {
+        filteredCourses = filteredCourses.filter(
+          (course: any) => course.code === Number(filterValue)
+        )
+      } else {
+        filteredCourses = filteredCourses.filter(
+          (course: any) =>
+            course.name
+              .toLocaleLowerCase()
+              .includes(filterValue.toLocaleLowerCase()) ||
+            course.name.startsWith(filterValue.toLocaleLowerCase())
+        )
+      }
+    }
+
+    return filteredCourses
+  }, [list.items, filterValue])
 
   const createCourseSchema = yup.object().shape({
     code: yup.number().required('Course code is required'),
@@ -265,17 +287,14 @@ const Courses = ({
               <Input
                 classNames={{
                   inputWrapper: [
-                    'rounded-r-none',
                     'bg-inherit',
                     'border border-primary',
-                    'md:min-w-[300px]',
+                    'md:min-w-[500px]',
                   ],
                 }}
-                placeholder='Search for a Course (Course Name)'
+                onChange={(e) => setFilterValue(e.target.value)}
+                placeholder='Search for a Course (Course Name | Course code)'
               />
-              <Button type='submit' color='primary' className='rounded-l-none'>
-                Search
-              </Button>
             </form>
           </div>
           <Table
@@ -302,7 +321,7 @@ const Courses = ({
               <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
-              items={list.items}
+              items={filteredItems}
               isLoading={isLoading}
               loadingContent={<Spinner label='Loading...' />}
             >
