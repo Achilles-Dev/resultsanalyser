@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Card,
@@ -92,6 +92,7 @@ const Students = ({
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
   const [initialCourse, setInitialCourse] = useState()
+  const [filterValue, setFilterValue] = useState('')
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -182,6 +183,25 @@ const Students = ({
       }
     },
   })
+
+  const filteredItems = useMemo(() => {
+    let filteredStudents = [...list.items]
+    if (!isNaN(Number(filterValue))) {
+      filteredStudents = filteredStudents.filter((student: any) =>
+        student.indexNo.includes(Number(filterValue))
+      )
+    } else {
+      filteredStudents = filteredStudents.filter(
+        (student: any) =>
+          student.name
+            .toLocaleLowerCase()
+            .includes(filterValue.toLocaleLowerCase()) ||
+          student.name.startsWith(filterValue.toLocaleLowerCase())
+      )
+    }
+
+    return filteredStudents
+  }, [list.items, filterValue])
 
   const studentSchema = yup.object().shape({
     year: yup.string().required('Select student year of completion'),
@@ -329,6 +349,7 @@ const Students = ({
                     'md:min-w-[300px]',
                   ],
                 }}
+                onChange={(e) => setFilterValue(e.target.value)}
                 placeholder='Search for a student (Name | Index No.)'
               />
               <Button type='submit' color='primary' className='rounded-l-none'>
@@ -363,7 +384,7 @@ const Students = ({
               <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
-              items={list.items}
+              items={filteredItems}
               isLoading={isLoading}
               loadingContent={<Spinner label='Loading...' />}
             >

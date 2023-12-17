@@ -21,7 +21,7 @@ ARG NEXT_PUBLIC_POSTGRESQL_URI="postgresql://postgres:5W6fPlrHiIQVtUiX@db.cxtffv
 ARG NEXT_PUBLIC_SUPABASE_URL="https://cxtffvugljqljkahbmyp.supabase.co"
 ARG NEXT_PUBLIC_SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dGZmdnVnbGpxbGprYWhibXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTYyMzYxMzgsImV4cCI6MjAxMTgxMjEzOH0.mh5l0L3aVtF5jUfXeUcThsiMje35ZsnoO9cZ4ZLex4s"
 ARG NEXT_SUPABASE_STORAGE_URL="https://juvxtsyifhdynkicgqhn.supabase.co/storage/v1"
-ARG NEXTAUTH_URL="https://resultsanalysis.fly.dev"
+ARG NEXTAUTH_URL="https://resultsanalyser.fly.dev"
 ARG NEXTAUTH_SECRET="whrthOkq5pop7JZzC6PlgpS+JW8ZqJubjoxaSwZwbZ4="
 
 # RUN yarn build
