@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Card,
@@ -81,6 +81,7 @@ const Subjects = ({
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
+  const [filterValue, setFilterValue] = useState('')
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -145,7 +146,26 @@ const Subjects = ({
     },
   })
 
-  console
+  const filteredItems = useMemo(() => {
+    let filteredSubjects = [...list.items]
+    if (filterValue) {
+      if (!isNaN(Number(filterValue))) {
+        filteredSubjects = filteredSubjects.filter(
+          (subject: any) => subject.code === Number(filterValue)
+        )
+      } else {
+        filteredSubjects = filteredSubjects.filter(
+          (subject: any) =>
+            subject.name
+              .toLocaleLowerCase()
+              .includes(filterValue.toLocaleLowerCase()) ||
+            subject.name.startsWith(filterValue.toLocaleLowerCase())
+        )
+      }
+    }
+
+    return filteredSubjects
+  }, [list.items, filterValue])
 
   const createSubjectSchema = yup.object().shape({
     code: yup.number().required('Subject code is required'),
@@ -241,17 +261,14 @@ const Subjects = ({
               <Input
                 classNames={{
                   inputWrapper: [
-                    'rounded-r-none',
                     'bg-inherit',
                     'border border-primary',
-                    'md:min-w-[300px]',
+                    'md:min-w-[500px]',
                   ],
                 }}
-                placeholder='Search for a Subject (Subject Name)'
+                onChange={(e) => setFilterValue(e.target.value)}
+                placeholder='Search for a Subject (Subject Name || subject code)'
               />
-              <Button type='submit' color='primary' className='rounded-l-none'>
-                Search
-              </Button>
             </form>
           </div>
           <Table
@@ -275,7 +292,7 @@ const Subjects = ({
               <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
-              items={list.items}
+              items={filteredItems}
               isLoading={isLoading}
               loadingContent={<Spinner label='Loading...' />}
             >
