@@ -17,7 +17,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # ARG NEXT_PUBLIC_EXAMPLE="value here"
 
 # Build arguments
-ARG NEXT_PUBLIC_POSTGRESQL_URI="postgresql://postgres:5W6fPlrHiIQVtUiX@db.cxtffvugljqljkahbmyp.supabase.co:5432/postgres"
+ARG NEXT_PUBLIC_POSTGRESQL_URI="postgres://postgres.cxtffvugljqljkahbmyp:i4651ijwWhEYIwtA@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
 ARG NEXT_PUBLIC_SUPABASE_URL="https://cxtffvugljqljkahbmyp.supabase.co"
 ARG NEXT_PUBLIC_SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dGZmdnVnbGpxbGprYWhibXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTYyMzYxMzgsImV4cCI6MjAxMTgxMjEzOH0.mh5l0L3aVtF5jUfXeUcThsiMje35ZsnoO9cZ4ZLex4s"
 ARG NEXT_SUPABASE_STORAGE_URL="https://juvxtsyifhdynkicgqhn.supabase.co/storage/v1"

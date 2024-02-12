@@ -31,7 +31,7 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
           subject.Grade.grade && Number(subject.Grade.grade.charAt(1)) <= 6
       ).length
 
-      if (student.Subjects[0].Grade.grade && student.sex === 'Male') {
+      if (student.Subjects[0].Grade.grade && student.sex === 'male') {
         switch (numberPassed) {
           case 0:
             passed = {

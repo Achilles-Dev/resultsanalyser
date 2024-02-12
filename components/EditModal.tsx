@@ -156,8 +156,8 @@ const EditModal = (props: EditModalProps) => {
                             value={value}
                             onValueChange={onChange}
                           >
-                            <Radio value='Male'>Male</Radio>
-                            <Radio value='Female'>Female</Radio>
+                            <Radio value='male'>Male</Radio>
+                            <Radio value='female'>Female</Radio>
                           </RadioGroup>
                         )
                       }}

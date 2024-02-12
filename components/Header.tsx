@@ -39,10 +39,11 @@ const Header = () => {
       isMenuOpen={isMenuOpen}
     >
       <NavbarItem className='md:hidden'>
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-          className='sm:hidden'
-        />
+        <NavbarContent className='sm:hidden' justify='start'>
+          <NavbarMenuToggle
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+          />
+        </NavbarContent>
       </NavbarItem>
       <NavbarItem>
         <Link href='/dashboard' className='uppercase text-[20px]'>

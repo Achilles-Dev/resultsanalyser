@@ -35,7 +35,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
       subject.Students.map((student: any) => {
         let grade = student.Grade.grade
         let status = student.Grade.status
-        if (student.sex === 'Male') {
+        if (student.sex === 'male') {
           values = {
             ...values,
             totalCandidates: {
