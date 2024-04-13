@@ -13,6 +13,7 @@ const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        console.log(credentials)
         const authResponse = await fetch(
           `${process.env.NEXTAUTH_URL}/api/users/login`,
           {
@@ -23,6 +24,7 @@ const authOptions: NextAuthOptions = {
             body: JSON.stringify(credentials),
           }
         )
+      
         if (!authResponse.ok) {
           return null
         }

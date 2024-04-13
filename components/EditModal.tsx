@@ -42,6 +42,7 @@ interface EditModalProps {
   setSelectedCourse?: (value: string) => void
   updateStatus?: string
   grades?: { value: string; name: string }[]
+  gradeAddStatus?: boolean
 }
 
 const EditModal = (props: EditModalProps) => {
@@ -61,6 +62,7 @@ const EditModal = (props: EditModalProps) => {
     setSelectedCourse,
     updateStatus,
     grades,
+    gradeAddStatus,
   } = props
   const { onOpenChange } = useDisclosure()
 
@@ -356,7 +358,7 @@ const EditModal = (props: EditModalProps) => {
             {name === 'Grades' &&
             subjects &&
             subjects.length > 0 &&
-            subjects[0].Grade.grade ? (
+            gradeAddStatus ? (
               <ModalBody className='flex flex-col gap-5 p-2 md:px-6'>
                 {subjects &&
                   subjects?.map((subject, index) => (
@@ -422,7 +424,7 @@ const EditModal = (props: EditModalProps) => {
               (name === 'Grades' &&
                 subjects &&
                 subjects.length > 0 &&
-                subjects[0].Grade.grade) ? (
+                gradeAddStatus) ? (
                 <Button
                   type='submit'
                   color='primary'

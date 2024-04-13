@@ -110,7 +110,7 @@ const Students = ({
     setValue('firstname', stud.firstName)
     setValue('lastname', stud.lastName)
     setValue('othername', stud?.otherName)
-    setValue('sex', stud.sex.charAt(0).toUpperCase() + stud.sex.slice(1))
+    setValue('sex', stud.sex)
     setValue('course', stud.Course.id)
     setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
     setIsFetched(true)
@@ -264,6 +264,7 @@ const Students = ({
 
   const handleEditStudent = async (data: studentsProps) => {
     const subjectIds = data.subjects ? data.subjects.split(',') : []
+    console.log(subjectIds)
     setSaveUpdateStatus('loading')
     await updateStudent({
       id: student.id,

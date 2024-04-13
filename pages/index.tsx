@@ -7,7 +7,9 @@ import { signIn } from 'next-auth/react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
+import { initDb } from '@/libs/api'
 
+initDb()
 interface LoginFormProps {
   email: string
   password: string
