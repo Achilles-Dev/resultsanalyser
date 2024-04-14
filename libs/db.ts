@@ -7,7 +7,7 @@ import pg from 'pg'
 //   dialectModule: pg,
 // })
 
-const sequelize = new Sequelize(process.env.NEXT_PUBLIC_POSTGRESQL_URL!, {
+const sequelize = new Sequelize(process.env.POSTGRES_URL!, {
   dialect: 'postgres',
   dialectModule: pg,
 })
