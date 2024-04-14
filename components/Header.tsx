@@ -13,7 +13,10 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from '@nextui-org/react'
+import { deleteCookie } from 'cookies-next'
+import { signOut as signOutNextAuth } from 'next-auth/react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { FaArrowDown } from 'react-icons/fa'
 
@@ -21,6 +24,14 @@ const menuItems = ['Dashboard', 'Courses', 'Students', 'Subjects', 'Results']
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
+  const router = useRouter()
+
+  const signOut = async () => {
+    deleteCookie('year')
+    await signOutNextAuth()
+    router.push('/')
+  }
+
   return (
     <Navbar
       className='bg-[#2096ffe6] flex text-[#05ffa3e6]'
@@ -28,10 +39,11 @@ const Header = () => {
       isMenuOpen={isMenuOpen}
     >
       <NavbarItem className='md:hidden'>
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-          className='sm:hidden'
-        />
+        <NavbarContent className='sm:hidden' justify='start'>
+          <NavbarMenuToggle
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+          />
+        </NavbarContent>
       </NavbarItem>
       <NavbarItem>
         <Link href='/dashboard' className='uppercase text-[20px]'>
@@ -69,7 +81,7 @@ const Header = () => {
               </Button>
             </DropdownTrigger>
           </NavbarItem>
-          <DropdownMenu>
+          <DropdownMenu aria-label='Results & Results analysis pages'>
             <DropdownItem>
               <Link href='/results' className=''>
                 Student Results
@@ -92,13 +104,13 @@ const Header = () => {
               Admin
             </Button>
           </DropdownTrigger>
-          <DropdownMenu>
+          <DropdownMenu aria-label='User & Logout'>
             <DropdownItem>
               <Link href='https://solomonhagan.netlify.app' target='_blank'>
                 Achilles-Dev
               </Link>
             </DropdownItem>
-            <DropdownItem>Logout</DropdownItem>
+            <DropdownItem onPress={signOut}>Logout</DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </NavbarItem>
@@ -112,7 +124,9 @@ const Header = () => {
             >
               Achilles-Dev
             </Link>
-            <Button color='primary'>Logout</Button>
+            <Button color='primary' onPress={signOut}>
+              Logout
+            </Button>
           </div>
         </NavbarMenuItem>
         {menuItems.map((item, index) => (

@@ -41,7 +41,7 @@ interface CreateModalProps {
   control?: any
   setSelectedCourse?: (value: string) => void
   saveStatus?: string
-  grades: { value: string; name: string }[]
+  grades?: { value: string; name: string }[]
 }
 
 const CreateModal = (props: CreateModalProps) => {
@@ -335,14 +335,16 @@ const CreateModal = (props: CreateModalProps) => {
                                 onChange={onChange}
                                 selectedKeys={new Set([value])}
                               >
-                                {grades.map((grade) => (
-                                  <SelectItem
-                                    key={grade.value}
-                                    value={grade.value}
-                                  >
-                                    {grade.name}
-                                  </SelectItem>
-                                ))}
+                                {grades !== undefined
+                                  ? grades.map((grade) => (
+                                      <SelectItem
+                                        key={grade.value}
+                                        value={grade.value}
+                                      >
+                                        {grade.name}
+                                      </SelectItem>
+                                    ))
+                                  : []}
                               </Select>
                             )
                           }}
@@ -356,10 +358,12 @@ const CreateModal = (props: CreateModalProps) => {
                     </div>
                   ))}
               </ModalBody>
-            ) : (
+            ) : name === 'Grades' && subjects && subjects.length > 0 ? (
               <p className='flex flex-col gap-5 p-2 md:px-6'>
                 Results already exists! Edit instead
               </p>
+            ) : (
+              ''
             )}
             <ModalFooter>
               <Button color='danger' onPress={(e) => setOpen(false)}>

@@ -4,16 +4,20 @@ import { Button, Card, CardBody, CardHeader, Input } from '@nextui-org/react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
+import { addUser } from '@/libs/api'
+import { useState } from 'react'
+import { useRouter } from 'next/router'
 
 interface RegisterFormProps {
-  username: string
   email: string
   password: string
 }
 
 const Register = () => {
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+
   const registerSchema = yup.object().shape({
-    username: yup.string().required('Username is required'),
     email: yup.string().required('Email is required'),
     password: yup.string().required('Password is required'),
     pass_confirm: yup
@@ -22,23 +26,26 @@ const Register = () => {
       .oneOf([yup.ref('password')], 'Passwords do not match'),
   })
 
-  const { register, handleSubmit, watch, formState } = useForm({
+  const { register, handleSubmit, formState } = useForm({
     reValidateMode: 'onBlur',
     resolver: yupResolver(registerSchema),
   })
 
   const { errors } = formState
 
-  const onSubmit = (data: RegisterFormProps) => {
-    console.log(data)
+  const onSubmit = async (data: RegisterFormProps) => {
+    setLoading(true)
+    await addUser({ email: data.email, password: data.password })
+    setLoading(false)
+    router.push('/')
   }
 
   return (
-    <main className='grid grid-cols-12 gap-2 min-h-screen'>
-      <div className='col-span-7 w-full flex justify-center items-center '>
+    <main className='md:grid md:grid-cols-12 md:gap-2 flex flex-col h-screen'>
+      <div className='md:col-span-7 w-full flex justify-center items-center'>
         <Image src={IndexImage} alt='Index Image' />
       </div>
-      <div className='col-span-5 w-full flex px-2 items-center'>
+      <div className='md:col-span-5 w-full md:flex px-2 md:items-center pb-5'>
         <Card className='w-full'>
           <CardHeader>
             <div className='flex flex-col gap-3 items-center w-full'>
@@ -51,15 +58,6 @@ const Register = () => {
               className='flex flex-col gap-3'
               onSubmit={handleSubmit(onSubmit)}
             >
-              <Input
-                type='text'
-                {...register('username')}
-                placeholder='Username'
-                className='p-2'
-              />
-              <span className='px-2 text-danger'>
-                {errors.username?.message}
-              </span>
               <Input
                 type='email'
                 {...register('email')}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Card,
@@ -26,22 +26,41 @@ import { v4 as uuidv4 } from 'uuid'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
+import { getCookie } from 'cookies-next'
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const subjects = JSON.stringify(
-    await Subject.findAll({
-      order: [['createdAt', 'DESC']],
-      include: { model: Student },
-    })
-  )
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const yearGroup = getCookie('year', { req, res }) as string
+  if (yearGroup) {
+    const subjects = JSON.stringify(
+      await Subject.findAll({
+        order: [['createdAt', 'DESC']],
+        include: { model: Student, where: { yearGroup: yearGroup } },
+      })
+    )
 
-  const students = JSON.stringify(await Student.findAll())
+    const students = JSON.stringify(
+      await Student.findAll({
+        where: {
+          yearGroup: yearGroup,
+        },
+      })
+    )
 
-  return {
-    props: {
-      subjects: JSON.parse(subjects),
-      students: JSON.parse(students),
-    },
+    return {
+      props: {
+        subjects: JSON.parse(subjects),
+        students: JSON.parse(students),
+        yearGroup,
+      },
+    }
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/dashboard',
+      },
+      props: {},
+    }
   }
 }
 
@@ -54,14 +73,15 @@ interface subjectsProps {
 const Subjects = ({
   subjects,
   students,
+  yearGroup,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [subject, setSubject] = useState<any>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
+  const [filterValue, setFilterValue] = useState('')
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -126,7 +146,26 @@ const Subjects = ({
     },
   })
 
-  console
+  const filteredItems = useMemo(() => {
+    let filteredSubjects = [...list.items]
+    if (filterValue) {
+      if (!isNaN(Number(filterValue))) {
+        filteredSubjects = filteredSubjects.filter(
+          (subject: any) => subject.code === Number(filterValue)
+        )
+      } else {
+        filteredSubjects = filteredSubjects.filter(
+          (subject: any) =>
+            subject.name
+              .toLocaleLowerCase()
+              .includes(filterValue.toLocaleLowerCase()) ||
+            subject.name.startsWith(filterValue.toLocaleLowerCase())
+        )
+      }
+    }
+
+    return filteredSubjects
+  }, [list.items, filterValue])
 
   const createSubjectSchema = yup.object().shape({
     code: yup.number().required('Subject code is required'),
@@ -203,7 +242,8 @@ const Subjects = ({
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
-            Subjects {year ? `(${year}/${year + 1})` : ''}
+            Subjects{' '}
+            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
@@ -221,17 +261,14 @@ const Subjects = ({
               <Input
                 classNames={{
                   inputWrapper: [
-                    'rounded-r-none',
                     'bg-inherit',
                     'border border-primary',
-                    'md:min-w-[300px]',
+                    'md:min-w-[500px]',
                   ],
                 }}
-                placeholder='Search for a Subject (Subject Name)'
+                onChange={(e) => setFilterValue(e.target.value)}
+                placeholder='Search for a Subject (Subject Name || subject code)'
               />
-              <Button type='submit' color='primary' className='rounded-l-none'>
-                Search
-              </Button>
             </form>
           </div>
           <Table
@@ -255,7 +292,7 @@ const Subjects = ({
               <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
-              items={list.items}
+              items={filteredItems}
               isLoading={isLoading}
               loadingContent={<Spinner label='Loading...' />}
             >

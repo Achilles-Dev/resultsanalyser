@@ -35,7 +35,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
       subject.Students.map((student: any) => {
         let grade = student.Grade.grade
         let status = student.Grade.status
-        if (student.sex === 'Male') {
+        if (student.sex === 'male') {
           values = {
             ...values,
             totalCandidates: {
@@ -433,7 +433,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
         </TableHeader>
         <TableBody>
           {subjectsGrades.map((subject, index) => (
-            <TableRow className='border-x-1'>
+            <TableRow className='border-x-1' key={subject.id}>
               <TableCell className='!px-1 text-center'>{index + 1}</TableCell>
               <TableCell className='border-x-1 !px-1 text-center'>
                 {subject.name}

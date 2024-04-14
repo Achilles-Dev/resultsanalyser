@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Course, CourseSubject, Subject } from '@/libs/models'
+import { Course, CourseSubject } from '@/libs/models'
 
 export default async function handler(
   req: NextApiRequest,

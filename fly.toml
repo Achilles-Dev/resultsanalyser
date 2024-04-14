@@ -1,0 +1,52 @@
+# fly.toml app configuration file generated for resultsanalyser on 2024-01-02T16:44:12Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "resultsanalyser"
+primary_region = "lhr"
+kill_signal = "SIGINT"
+kill_timeout = "5s"
+
+[build]
+
+[env]
+  BASE_URL = "https://resultsanalyser.fly.dev"
+  NEXTAUTH_SECRET = "whrthOkq5pop7JZzC6PlgpS+JW8ZqJubjoxaSwZwbZ4="
+  NEXTAUTH_URL = "https://resultsanalyser.fly.dev"
+  NEXT_PUBLIC_POSTGRESQL_URI = "postgres://postgres.cxtffvugljqljkahbmyp:i4651ijwWhEYIwtA@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
+  NEXT_PUBLIC_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dGZmdnVnbGpxbGprYWhibXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTYyMzYxMzgsImV4cCI6MjAxMTgxMjEzOH0.mh5l0L3aVtF5jUfXeUcThsiMje35ZsnoO9cZ4ZLex4s"
+  NEXT_PUBLIC_SUPABASE_URL = "https://cxtffvugljqljkahbmyp.supabase.co"
+  NEXT_SUPABASE_STORAGE_URL = "https://juvxtsyifhdynkicgqhn.supabase.co/storage/v1"
+  PORT = "8080"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = false
+  min_machines_running = 0
+  processes = ["app"]
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["app"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 1024

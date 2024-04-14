@@ -41,7 +41,8 @@ interface EditModalProps {
   subjects?: any[]
   setSelectedCourse?: (value: string) => void
   updateStatus?: string
-  grades: { value: string; name: string }[]
+  grades?: { value: string; name: string }[]
+  gradeAddStatus?: boolean
 }
 
 const EditModal = (props: EditModalProps) => {
@@ -61,6 +62,7 @@ const EditModal = (props: EditModalProps) => {
     setSelectedCourse,
     updateStatus,
     grades,
+    gradeAddStatus,
   } = props
   const { onOpenChange } = useDisclosure()
 
@@ -156,8 +158,8 @@ const EditModal = (props: EditModalProps) => {
                             value={value}
                             onValueChange={onChange}
                           >
-                            <Radio value='Male'>Male</Radio>
-                            <Radio value='Female'>Female</Radio>
+                            <Radio value='male'>Male</Radio>
+                            <Radio value='female'>Female</Radio>
                           </RadioGroup>
                         )
                       }}
@@ -356,7 +358,7 @@ const EditModal = (props: EditModalProps) => {
             {name === 'Grades' &&
             subjects &&
             subjects.length > 0 &&
-            subjects[0].Grade.grade ? (
+            gradeAddStatus ? (
               <ModalBody className='flex flex-col gap-5 p-2 md:px-6'>
                 {subjects &&
                   subjects?.map((subject, index) => (
@@ -384,14 +386,16 @@ const EditModal = (props: EditModalProps) => {
                                 onChange={onChange}
                                 selectedKeys={new Set([value])}
                               >
-                                {grades.map((grade) => (
-                                  <SelectItem
-                                    key={grade.value}
-                                    value={grade.value}
-                                  >
-                                    {grade.name}
-                                  </SelectItem>
-                                ))}
+                                {grades !== undefined
+                                  ? grades.map((grade) => (
+                                      <SelectItem
+                                        key={grade.value}
+                                        value={grade.value}
+                                      >
+                                        {grade.name}
+                                      </SelectItem>
+                                    ))
+                                  : []}
                               </Select>
                             )
                           }}
@@ -405,10 +409,12 @@ const EditModal = (props: EditModalProps) => {
                     </div>
                   ))}
               </ModalBody>
-            ) : (
+            ) : name === 'Grades' && subjects && subjects.length > 0 ? (
               <p className='flex flex-col gap-5 p-2 md:px-6'>
                 Results has not been added! Add Student Results
               </p>
+            ) : (
+              ''
             )}
             <ModalFooter>
               <Button color='danger' onPress={(e) => setOpen(false)}>
@@ -418,7 +424,7 @@ const EditModal = (props: EditModalProps) => {
               (name === 'Grades' &&
                 subjects &&
                 subjects.length > 0 &&
-                subjects[0].Grade.grade) ? (
+                gradeAddStatus) ? (
                 <Button
                   type='submit'
                   color='primary'

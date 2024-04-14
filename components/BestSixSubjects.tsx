@@ -10,7 +10,8 @@ import { useMemo, useState } from 'react'
 
 const BestSixSubjects = ({ students }: { students: any[] }) => {
   const [message, setMessage] = useState('')
-  const maleNumber = students.filter((student) => student.sex === 'Male').length
+
+  const maleNumber = students.filter((student) => student.sex === 'male').length
   const femaleNumber = students.length - maleNumber
 
   const calculateSixSubjects = () => {
@@ -80,7 +81,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
           subject.Grade.grade && Number(subject.Grade.grade.charAt(1)) > 6
       ).length
       if (allFail === 8) {
-        if (student.sex === 'Male') {
+        if (student.sex === 'male') {
           bestSix = {
             ...bestSix,
             allFail: {
@@ -105,7 +106,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
       elective.pop()
       studBest += elective.reduce((a, b) => a + b, 0)
       if (studBest > 0 && studBest <= 24) {
-        if (student.sex === 'Male') {
+        if (student.sex === 'male') {
           bestSix = {
             ...bestSix,
             bestSix24: {
@@ -123,7 +124,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
           }
         }
       } else if (studBest > 0 && studBest <= 36) {
-        if (student.sex === 'Male') {
+        if (student.sex === 'male') {
           bestSix = {
             ...bestSix,
             bestSix36: {
@@ -141,7 +142,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
           }
         }
       } else {
-        if (studBest > 0 && student.sex === 'Male') {
+        if (studBest > 0 && student.sex === 'male') {
           bestSix = {
             ...bestSix,
             bestSixOver36: {

@@ -16,7 +16,7 @@ import {
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import * as yup from 'yup'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Student, Subject } from '@/libs/models'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
@@ -24,18 +24,34 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { addStudentGrades, fetchStudent } from '@/libs/api'
 import CreateModal from '@/components/CreateModal'
 import EditModal from '@/components/EditModal'
+import { getCookie } from 'cookies-next'
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const students = JSON.stringify(
-    await Student.findAll({
-      order: [['indexNo', 'ASC']],
-      include: { model: Subject },
-    })
-  )
-  return {
-    props: {
-      students: JSON.parse(students),
-    },
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const yearGroup = getCookie('year', { req, res }) as string
+  if (yearGroup) {
+    const students = JSON.stringify(
+      await Student.findAll({
+        where: {
+          yearGroup: yearGroup,
+        },
+        order: [['indexNo', 'ASC']],
+        include: { model: Subject },
+      })
+    )
+    return {
+      props: {
+        students: JSON.parse(students),
+        yearGroup,
+      },
+    }
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/dashboard',
+      },
+      props: {},
+    }
   }
 }
 
@@ -67,8 +83,8 @@ interface studentResultsProps {
 
 const Results = ({
   students,
+  yearGroup,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -76,6 +92,8 @@ const Results = ({
   const [subjects, setSubjects] = useState<any>([])
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
+  const [filterValue, setFilterValue] = useState('')
+  const [gradeAddStatus, setGradeAddStatus] = useState(false)
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -87,6 +105,12 @@ const Results = ({
     setIsLoading(true)
     const { response } = await fetchStudent(id)
     setStudent(response)
+    response.Subjects.forEach((subject: any) => {
+      if (subject.Grade) {
+        setGradeAddStatus(true)
+        return
+      }
+    })
     const sortedSubjects = response.Subjects.sort((a: any, b: any) => {
       let first = a.type
       let second = b.type
@@ -111,7 +135,6 @@ const Results = ({
           ? sortedSubjects[index].Grade.grade
           : sortedSubjects[index].Grade.status
         setValue(name, value)
-        console.log(value)
       }
     })
     setIsFetched(true)
@@ -127,48 +150,50 @@ const Results = ({
     </div>
   )
 
-  const subjectWithResults = (subjects: any) => (
-    <div className='flex'>
-      {subjects
-        .sort((a: any, b: any) => {
-          let first = a.name
-          let second = b.name
-          if (first < second) {
-            return -1
-          }
-          if (first > second) {
-            return 1
-          }
-          return 0
-        })
-        .sort((a: any, b: any) => {
-          let first = a.type
-          let second = b.type
-          if (first < second) {
-            return -1
-          }
-          if (first > second) {
-            return 1
-          }
-          return 0
-        })
-        .map((subject: any, index: number) => (
-          <div
-            key={subject.id}
-            className={`flex flex-col justify-center gap-2 py-2 border-r-3 w-[150px] ${
-              index === 0 ? 'border-l-3' : ''
-            }`}
-          >
-            <p className='flex border-b-2 px-2 h-[40px]'>{subject.name}</p>
-            <p className='h-[20px] px-2'>
-              {subject.Grade.status
-                ? subject.Grade.status
-                : subject.Grade.grade}
-            </p>
-          </div>
-        ))}
-    </div>
-  )
+  const subjectWithResults = (subjects: any) => {
+    return (
+      <div className='flex'>
+        {subjects
+          .sort((a: any, b: any) => {
+            let first = a.name
+            let second = b.name
+            if (first < second) {
+              return -1
+            }
+            if (first > second) {
+              return 1
+            }
+            return 0
+          })
+          .sort((a: any, b: any) => {
+            let first = a.type
+            let second = b.type
+            if (first < second) {
+              return -1
+            }
+            if (first > second) {
+              return 1
+            }
+            return 0
+          })
+          .map((subject: any, index: number) => (
+            <div
+              key={subject.id}
+              className={`flex flex-col justify-center gap-2 py-2 border-r-3 w-[150px] ${
+                index === 0 ? 'border-l-3' : ''
+              }`}
+            >
+              <p className='flex border-b-2 px-2 h-[40px]'>{subject.name}</p>
+              <p className='h-[20px] px-2'>
+                {subject.Grade.status
+                  ? subject.Grade.status
+                  : subject.Grade.grade}
+              </p>
+            </div>
+          ))}
+      </div>
+    )
+  }
 
   const handleNameButtonClick = async (id: string) => {
     setSubjects([])
@@ -229,6 +254,27 @@ const Results = ({
     },
   })
 
+  const filteredItems = useMemo(() => {
+    let filteredStudents = [...list.items]
+    if (!isNaN(Number(filterValue))) {
+      filteredStudents = filteredStudents.filter((student: any) =>
+        student.indexNo.includes(Number(filterValue))
+      )
+    } else {
+      filteredStudents = filteredStudents.filter((student: any) => {
+        const name = `${student.lastName} ${student.firstName} ${
+          student.otherName !== undefined ? student.otherName : ''
+        }`
+        return (
+          name.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) ||
+          name.startsWith(filterValue.toLocaleLowerCase())
+        )
+      })
+    }
+
+    return filteredStudents
+  }, [list.items, filterValue])
+
   const studentSchema = yup.object().shape({
     core1: yup.string().required('Grade is required'),
     core2: yup.string().required('Grade is required'),
@@ -250,7 +296,8 @@ const Results = ({
 
   const handleCreateStudentResults = async (data: studentResultsProps) => {
     setSaveUpdateStatus('loading')
-    await subjects.forEach((subject: any, index: number) => {
+    for (let index = 0; index < subjects.length; index++) {
+      let subject = subjects[index]
       if (subject.type === 'core') {
         let name = `core${index + 1}` as keyof typeof data
         let grade = data[`${name}`]
@@ -263,7 +310,7 @@ const Results = ({
           status = data[`${name}`]
           grade = ''
         }
-        addStudentGrades({
+        await addStudentGrades({
           studentId: student.id,
           subjectId: subject.id,
           grade,
@@ -281,14 +328,14 @@ const Results = ({
           status = data[`${name}`]
           grade = ''
         }
-        addStudentGrades({
+        await addStudentGrades({
           studentId: student.id,
           subjectId: subject.id,
           grade,
           status,
         })
       }
-    })
+    }
     const { response } = await fetchStudent(student.id)
     const editedStudent = {
       ...response,
@@ -394,7 +441,8 @@ const Results = ({
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
-            Student Results {year ? `(${year}/${year + 1})` : ''}
+            Student Results{' '}
+            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
@@ -403,17 +451,14 @@ const Results = ({
               <Input
                 classNames={{
                   inputWrapper: [
-                    'rounded-r-none',
                     'bg-inherit',
                     'border border-primary',
-                    'md:min-w-[300px]',
+                    'md:min-w-[500px]',
                   ],
                 }}
+                onChange={(e) => setFilterValue(e.target.value)}
                 placeholder='Search for a student (Name | Index No.)'
               />
-              <Button type='submit' color='primary' className='rounded-l-none'>
-                Search
-              </Button>
             </form>
           </div>
           <Table
@@ -437,7 +482,7 @@ const Results = ({
               <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
-              items={list.items}
+              items={filteredItems}
               isLoading={isLoading}
               loadingContent={<Spinner label='Loading...' />}
             >
@@ -486,6 +531,7 @@ const Results = ({
           subjects={subjects}
           updateStatus={saveUpdateStatus}
           grades={grades}
+          gradeAddStatus={gradeAddStatus}
         />
       )}
     </main>

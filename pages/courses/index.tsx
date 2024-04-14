@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Card,
@@ -27,28 +27,44 @@ import { Course, Student, Subject } from '@/libs/models'
 import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
+import { getCookie } from 'cookies-next'
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const courses = JSON.stringify(
-    await Course.findAll({
-      order: [['createdAt', 'DESC']],
-      include: [{ model: Subject }, { model: Student }],
-    })
-  )
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const yearGroup = getCookie('year', { req, res }) as string
+  if (yearGroup) {
+    const courses = JSON.stringify(
+      await Course.findAll({
+        order: [['createdAt', 'DESC']],
+        include: [
+          { model: Subject },
+          { model: Student, where: { yearGroup: yearGroup } },
+        ],
+      })
+    )
 
-  const subjects = JSON.stringify(
-    await Subject.findAll({
-      where: {
-        type: 'elective',
+    const subjects = JSON.stringify(
+      await Subject.findAll({
+        where: {
+          type: 'elective',
+        },
+      })
+    )
+
+    return {
+      props: {
+        courses: JSON.parse(courses),
+        subjects: JSON.parse(subjects),
+        yearGroup,
       },
-    })
-  )
-
-  return {
-    props: {
-      courses: JSON.parse(courses),
-      subjects: JSON.parse(subjects),
-    },
+    }
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/dashboard',
+      },
+      props: {},
+    }
   }
 }
 
@@ -61,14 +77,15 @@ interface coursesProps {
 const Courses = ({
   courses,
   subjects,
+  yearGroup,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [course, setCourse] = useState<any>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
+  const [filterValue, setFilterValue] = useState('')
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -150,6 +167,27 @@ const Courses = ({
     },
   })
 
+  const filteredItems = useMemo(() => {
+    let filteredCourses = [...list.items]
+    if (filterValue) {
+      if (!isNaN(Number(filterValue))) {
+        filteredCourses = filteredCourses.filter(
+          (course: any) => course.code === Number(filterValue)
+        )
+      } else {
+        filteredCourses = filteredCourses.filter(
+          (course: any) =>
+            course.name
+              .toLocaleLowerCase()
+              .includes(filterValue.toLocaleLowerCase()) ||
+            course.name.startsWith(filterValue.toLocaleLowerCase())
+        )
+      }
+    }
+
+    return filteredCourses
+  }, [list.items, filterValue])
+
   const createCourseSchema = yup.object().shape({
     code: yup.number().required('Course code is required'),
     name: yup.string().required('Name of course is required'),
@@ -215,48 +253,6 @@ const Courses = ({
     reset()
   }
 
-  // useEffect(() => {
-  //   if (editStatus === 'loading') {
-  //     const myList = list.getItem(courseId)
-  //     const myList2 = {
-  //       ...myList,
-  //       edit: {
-  //         ...myList.edit,
-  //         props: {
-  //           ...myList.edit.props,
-  //           children: {
-  //             ...myList.edit.props.children,
-  //             props: {
-  //               ...myList.edit.props.children.props,
-  //               isLoading: true,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     }
-  //     list.update(courseId, myList2)
-  //   } else if (editStatus === 'success') {
-  //     const myList = list.getItem(courseId)
-  //     const myList2 = {
-  //       ...myList,
-  //       edit: {
-  //         ...myList.edit,
-  //         props: {
-  //           ...myList.edit.props,
-  //           children: {
-  //             ...myList.edit.props.children,
-  //             props: {
-  //               ...myList.edit.props.children.props,
-  //               isLoading: false,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     }
-  //     list.update(courseId, myList2)
-  //   }
-  // }, [editStatus])
-
   useEffect(() => {
     if (!editOpen && router.query?.id) {
       router.push({
@@ -273,7 +269,7 @@ const Courses = ({
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
-            Courses {year ? `(${year}/${year + 1})` : ''}
+            Courses {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
@@ -291,17 +287,14 @@ const Courses = ({
               <Input
                 classNames={{
                   inputWrapper: [
-                    'rounded-r-none',
                     'bg-inherit',
                     'border border-primary',
-                    'md:min-w-[300px]',
+                    'md:min-w-[500px]',
                   ],
                 }}
-                placeholder='Search for a Course (Course Name)'
+                onChange={(e) => setFilterValue(e.target.value)}
+                placeholder='Search for a Course (Course Name | Course code)'
               />
-              <Button type='submit' color='primary' className='rounded-l-none'>
-                Search
-              </Button>
             </form>
           </div>
           <Table
@@ -328,7 +321,7 @@ const Courses = ({
               <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
-              items={list.items}
+              items={filteredItems}
               isLoading={isLoading}
               loadingContent={<Spinner label='Loading...' />}
             >

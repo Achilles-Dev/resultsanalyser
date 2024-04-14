@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Card,
@@ -27,27 +27,43 @@ import EditModal from '@/components/EditModal'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { Course, Student, Subject } from '@/libs/models'
 import { v4 as uuidv4 } from 'uuid'
+import { getCookie } from 'cookies-next'
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const students = JSON.stringify(
-    await Student.findAll({
-      order: [['indexNo', 'ASC']],
-      include: [{ model: Subject }, { model: Course }],
-    })
-  )
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const yearGroup = getCookie('year', { req, res }) as string
+  if (yearGroup) {
+    const students = JSON.stringify(
+      await Student.findAll({
+        where: {
+          yearGroup: yearGroup,
+        },
+        order: [['indexNo', 'ASC']],
+        include: [{ model: Subject }, { model: Course }],
+      })
+    )
 
-  const courses = JSON.stringify(
-    await Course.findAll({
-      order: [['createdAt', 'DESC']],
-      include: { model: Subject },
-    })
-  )
+    const courses = JSON.stringify(
+      await Course.findAll({
+        order: [['createdAt', 'DESC']],
+        include: { model: Subject },
+      })
+    )
 
-  return {
-    props: {
-      students: JSON.parse(students),
-      courses: JSON.parse(courses),
-    },
+    return {
+      props: {
+        students: JSON.parse(students),
+        courses: JSON.parse(courses),
+        yearGroup,
+      },
+    }
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/dashboard',
+      },
+      props: {},
+    }
   }
 }
 
@@ -65,8 +81,8 @@ interface studentsProps {
 const Students = ({
   students,
   courses,
+  yearGroup,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [year, setYear] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -76,6 +92,7 @@ const Students = ({
   const [isFetched, setIsFetched] = useState<boolean>(false)
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
   const [initialCourse, setInitialCourse] = useState()
+  const [filterValue, setFilterValue] = useState('')
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -93,7 +110,7 @@ const Students = ({
     setValue('firstname', stud.firstName)
     setValue('lastname', stud.lastName)
     setValue('othername', stud?.otherName)
-    setValue('sex', stud.sex.charAt(0).toUpperCase() + stud.sex.slice(1))
+    setValue('sex', stud.sex)
     setValue('course', stud.Course.id)
     setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
     setIsFetched(true)
@@ -167,6 +184,25 @@ const Students = ({
     },
   })
 
+  const filteredItems = useMemo(() => {
+    let filteredStudents = [...list.items]
+    if (!isNaN(Number(filterValue))) {
+      filteredStudents = filteredStudents.filter((student: any) =>
+        student.indexNo.includes(Number(filterValue))
+      )
+    } else {
+      filteredStudents = filteredStudents.filter(
+        (student: any) =>
+          student.name
+            .toLocaleLowerCase()
+            .includes(filterValue.toLocaleLowerCase()) ||
+          student.name.startsWith(filterValue.toLocaleLowerCase())
+      )
+    }
+
+    return filteredStudents
+  }, [list.items, filterValue])
+
   const studentSchema = yup.object().shape({
     year: yup.string().required('Select student year of completion'),
     indexNo: yup.string().required('Index Number is required'),
@@ -228,6 +264,7 @@ const Students = ({
 
   const handleEditStudent = async (data: studentsProps) => {
     const subjectIds = data.subjects ? data.subjects.split(',') : []
+    console.log(subjectIds)
     setSaveUpdateStatus('loading')
     await updateStudent({
       id: student.id,
@@ -288,7 +325,8 @@ const Students = ({
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
-            Students {year ? `(${year}/${year + 1})` : ''}
+            Students{' '}
+            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
@@ -306,17 +344,14 @@ const Students = ({
               <Input
                 classNames={{
                   inputWrapper: [
-                    'rounded-r-none',
                     'bg-inherit',
                     'border border-primary',
-                    'md:min-w-[300px]',
+                    'md:min-w-[500px]',
                   ],
                 }}
+                onChange={(e) => setFilterValue(e.target.value)}
                 placeholder='Search for a student (Name | Index No.)'
               />
-              <Button type='submit' color='primary' className='rounded-l-none'>
-                Search
-              </Button>
             </form>
           </div>
           <Table
@@ -346,7 +381,7 @@ const Students = ({
               <TableColumn key='edit'>Edit / Delete</TableColumn>
             </TableHeader>
             <TableBody
-              items={list.items}
+              items={filteredItems}
               isLoading={isLoading}
               loadingContent={<Spinner label='Loading...' />}
             >
