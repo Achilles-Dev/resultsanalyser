@@ -20,6 +20,7 @@
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "@types/uuid": "^9.0.4",
+    "@vercel/postgres": "^0.8.0",
     "bcrypt-ts": "^4.0.1",
     "cookies-next": "^4.0.0",
     "eslint": "8.48.0",
