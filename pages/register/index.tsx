@@ -26,7 +26,7 @@ const Register = () => {
       .oneOf([yup.ref('password')], 'Passwords do not match'),
   })
 
-  const { register, handleSubmit, formState } = useForm({
+  const { register, handleSubmit, formState, setError } = useForm({
     reValidateMode: 'onBlur',
     resolver: yupResolver(registerSchema),
   })
@@ -35,9 +35,13 @@ const Register = () => {
 
   const onSubmit = async (data: RegisterFormProps) => {
     setLoading(true)
-    await addUser({ email: data.email, password: data.password })
+    const result = await addUser({ email: data.email, password: data.password })
     setLoading(false)
-    router.push('/')
+    if (result.message) {
+      setError("email", { type: 'custom', message: 'Sorry! Email address is already in use' })
+    } else {
+      router.push('/')
+    }
   }
 
   return (
@@ -84,7 +88,7 @@ const Register = () => {
                 {errors.pass_confirm?.message}
               </span>
               <div>
-                <Button type='submit' className='bg-primary text-white'>
+                <Button type='submit' isLoading={loading} className='bg-primary text-white'>
                   Register
                 </Button>
               </div>
