@@ -2,14 +2,13 @@ import Image from 'next/image'
 import IndexImage from '@/public/images/illustration.svg'
 import { Button, Card, CardBody, CardHeader, Input } from '@nextui-org/react'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
-// import { initDb } from '@/libs/api'
+import { initDb } from '@/libs/api'
 
-// initDb()
 interface LoginFormProps {
   email: string
   password: string
@@ -18,6 +17,10 @@ interface LoginFormProps {
 export default function Home() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+
+  }, [])
 
   const loginSchema = yup.object().shape({
     email: yup.string().required('Email is required'),
@@ -32,6 +35,7 @@ export default function Home() {
   const { errors } = formState
 
   const handleLogin = async (data: LoginFormProps) => {
+    await initDb()
     setLoading(true)
     const email = data.email
     const password = data.password
