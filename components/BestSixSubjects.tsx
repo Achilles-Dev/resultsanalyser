@@ -67,6 +67,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
         (subject: any) => subject.Grade.grade === null
       )
       if (noResults) {
+        console.log(student)
         count += 1
         setMessage(
           `${

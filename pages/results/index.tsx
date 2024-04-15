@@ -208,11 +208,11 @@ const Results = ({
     <Button
       className='p-0 bg-transparent data-[hover=true]:bg-transparent'
       variant='light'
-      color='primary'
+      color={student.Subjects.length < 8 || student.Subjects.find((subject: any) => subject.Grade.grade == null) ? 'danger' : 'primary'}
       onPress={() => handleNameButtonClick(student.id)}
     >
       {`${student.lastName} ${student.firstName} ${
-        student.otherName !== undefined ? student.otherName : ''
+        (student.otherName !== undefined && student.otherName !== null) ? student.otherName : ''
       }`}
     </Button>
   )
@@ -263,7 +263,7 @@ const Results = ({
     } else {
       filteredStudents = filteredStudents.filter((student: any) => {
         const name = `${student.lastName} ${student.firstName} ${
-          student.otherName !== undefined ? student.otherName : ''
+          (student.otherName !== undefined && student.otherName !== null) ? student.otherName : ''
         }`
         return (
           name.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) ||
@@ -274,6 +274,8 @@ const Results = ({
 
     return filteredStudents
   }, [list.items, filterValue])
+
+  filteredItems[0]?.Subjects.forEach((subject: any) => subject.Grade.grade == null)
 
   const studentSchema = yup.object().shape({
     core1: yup.string().required('Grade is required'),
@@ -436,6 +438,7 @@ const Results = ({
     }
   }, [editOpen])
 
+
   return (
     <main className='px-2 pt-2'>
       <Card className='min-h-[89vh] px-2'>
@@ -505,7 +508,7 @@ const Results = ({
         handleSubmit={handleSubmit}
         errors={errors}
         headerName={`Add Results for ${student.lastName} ${student.firstName} ${
-          student.otherName !== undefined ? student.otherName : ''
+          (student.otherName !== undefined && student.otherName !== null) ? student.otherName : ''
         }`}
         name='Grades'
         buttonName='Save'
@@ -524,7 +527,7 @@ const Results = ({
           errors={errors}
           headerName={`Update Results for ${student.lastName} ${
             student.firstName
-          } ${student.otherName !== undefined ? student.otherName : ''}`}
+          } ${(student.otherName !== undefined && student.otherName !== null) ? student.otherName : ''}`}
           name='Grades'
           buttonName='Update Results'
           control={control}

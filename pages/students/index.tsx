@@ -146,8 +146,8 @@ const Students = ({
     async load({ signal }) {
       const myStudents = students.map((student: any) => ({
         ...student,
-        name: `${student.lastName} ${student.firstName} ${
-          student.otherName !== undefined ? student.otherName : ''
+        name: `${student.lastName.toUpperCase()} ${student.firstName.toUpperCase()} ${
+          (student.otherName !== undefined && student.otherName !== null) ? student.otherName.toUpperCase() : ''
         }`,
         sex: student.sex.charAt(0).toUpperCase() + student.sex.slice(1),
         year: student.yearGroup,
