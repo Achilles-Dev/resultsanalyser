@@ -150,8 +150,6 @@ const Subjects = ({
     },
   })
 
-  console.log(subjects);
-
   const filteredItems = useMemo(() => {
     let filteredSubjects = [...list.items]
     if (filterValue) {
