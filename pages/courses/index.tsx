@@ -36,8 +36,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       await Course.findAll({
         order: [['createdAt', 'DESC']],
         include: [
-          { model: Subject },
-          { model: Student, where: { yearGroup: yearGroup } },
+          { model: Subject, required: false },
+          { model: Student, where: { yearGroup: yearGroup }, required: false },
         ],
       })
     )

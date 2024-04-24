@@ -34,7 +34,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const subjects = JSON.stringify(
       await Subject.findAll({
         order: [['createdAt', 'DESC']],
-        include: { model: Student, where: { yearGroup: yearGroup } },
+        include: [{ 
+          model: Student, 
+          where: { yearGroup: yearGroup },
+          required: false
+        }],       
       })
     )
 
@@ -145,6 +149,8 @@ const Subjects = ({
       }
     },
   })
+
+  console.log(subjects);
 
   const filteredItems = useMemo(() => {
     let filteredSubjects = [...list.items]
