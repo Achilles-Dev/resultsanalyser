@@ -34,7 +34,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const subjects = JSON.stringify(
       await Subject.findAll({
         order: [['createdAt', 'DESC']],
-        include: { model: Student, where: { yearGroup: yearGroup } },
+        include: [{ 
+          model: Student, 
+          where: { yearGroup: yearGroup },
+          required: false
+        }],       
       })
     )
 
@@ -216,7 +220,7 @@ const Subjects = ({
     const editedSubject = {
       ...response,
       number:
-        response.type === 'core' ? students.length : response.Students.length,
+        response.type === 'core' ? students.length : response.Students.filter((student: any) => student.yearGroup == yearGroup).length,
       edit: editDelete(response.id),
     }
     list.update(subject.id, editedSubject)
