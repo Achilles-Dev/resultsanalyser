@@ -9,13 +9,11 @@
 
 ## Built With
 
+- Typescript / JavaScript
 - Next.js
 - Sequelize
 - Postgresql
-
-## Live Demo (if available)
-
-[Live Demo Link](https://livedemo.com)
+- Tailwind CSS
 
 ## Getting Started
 
@@ -23,8 +21,11 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-- React.js
-- Javascript
+- Next.js
+- Sequelize
+- Postgresql
+- Typescript
+- Tailwind CSS
 
 ### Setup
 
@@ -44,10 +45,6 @@ To get a local copy up and running follow these simple example steps.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
 2.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -58,9 +55,17 @@ pnpm dev
 
 5.  The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
+
+
 ### Online Version
 
-[Results Analyser](https://resultsanalysis.fly.dev/)
+[Results Analyser](https://resultsanalyser.vercel.app/)
+
+### Credentials 
+
+- Username (solomon@gmail.com)
+- Password (admin123) 
+
 
 ## Authors
 
@@ -80,16 +85,3 @@ Feel free to check the [issues page](../../issues/).
 
 Give a ⭐️ if you like this project!
 
-## Acknowledgments
-
-- Hat tip to anyone whose code was used
-- Inspiration
-- etc
-
-## 📝 License
-
-This project is [MIT](./MIT.md) licensed.
-
-```
-
-```

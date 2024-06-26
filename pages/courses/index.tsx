@@ -243,7 +243,7 @@ const Courses = ({
     const editedCourse = {
       ...response,
       subjects: electiveSubjects(response.Subjects),
-      number: response.Students.length,
+      number: response.Students.filter((student: any) => student.yearGroup == yearGroup).length,
       edit: editDelete(response.id),
     }
     list.update(course.id, editedCourse)

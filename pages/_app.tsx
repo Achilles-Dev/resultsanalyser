@@ -11,7 +11,16 @@ export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) {
-  const router = useRouter()
+  const router = useRouter();
+  const matcher = [
+    '/results',
+    '/results/analyse',
+    '/courses',
+    '/students',
+    '/subjects',
+    '/dashboard',
+  ];
+
   return (
     <SessionProvider session={session}>
       <NextUIProvider>
@@ -25,7 +34,7 @@ export default function App({
               content='initial-scale=1, width=device-width'
             />
           </Head>
-          {router.pathname === '/' || router.pathname === '/register' ? (
+          {router.pathname === '/' || router.pathname === '/register' || !matcher.includes(router.pathname) ? (
             ''
           ) : (
             <Header />

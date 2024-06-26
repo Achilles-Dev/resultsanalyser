@@ -220,7 +220,7 @@ const Subjects = ({
     const editedSubject = {
       ...response,
       number:
-        response.type === 'core' ? students.length : response.Students.length,
+        response.type === 'core' ? students.length : response.Students.filter((student: any) => student.yearGroup == yearGroup).length,
       edit: editDelete(response.id),
     }
     list.update(subject.id, editedSubject)
