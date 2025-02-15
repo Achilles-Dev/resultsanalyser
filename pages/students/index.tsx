@@ -31,6 +31,7 @@ import { getCookie } from 'cookies-next'
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const yearGroup = getCookie('year', { req, res }) as string
+  console.log(yearGroup)
   if (yearGroup) {
     const students = JSON.stringify(
       await Student.findAll({
@@ -326,7 +327,7 @@ const Students = ({
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
             Students{' '}
-            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
+            {yearGroup ? `(${yearGroup})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>

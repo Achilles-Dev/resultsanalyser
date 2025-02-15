@@ -269,7 +269,7 @@ const Courses = ({
       <Card className='min-h-[89vh] px-2'>
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
-            Courses {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
+            Courses {yearGroup ? `(${yearGroup})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>

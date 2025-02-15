@@ -49,12 +49,13 @@ const Dashboard = ({
   }
 
   useEffect(() => {
-    if (year === '') {
+    if (year === '' && !isOpen) {
       onOpen()
     } else {
       setCookie('year', year)
     }
-  }, [year])
+  }, [year, isOpen, onOpen])
+
   return (
     <main>
       <Card className='min-h-[90vh]'>

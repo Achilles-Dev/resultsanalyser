@@ -53,7 +53,7 @@ const ResultsAnalysisPage = ({
         <CardHeader>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
             Results Analysis{' '}
-            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
+            {yearGroup ? `(${yearGroup})` : ''}
           </p>
         </CardHeader>
         <CardBody className='p-2 md:p-5'>
