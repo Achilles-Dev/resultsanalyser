@@ -84,6 +84,7 @@ const CreateModal = (props: CreateModalProps) => {
                     <Select
                       label='Year completed eg. 2019'
                       {...register('year')}
+                      selectedKeys={new Set(['2024'])}
                     >
                       {yearRange.map((yearValue) => (
                         <SelectItem
