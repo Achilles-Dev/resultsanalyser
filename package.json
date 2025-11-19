@@ -25,6 +25,7 @@
     "cookies-next": "^4.0.0",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
+    "formidable": "^3.5.4",
     "framer-motion": "^10.16.4",
     "next": "13.4.19",
     "next-auth": "^4.24.4",
@@ -40,9 +41,11 @@
     "sharp": "^0.32.6",
     "typescript": "5.2.2",
     "uuid": "^9.0.1",
+    "xlsx": "^0.18.5",
     "yup": "^1.2.0"
   },
   "devDependencies": {
+    "@types/formidable": "^3.4.6",
     "@types/js-cookie": "^3.0.6",
     "autoprefixer": "^10.4.15",
     "postcss": "^8.4.29",
