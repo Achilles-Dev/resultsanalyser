@@ -120,6 +120,30 @@ export const updateStudent = async ({
   return results.json()
 }
 
+export const deleteStudent = async ({
+  id,
+  yearGroup,
+  subjectIds,
+}: {
+  id: string
+  yearGroup: string
+  subjectIds: readonly string[]
+}) => {
+  const data = {
+    id,
+    yearGroup,
+    subjectIds,
+  }
+  const results = await fetch('/api/students/delete', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}
+
 export const createCourse = async ({
   id,
   code,

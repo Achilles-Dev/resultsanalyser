@@ -25,6 +25,7 @@ import { addStudentGrades, fetchStudent } from '@/libs/api'
 import CreateModal from '@/components/CreateModal'
 import EditModal from '@/components/EditModal'
 import { getCookie } from 'cookies-next'
+import { FaArrowCircleDown } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const yearGroup = getCookie('year', { req, res }) as string
@@ -94,6 +95,7 @@ const Results = ({
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
   const [filterValue, setFilterValue] = useState('')
   const [gradeAddStatus, setGradeAddStatus] = useState(false)
+  const [status, setStatus] = useState('');
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -405,6 +407,21 @@ const Results = ({
     reset()
   }
 
+   const handleUploadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const formData = new FormData(e.currentTarget);
+      setStatus('Uploading...');
+  
+      const res = await fetch('/api/uploads/results', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      // console.log("data:", data)
+
+      setStatus(res.ok ? `Success: ${data.length} rows imported` : `Error: ${data.error}`);
+    };
+
   useEffect(() => {
     if (Object.keys(student).length > 0 && subjects.length < 8) {
       const sortedSubjects = student.Subjects.sort((a: any, b: any) => {
@@ -449,7 +466,27 @@ const Results = ({
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
-          <div className='flex justify-end'>
+          <div className='flex justify-between'>
+             <div className=" flex max-w-md">
+                <form onSubmit={handleUploadSubmit} className="flex items-center justify-center gap-3 w-100">
+                  <Input
+                    type="file"
+                    name="file"
+                    accept=".xlsx,.xls"
+                    required
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  <Button
+                    color='primary'
+                    type='submit'
+                    startContent={<FaArrowCircleDown />}
+                    className='mt-0'
+                  >
+                    Upload
+                  </Button>
+                </form>
+                {status && <p className="mt-4 p-2 bg-gray-100 rounded">{status}</p>}
+              </div>
             <form className='flex'>
               <Input
                 classNames={{

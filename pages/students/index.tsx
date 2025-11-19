@@ -21,7 +21,7 @@ import { useForm } from 'react-hook-form'
 import { FaArrowCircleDown, FaPlus } from 'react-icons/fa'
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { createStudent, fetchStudent, updateStudent } from '@/libs/api'
+import { createStudent, deleteStudent, fetchStudent, updateStudent } from '@/libs/api'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
@@ -120,10 +120,35 @@ const Students = ({
     setIsLoading(false)
   }
 
+  const handleDelete = async (id: string) => {
+    router.push({
+      pathname: router.pathname,
+      query: { id },
+    })
+    setIsLoading(true)
+    const { response } = await fetchStudent(id)
+    setStudent(response)
+    const stud = response
+    // setInitialCourse(stud.Course.id)
+    // setValue('year', stud.yearGroup)
+    // setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
+    const yearGroup = stud.yearGroup;
+    const subjectIds = stud.Subjects.map((val: any) => val.id);
+    console.log(subjectIds)
+    await deleteStudent({id, yearGroup, subjectIds})
+    // setIsFetched(true)
+    setIsLoading(false)
+  }
+
+
   const editDelete = (id: string) => (
-    <div>
+    <div className='flex gap-2 items-center'>
       <Button onPress={() => handleEdit(id)} color='primary' isLoading={false}>
         Edit
+      </Button> 
+      <span>/</span>
+      <Button onPress={() => handleDelete(id)} color='danger' isLoading={false}>
+        Delete
       </Button>
     </div>
   )
@@ -266,7 +291,7 @@ const Students = ({
 
   const handleEditStudent = async (data: studentsProps) => {
     const subjectIds = data.subjects ? data.subjects.split(',') : []
-    console.log(subjectIds)
+    console.log("SubjectId:", subjectIds)
     setSaveUpdateStatus('loading')
     await updateStudent({
       id: student.id,
@@ -370,7 +395,7 @@ const Students = ({
                     startContent={<FaArrowCircleDown />}
                     className='mt-0'
                   >
-                    Import
+                    Upload
                   </Button>
                 </form>
                 {status && <p className="mt-4 p-2 bg-gray-100 rounded">{status}</p>}
