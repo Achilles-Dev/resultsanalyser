@@ -18,7 +18,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
-import { FaPlus } from 'react-icons/fa'
+import { FaArrowCircleDown, FaPlus } from 'react-icons/fa'
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
 import { createStudent, fetchStudent, updateStudent } from '@/libs/api'
@@ -93,6 +93,7 @@ const Students = ({
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
   const [initialCourse, setInitialCourse] = useState()
   const [filterValue, setFilterValue] = useState('')
+  const [status, setStatus] = useState('');
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -294,6 +295,20 @@ const Students = ({
     reset()
   }
 
+  const handleUploadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    setStatus('Uploading...');
+
+    const res = await fetch('/api/uploads/students', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json();
+    setStatus(res.ok ? `Success: ${data.length} rows imported` : `Error: ${data.error}`);
+  };
+
   useEffect(() => {
     if (selectedCourse) {
       const course = courses.find((course: any) => course.id === selectedCourse)
@@ -329,9 +344,9 @@ const Students = ({
             {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
           </p>
         </CardHeader>
-        <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
+        <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-5'>
           <div className='flex flex-col md:flex-row md:justify-between gap-2 justify-end'>
-            <div className='flex justify-end'>
+            <div className='flex justify-end gap-3'>
               <Button
                 color='primary'
                 onPress={(e) => setOpen(true)}
@@ -339,6 +354,27 @@ const Students = ({
               >
                 Add Student
               </Button>
+              <div className=" flex max-w-md mx-auto">
+                <form onSubmit={handleUploadSubmit} className="flex items-center justify-center gap-3 w-100">
+                  <Input
+                    type="file"
+                    name="file"
+                    accept=".xlsx,.xls"
+                    required
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  <Button
+                    color='primary'
+                    type='submit'
+                    startContent={<FaArrowCircleDown />}
+                    className='mt-0'
+                  >
+                    Import
+                  </Button>
+                </form>
+                {status && <p className="mt-4 p-2 bg-gray-100 rounded">{status}</p>}
+              </div>
+              
             </div>
             <form className='flex'>
               <Input
