@@ -5,7 +5,7 @@ import {
   TableColumn,
   TableRow,
   TableCell,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useMemo, useState } from 'react'
 
 const BestSixSubjects = ({ students }: { students: any[] }) => {

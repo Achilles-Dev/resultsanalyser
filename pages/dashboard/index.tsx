@@ -11,7 +11,7 @@ import {
   Select,
   SelectItem,
   useDisclosure,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { ChangeEvent, useEffect, useState } from 'react'
 import { getCookie, setCookie } from 'cookies-next'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'

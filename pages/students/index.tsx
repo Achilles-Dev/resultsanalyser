@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
   getKeyValue,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
@@ -143,11 +143,11 @@ const Students = ({
 
   const editDelete = (id: string) => (
     <div className='flex gap-2 items-center'>
-      <Button onPress={() => handleEdit(id)} color='primary' isLoading={false}>
+      <Button size='sm' onPress={() => handleEdit(id)} color='primary' isLoading={false}>
         Edit
       </Button> 
       <span>/</span>
-      <Button onPress={() => handleDelete(id)} color='danger' isLoading={false}>
+      <Button size='sm' onPress={() => handleDelete(id)} color='danger' isLoading={false}>
         Delete
       </Button>
     </div>
@@ -375,7 +375,7 @@ const Students = ({
             <div className='flex justify-end gap-3'>
               <Button
                 color='primary'
-                onPress={(e) => setOpen(true)}
+                onPress={() => setOpen(true)}
                 startContent={<FaPlus />}
               >
                 Add Student
@@ -411,7 +411,7 @@ const Students = ({
                     'md:min-w-[500px]',
                   ],
                 }}
-                onChange={(e) => setFilterValue(e.target.value)}
+                onChange={(e: any) => setFilterValue(e.target.value)}
                 placeholder='Search for a student (Name | Index No.)'
               />
             </form>

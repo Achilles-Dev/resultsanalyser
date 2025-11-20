@@ -12,7 +12,7 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { deleteCookie } from 'cookies-next'
 import { signOut as signOutNextAuth } from 'next-auth/react'
 import Link from 'next/link'

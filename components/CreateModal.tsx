@@ -12,7 +12,7 @@ import {
   Select,
   SelectItem,
   useDisclosure,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { Controller } from 'react-hook-form'
 
 const currentYear = new Date().getFullYear()

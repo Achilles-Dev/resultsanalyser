@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
   getKeyValue,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import * as yup from 'yup'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'

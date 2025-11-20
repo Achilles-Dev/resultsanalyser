@@ -6,7 +6,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useMemo } from 'react'
 
 const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {

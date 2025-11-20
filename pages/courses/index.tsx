@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
   getKeyValue,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
