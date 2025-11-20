@@ -416,10 +416,10 @@ const Results = ({
         method: 'POST',
         body: formData,
       });
-      const data = await res.json();
-      // console.log("data:", data)
+      const {response} = await res.json();
+      // console.log("data:", response)
 
-      setStatus(res.ok ? `Success: ${data.length} rows imported` : `Error: ${data.error}`);
+      setStatus(res.ok ? `Success: ${response.length} rows imported` : `Error: ${response.error}`);
     };
 
   useEffect(() => {

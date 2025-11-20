@@ -331,8 +331,8 @@ const Students = ({
       body: formData,
     });
 
-    const data = await res.json();
-    setStatus(res.ok ? `Success: ${data.length} rows imported` : `Error: ${data.error}`);
+    const {response} = await res.json();
+    setStatus(res.ok ? `Success: ${response.length} rows imported` : `Error: ${response.error}`);
   };
 
   useEffect(() => {
