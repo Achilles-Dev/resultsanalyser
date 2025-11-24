@@ -21,7 +21,7 @@ import { Student, Subject } from '@/libs/models'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { addStudentGrades, fetchStudent } from '@/libs/api'
+import { addStudentGrades, fetchStudent, fetchStudents } from '@/libs/api'
 import CreateModal from '@/components/CreateModal'
 import EditModal from '@/components/EditModal'
 import { getCookie } from 'cookies-next'
@@ -96,6 +96,7 @@ const Results = ({
   const [filterValue, setFilterValue] = useState('')
   const [gradeAddStatus, setGradeAddStatus] = useState(false)
   const [status, setStatus] = useState('');
+  const [isReloading, setIsReloading] = useState<boolean>(false)
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -219,9 +220,18 @@ const Results = ({
     </Button>
   )
 
+
   let list: AsyncListData<any> = useAsyncList({
     async load({ signal }) {
-      const myStudents = students.map((student: any) => ({
+      let data
+      if (!isReloading && students) {
+        data = students
+      } else {
+        const {response} = await fetchStudents(yearGroup, false, true)
+        data = response        
+        setIsReloading(false)
+      }
+      const myStudents = data.map((student: any) => ({
         ...student,
         name: nameButton(student),
         subjects: subjectWithResults(student.Subjects),
@@ -255,6 +265,9 @@ const Results = ({
       }
     },
   })
+
+  console.log("List:", list.items)
+
 
   const filteredItems = useMemo(() => {
     let filteredStudents = [...list.items]
@@ -407,20 +420,29 @@ const Results = ({
     reset()
   }
 
-   const handleUploadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const formData = new FormData(e.currentTarget);
-      setStatus('Uploading...');
-  
-      const res = await fetch('/api/uploads/results', {
-        method: 'POST',
-        body: formData,
-      });
-      const {response} = await res.json();
-      // console.log("data:", response)
+  const handleUploadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    setStatus('Uploading...');
 
-      setStatus(res.ok ? `Success: ${response.length} rows imported` : `Error: ${response.error}`);
-    };
+    formData.append("yearGroup",yearGroup)
+
+    const res = await fetch('/api/uploads/results', {
+      method: 'POST',
+      body: formData,
+    });
+    const {response} = await res.json();
+    // console.log("data:", response)
+
+    setStatus(res.ok ? `Success: ${response.length} rows imported` : `Error: ${response.error}`);
+    setIsReloading(true)
+  };
+
+  useEffect(() => {
+    if (isReloading) {
+      list.reload();
+    }
+  }, [isReloading, list])
 
   useEffect(() => {
     if (Object.keys(student).length > 0 && subjects.length < 8) {
@@ -437,7 +459,7 @@ const Results = ({
       })
       setSubjects([...subjects, ...sortedSubjects])
     }
-  }, [student])
+  }, [student, subjects])
 
   useEffect(() => {
     if (!editOpen) {
