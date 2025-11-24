@@ -95,7 +95,6 @@ const EditModal = (props: EditModalProps) => {
                           {yearRange.map((yearValue) => (
                             <SelectItem
                               key={yearValue.toString()}
-                              value={yearValue.toString()}
                             >
                               {yearValue.toString()}
                             </SelectItem>
@@ -185,7 +184,7 @@ const EditModal = (props: EditModalProps) => {
                           >
                             {courses !== undefined
                               ? courses.map((course) => (
-                                  <SelectItem key={course.id} value={course.id}>
+                                  <SelectItem key={course.id}>
                                     {course.name}
                                   </SelectItem>
                                 ))
@@ -229,7 +228,6 @@ const EditModal = (props: EditModalProps) => {
                               ? subjects.map((subject) => (
                                   <SelectItem
                                     key={subject.id}
-                                    value={subject.id}
                                   >
                                     {subject.name}
                                   </SelectItem>
@@ -276,7 +274,7 @@ const EditModal = (props: EditModalProps) => {
                       return (
                         <Select
                           label='Elective Subjects:'
-                          items={yearRange}
+                          items={subjects}
                           labelPlacement='outside'
                           placeholder='Select subjects'
                           selectionMode='multiple'
@@ -295,7 +293,7 @@ const EditModal = (props: EditModalProps) => {
                         >
                           {subjects !== undefined
                             ? subjects.map((subject) => (
-                                <SelectItem key={subject.id} value={subject.id}>
+                                <SelectItem key={subject.id}>
                                   {subject.name}
                                 </SelectItem>
                               ))
@@ -335,7 +333,7 @@ const EditModal = (props: EditModalProps) => {
                         selectedKeys={new Set([value])}
                       >
                         {subjectType.map((subject) => (
-                          <SelectItem key={subject.value} value={subject.value}>
+                          <SelectItem key={subject.value}>
                             {subject.name}
                           </SelectItem>
                         ))}
@@ -390,7 +388,6 @@ const EditModal = (props: EditModalProps) => {
                                   ? grades.map((grade) => (
                                       <SelectItem
                                         key={grade.value}
-                                        value={grade.value}
                                       >
                                         {grade.name}
                                       </SelectItem>

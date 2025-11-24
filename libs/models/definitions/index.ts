@@ -16,6 +16,7 @@ interface Student
   otherName: string
   sex: string
   courseId: UUID
+  schoolId: UUID
   yearGroup: string
 }
 
@@ -51,13 +52,55 @@ interface CourseSubject
   courseId: UUID | string
   subjectId: UUID | string
 }
-
+interface School
+  extends Model<
+    InferAttributes<School>,
+    InferCreationAttributes<School>
+  > {
+  id: UUID | string
+  name: string
+  district?: string
+  region?: string
+}
 interface User
   extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   id: UUID
   email: string
   password: string
+  schoolId: UUID
+  role: string
 }
+
+// School
+const School = sequelize.define<School>(
+  'School', 
+  {
+    id: { 
+      primaryKey: true, 
+      type: DataTypes.UUID, 
+      defaultValue: DataTypes.UUIDV4, 
+      allowNull: false
+    },
+    name: { 
+      type: DataTypes.STRING, 
+      allowNull: false 
+    },
+    district: { 
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
+    region: { 
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
+  },
+  {
+    tableName: 'schools',
+    timestamps: true,
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+  }
+);
 
 const Course = sequelize.define<Course>(
   'Course',
@@ -119,6 +162,14 @@ const Student = sequelize.define<Student>(
       allowNull: false,
       references: {
         model: Course,
+        key: 'id',
+      },
+    },
+    schoolId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: School,
         key: 'id',
       },
     },
@@ -224,6 +275,18 @@ const User = sequelize.define<User>(
     password: {
       type: DataTypes.STRING,
     },
+    schoolId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: School,
+        key: 'id',
+      },
+    },
+     role: {
+      type: DataTypes.STRING,
+      defaultValue: 'user'
+    },
   },
   {
     tableName: 'users',
@@ -289,4 +352,21 @@ Subject.belongsToMany(Course, {
   foreignKey: 'subjectId',
 })
 
-export { Student, Course, Subject, User, Grade, CourseSubject }
+School.hasMany(Student, {
+  foreignKey: 'schoolId',
+})
+
+Student.belongsTo(School, {
+  foreignKey: 'schoolId',
+})
+
+School.hasMany(User, {
+  foreignKey: 'schoolId',
+})
+
+User.belongsTo(School, {
+  foreignKey: 'schoolId',
+})
+
+
+export { Student, Course, Subject, User, Grade, CourseSubject, School }

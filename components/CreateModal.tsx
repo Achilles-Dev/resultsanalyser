@@ -89,7 +89,6 @@ const CreateModal = (props: CreateModalProps) => {
                       {yearRange.map((yearValue) => (
                         <SelectItem
                           key={yearValue.toString()}
-                          value={yearValue.toString()}
                         >
                           {yearValue.toString()}
                         </SelectItem>
@@ -171,7 +170,7 @@ const CreateModal = (props: CreateModalProps) => {
                           >
                             {courses !== undefined
                               ? courses.map((course) => (
-                                  <SelectItem key={course.id} value={course.id}>
+                                  <SelectItem key={course.id}>
                                     {course.name}
                                   </SelectItem>
                                 ))
@@ -205,7 +204,7 @@ const CreateModal = (props: CreateModalProps) => {
                     >
                       {subjects !== undefined &&
                         subjects.map((subject) => (
-                          <SelectItem key={subject.id} value={subject.id}>
+                          <SelectItem key={subject.id}>
                             {subject.name}
                           </SelectItem>
                         ))}
@@ -259,7 +258,7 @@ const CreateModal = (props: CreateModalProps) => {
                   >
                     {subjects &&
                       subjects.map((subject) => (
-                        <SelectItem key={subject.id} value={subject.id}>
+                        <SelectItem key={subject.id}>
                           {subject.name}
                         </SelectItem>
                       ))}
@@ -287,7 +286,7 @@ const CreateModal = (props: CreateModalProps) => {
                 <div className='flex flex-col w-full items-center'>
                   <Select label='Subject type' {...register('type')}>
                     {subjectType.map((subject) => (
-                      <SelectItem key={subject.value} value={subject.value}>
+                      <SelectItem key={subject.value}>
                         {subject.name}
                       </SelectItem>
                     ))}
@@ -340,7 +339,6 @@ const CreateModal = (props: CreateModalProps) => {
                                   ? grades.map((grade) => (
                                       <SelectItem
                                         key={grade.value}
-                                        value={grade.value}
                                       >
                                         {grade.name}
                                       </SelectItem>

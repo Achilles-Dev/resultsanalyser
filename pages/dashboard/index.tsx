@@ -15,22 +15,24 @@ import {
 import { ChangeEvent, useEffect, useState } from 'react'
 import { getCookie, setCookie } from 'cookies-next'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+// import { initDb } from "@/libs/api";
 
 const currentYear = new Date().getFullYear()
 const yearRange = Array.from(
   { length: 20 },
-  (_, i) => currentYear + 2 + i * -1
+  (_, i) => currentYear + 3 + i * -1
 ).reverse()
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const yearGroup = getCookie('year', { req, res }) as string
+  // const schoolId = getCookie('schoolId', { req, res }) as string
   if (yearGroup) {
     return {
       props: {
         yearGroup,
       },
     }
-  } else {
+  }  else {
     return {
       props: { yearGroup: '' },
     }
@@ -55,6 +57,10 @@ const Dashboard = ({
       setCookie('year', year)
     }
   }, [year, isOpen, onOpen])
+
+  // useEffect(() => {
+  //    initDb()
+  // }, [])
 
   return (
     <main>
@@ -122,7 +128,6 @@ const Dashboard = ({
                   {yearRange.map((yearValue) => (
                     <SelectItem
                       key={yearValue.toString()}
-                      value={yearValue.toString()}
                     >
                       {yearValue.toString()}
                     </SelectItem>

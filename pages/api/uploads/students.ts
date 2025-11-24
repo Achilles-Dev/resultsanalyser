@@ -143,18 +143,18 @@ export default async function handler(
         lastName: lastName,
         otherName: otherName,
         sex: sex.toLowerCase(),
-        yearGroup: getAdjustedYear(),
+        yearGroup: fields.yearGroup ? fields.yearGroup[0].toString() : getAdjustedYear(),
         courseId: course[0].id,
         subjectIds: course[0].subjectIds
       });
     }
 
-    console.log("processedRows:", processedRows.length)
+    // console.log("processedRows:", processedRows.length)
 
     if (processedRows.length === 0) {
       return res.status(400).json({ error: 'No valid data to import' });
     } else {
-      console.log("processedRows:", processedRows.length)
+      // console.log("processedRows:", processedRows.length)
       const students = []
       for (const row of processedRows) {
         const student = await Student.create({
@@ -184,7 +184,6 @@ export default async function handler(
 
         students.push(student)
       }
-      console.log("Students:", students)
       res.status(200).json({ response: students })
     }
     } catch (error) {

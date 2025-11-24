@@ -21,7 +21,7 @@ import { useForm } from 'react-hook-form'
 import { FaArrowCircleDown, FaPlus } from 'react-icons/fa'
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { createStudent, deleteStudent, fetchStudent, updateStudent } from '@/libs/api'
+import { createStudent, deleteAllStudents, deleteStudent, fetchStudent, fetchStudents, updateStudent } from '@/libs/api'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
@@ -31,7 +31,7 @@ import { getCookie } from 'cookies-next'
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const yearGroup = getCookie('year', { req, res }) as string
-  console.log(yearGroup)
+  // console.log(yearGroup)
   if (yearGroup) {
     const students = JSON.stringify(
       await Student.findAll({
@@ -95,6 +95,8 @@ const Students = ({
   const [initialCourse, setInitialCourse] = useState()
   const [filterValue, setFilterValue] = useState('')
   const [status, setStatus] = useState('');
+  const [isReloading, setIsReloading] = useState<boolean>(false)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -129,12 +131,9 @@ const Students = ({
     const { response } = await fetchStudent(id)
     setStudent(response)
     const stud = response
-    // setInitialCourse(stud.Course.id)
-    // setValue('year', stud.yearGroup)
-    // setValue('subjects', stud.Subjects.map((val: any) => val.id).join(','))
     const yearGroup = stud.yearGroup;
     const subjectIds = stud.Subjects.map((val: any) => val.id);
-    console.log(subjectIds)
+    // console.log(subjectIds)
     await deleteStudent({id, yearGroup, subjectIds})
     // setIsFetched(true)
     setIsLoading(false)
@@ -171,7 +170,15 @@ const Students = ({
 
   let list: AsyncListData<any> = useAsyncList({
     async load({ signal }) {
-      const myStudents = students.map((student: any) => ({
+      let data
+      setIsReloading(false)
+      if (!isReloading && students) {
+        data = students
+      } else {
+        const {response} = await fetchStudents(yearGroup, true, true)
+        data = response        
+      }
+      const myStudents = data.map((student: any) => ({
         ...student,
         name: `${student.lastName.toUpperCase()} ${student.firstName.toUpperCase()} ${
           (student.otherName !== undefined && student.otherName !== null) ? student.otherName.toUpperCase() : ''
@@ -211,6 +218,7 @@ const Students = ({
     },
   })
 
+
   const filteredItems = useMemo(() => {
     let filteredStudents = [...list.items]
     if (!isNaN(Number(filterValue))) {
@@ -229,6 +237,8 @@ const Students = ({
 
     return filteredStudents
   }, [list.items, filterValue])
+
+  console.log("Students:", list.items)
 
   const studentSchema = yup.object().shape({
     year: yup.string().required('Select student year of completion'),
@@ -291,7 +301,6 @@ const Students = ({
 
   const handleEditStudent = async (data: studentsProps) => {
     const subjectIds = data.subjects ? data.subjects.split(',') : []
-    console.log("SubjectId:", subjectIds)
     setSaveUpdateStatus('loading')
     await updateStudent({
       id: student.id,
@@ -323,18 +332,44 @@ const Students = ({
 
   const handleUploadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
     const formData = new FormData(e.currentTarget);
     setStatus('Uploading...');
+    formData.append("yearGroup", yearGroup)
 
     const res = await fetch('/api/uploads/students', {
       method: 'POST',
       body: formData,
     });
 
-    const {response} = await res.json();
-    setStatus(res.ok ? `Success: ${response.length} rows imported` : `Error: ${response.error}`);
-  };
+    if (res.ok) {
+      const res2 = await fetch('/api/uploads/results', {
+      method: 'POST',
+      body: formData,
+    });
+    const {response} = await res2.json();
 
+    setStatus(res2.ok ? `Success: ${response.length} rows imported` : `Error: ${response.error}`);
+    setIsReloading(true)
+    }
+  };
+  
+
+  const handleDeleteAllStudents = async (students: any[]) => {
+    setIsDeleting(true)
+    if (students.length > 0) {
+      await deleteAllStudents({students})
+      setIsReloading(true)
+      setIsDeleting(false)
+    }
+  }
+
+  useEffect(() => {
+    if (isReloading) {
+      list.reload();
+    }
+  }, [isReloading, list])
+  
   useEffect(() => {
     if (selectedCourse) {
       const course = courses.find((course: any) => course.id === selectedCourse)
@@ -369,6 +404,14 @@ const Students = ({
             Students{' '}
             {yearGroup ? `(${yearGroup})` : ''}
           </p>
+          <Button
+            color='danger'
+            onPress={() => handleDeleteAllStudents(list.items)}
+            isLoading={isDeleting}
+            isDisabled={isDeleting}
+          >
+            Delete All Students
+          </Button>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-5'>
           <div className='flex flex-col md:flex-row md:justify-between gap-2 justify-end'>

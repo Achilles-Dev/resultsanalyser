@@ -1,7 +1,7 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import NextAuth, { NextAuthOptions } from 'next-auth'
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       id: 'credentials',
@@ -13,7 +13,7 @@ const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        console.log(credentials)
+        // console.log(credentials)
         const authResponse = await fetch(
           `${process.env.NEXTAUTH_URL}/api/users/login`,
           {
