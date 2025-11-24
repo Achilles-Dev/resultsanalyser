@@ -5,7 +5,7 @@ import {
   TableColumn,
   TableRow,
   TableCell,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useMemo } from 'react'
 
 const SubjectsPassed = ({ students }: { students: any[] }) => {
@@ -28,10 +28,10 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
     students.forEach((student: any) => {
       let numberPassed = student.Subjects.filter(
         (subject: any) =>
-          subject.Grade.grade && Number(subject.Grade.grade.charAt(1)) <= 6
+          subject.Grade.grade && (Number(subject.Grade.grade.charAt(1)) <= 8 && Number(subject.Grade.grade.charAt(1)) > 0)
       ).length
 
-      if (student.Subjects[0].Grade.grade && student.sex === 'male') {
+      if ((student.Subjects[0].Grade.grade || student.Subjects[0].Grade.status) && student.sex === 'male') {
         switch (numberPassed) {
           case 0:
             passed = {
@@ -114,7 +114,7 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
               },
             }
         }
-      } else if (student.Subjects[0].Grade.grade) {
+      } else if (student.Subjects[0].Grade.grade || student.Subjects[0].Grade.status) {
         switch (numberPassed) {
           case 0:
             passed = {

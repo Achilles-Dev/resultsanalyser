@@ -12,7 +12,7 @@ import {
   Select,
   SelectItem,
   useDisclosure,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { Controller } from 'react-hook-form'
 
 const currentYear = new Date().getFullYear()
@@ -84,11 +84,11 @@ const CreateModal = (props: CreateModalProps) => {
                     <Select
                       label='Year completed eg. 2019'
                       {...register('year')}
+                      selectedKeys={new Set(['2024'])}
                     >
                       {yearRange.map((yearValue) => (
                         <SelectItem
                           key={yearValue.toString()}
-                          value={yearValue.toString()}
                         >
                           {yearValue.toString()}
                         </SelectItem>
@@ -170,7 +170,7 @@ const CreateModal = (props: CreateModalProps) => {
                           >
                             {courses !== undefined
                               ? courses.map((course) => (
-                                  <SelectItem key={course.id} value={course.id}>
+                                  <SelectItem key={course.id}>
                                     {course.name}
                                   </SelectItem>
                                 ))
@@ -204,7 +204,7 @@ const CreateModal = (props: CreateModalProps) => {
                     >
                       {subjects !== undefined &&
                         subjects.map((subject) => (
-                          <SelectItem key={subject.id} value={subject.id}>
+                          <SelectItem key={subject.id}>
                             {subject.name}
                           </SelectItem>
                         ))}
@@ -258,7 +258,7 @@ const CreateModal = (props: CreateModalProps) => {
                   >
                     {subjects &&
                       subjects.map((subject) => (
-                        <SelectItem key={subject.id} value={subject.id}>
+                        <SelectItem key={subject.id}>
                           {subject.name}
                         </SelectItem>
                       ))}
@@ -286,7 +286,7 @@ const CreateModal = (props: CreateModalProps) => {
                 <div className='flex flex-col w-full items-center'>
                   <Select label='Subject type' {...register('type')}>
                     {subjectType.map((subject) => (
-                      <SelectItem key={subject.value} value={subject.value}>
+                      <SelectItem key={subject.value}>
                         {subject.name}
                       </SelectItem>
                     ))}
@@ -339,7 +339,6 @@ const CreateModal = (props: CreateModalProps) => {
                                   ? grades.map((grade) => (
                                       <SelectItem
                                         key={grade.value}
-                                        value={grade.value}
                                       >
                                         {grade.name}
                                       </SelectItem>

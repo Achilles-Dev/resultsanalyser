@@ -5,7 +5,7 @@ import {
   TableColumn,
   TableRow,
   TableCell,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useMemo, useState } from 'react'
 
 const BestSixSubjects = ({ students }: { students: any[] }) => {
@@ -33,10 +33,10 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
       student.Subjects.forEach((subject: any) => {
         //Best 3 core subject grades including Maths and English
         if (subject.type === 'core') {
-          if (subject.name === 'English Language' && subject.Grade.grade) {
+          if (subject.name === 'English Lang' && subject.Grade.grade) {
             studBest += Number(subject.Grade.grade.charAt(1))
           } else if (
-            subject.name === 'Mathematics (Core)' &&
+            subject.name === 'Mathematics(Core)' &&
             subject.Grade.grade
           ) {
             studBest += Number(subject.Grade.grade.charAt(1))

@@ -6,8 +6,8 @@ export const initDb = async () => {
   return response.json()
 }
 
-export const fetchStudents = async () => {
-  const results = await fetch('/api/students')
+export const fetchStudents = async (yearGroup: string, course: boolean, subject: boolean) => {
+  const results = await fetch(`/api/students?yearGroup=${yearGroup}&course=${course}&subject=${subject}`)
   return results.json()
 }
 
@@ -118,6 +118,53 @@ export const updateStudent = async ({
     body: JSON.stringify(data),
   })
   return results.json()
+}
+
+export const deleteStudent = async ({
+  id,
+  yearGroup,
+  subjectIds,
+}: {
+  id: string
+  yearGroup: string
+  subjectIds: readonly string[]
+}) => {
+  const data = {
+    id,
+    yearGroup,
+    subjectIds,
+  }
+  const results = await fetch('/api/students/delete', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return results.json()
+}
+
+export const deleteAllStudents = async ({
+  students
+}: {
+  students: any
+}) => {
+  let currentStudentSize = students.length
+  let newSize = 0
+  for (const student of students) {
+    const yearGroup = student.yearGroup;
+    const id = student.id
+    const subjects = student.Subjects;
+    const subjectIds = subjects.map((subj: any) => subj.id)
+    await deleteStudent({id, yearGroup, subjectIds})
+    newSize += 1
+  }
+  if (currentStudentSize === newSize) {
+    return {message: "All Students successfully deleted"}
+  } else {
+    return {error: "Failed to delete all Students"}
+  }
+  
 }
 
 export const createCourse = async ({
