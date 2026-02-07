@@ -108,15 +108,15 @@ export default async function handler(
             const studentId = student.id
             const subjectId = subject.id
             if (
-              subResult[1].toLowerCase() === 'withheld' ||
+              subResult[1].toLowerCase() === 'cancelled' ||
               subResult[1] === '*'
             ) {
+              status = "Cancelled"
+              grade = ''
+            } else if (subResult[1].toLowerCase() === 'withheld') {
               status = "Withheld"
               grade = ''
-            } else if (subResult[1].toLowerCase() === 'canceled') {
-              status = "Canceled"
-              grade = ''
-            } else if (subResult[1].toLowerCase() === 'absent') {
+            } else if (subResult[1].toLowerCase() === 'absent' || subResult[1] === 'X') {
               status = "Absent"
               grade = ''
             }

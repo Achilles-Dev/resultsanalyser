@@ -28,10 +28,19 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
     students.forEach((student: any) => {
       let numberPassed = student.Subjects.filter(
         (subject: any) =>
-          subject.Grade.grade && (Number(subject.Grade.grade.charAt(1)) <= 8 && Number(subject.Grade.grade.charAt(1)) > 0)
+          subject.Grade.grade && (Number(subject.Grade.grade.charAt(1)) <= 6 && Number(subject.Grade.grade.charAt(1)) > 0)
+      ).length
+      // All results cancelled, withheld or absent student.
+      let allCancWithAbs = student.Subjects.filter(
+        (subject: any) =>
+          subject.Grade.grade === "" && (subject.Grade.status === "Withheld" || subject.Grade.status === "Cancelled" || subject.Grade.status === "Absent")
       ).length
 
-      if ((student.Subjects[0].Grade.grade || student.Subjects[0].Grade.status) && student.sex === 'male') {
+      if (allCancWithAbs === 8) {
+        console.log("Student:", student)
+      }
+
+      if ((student.Subjects[0].Grade.grade || student.Subjects[0].Grade.status) && student.sex === 'male' && allCancWithAbs < 8) {
         switch (numberPassed) {
           case 0:
             passed = {
@@ -114,7 +123,7 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
               },
             }
         }
-      } else if (student.Subjects[0].Grade.grade || student.Subjects[0].Grade.status) {
+      } else if (student.Subjects[0].Grade.grade || student.Subjects[0].Grade.status && allCancWithAbs < 8) {
         switch (numberPassed) {
           case 0:
             passed = {
@@ -215,7 +224,7 @@ const SubjectsPassed = ({ students }: { students: any[] }) => {
           </TableColumn>
           <TableColumn key='Male'>
             <div className='flex flex-col border-b-1 py-2'>
-              <span className='pt-2'>Total number of subjects passed</span>
+              <span className='pt-2'>Total number of subjects passed (A1 to C6)</span>
               <div className='flex w-full mt-2'>
                 {Array(9)
                   .fill(0)

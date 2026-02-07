@@ -6,6 +6,10 @@ import {
   CardHeader,
   Chip,
   Input,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Spinner,
   Table,
   TableBody,
@@ -14,6 +18,7 @@ import {
   TableHeader,
   TableRow,
   getKeyValue,
+  useDisclosure,
 } from "@heroui/react"
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -97,6 +102,8 @@ const Students = ({
   const [status, setStatus] = useState('');
   const [isReloading, setIsReloading] = useState<boolean>(false)
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
+  const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false)
+  const { onOpenChange } = useDisclosure()
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -361,6 +368,8 @@ const Students = ({
       await deleteAllStudents({students})
       setIsReloading(true)
       setIsDeleting(false)
+    } else {
+      setIsDeleting(false)
     }
   }
 
@@ -406,7 +415,9 @@ const Students = ({
           </p>
           <Button
             color='danger'
-            onPress={() => handleDeleteAllStudents(list.items)}
+            onPress={() => 
+              setIsDeleteOpen(true)
+            }
             isLoading={isDeleting}
             isDisabled={isDeleting}
           >
@@ -517,6 +528,36 @@ const Students = ({
         setSelectedCourse={setSelectedCourse}
         saveStatus={saveUpdateStatus}
       />
+      <Modal isOpen={isDeleteOpen} onOpenChange={onOpenChange} hideCloseButton>
+        <ModalContent>
+          <>
+            <ModalHeader className='flex flex-col gap-1'>
+              Are you sure you want to DELETE all Students
+            </ModalHeader>
+            <ModalFooter>
+              <Button
+                color='primary'
+                onPress={() => {
+                  setIsDeleteOpen(false)
+                }}
+              >
+                Cancel
+              </Button>
+                <Button
+                  color='danger'
+                  type='submit'
+                  className='mt-0'
+                  onPress={() => {
+                  setIsDeleteOpen(false)
+                  handleDeleteAllStudents(list.items)
+                }}
+                >
+                  Delete
+                </Button>
+            </ModalFooter>
+          </>
+        </ModalContent>
+      </Modal>
       {isFetched && (
         <EditModal
           open={editOpen}

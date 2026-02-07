@@ -19,7 +19,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
       let values = {
         totalCandidates: maleFemale,
         absent: maleFemale,
-        canceled: maleFemale,
+        cancelled: maleFemale,
         withheld: maleFemale,
         A1: maleFemale,
         B2: maleFemale,
@@ -138,12 +138,12 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
                 },
               }
               break
-            case 'Canceled':
+            case 'Cancelled':
               values = {
                 ...values,
-                canceled: {
-                  ...values.canceled,
-                  male: values.canceled.male + 1,
+                cancelled: {
+                  ...values.cancelled,
+                  male: values.cancelled.male + 1,
                 },
               }
               break
@@ -262,12 +262,12 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
                 },
               }
               break
-            case 'Canceled':
+            case 'Cancelled':
               values = {
                 ...values,
-                canceled: {
-                  ...values.canceled,
-                  female: values.canceled.female + 1,
+                cancelled: {
+                  ...values.cancelled,
+                  female: values.cancelled.female + 1,
                 },
               }
               break
@@ -461,10 +461,10 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
                   <span className='w-[50%] border-e-2'>
-                    {subject.values.canceled.male}
+                    {subject.values.cancelled.male}
                   </span>
                   <span className='w-[50%]'>
-                    {subject.values.canceled.female}
+                    {subject.values.cancelled.female}
                   </span>
                 </div>
               </TableCell>

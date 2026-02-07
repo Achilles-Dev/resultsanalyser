@@ -67,7 +67,7 @@ const grades = [
   { value: 'E8', name: 'E8' },
   { value: 'F9', name: 'F9' },
   { value: 'Withheld', name: 'Withheld' },
-  { value: 'Canceled', name: 'Canceled' },
+  { value: 'Cancelled', name: 'Cancelled' },
   { value: 'Absent', name: 'Absent' },
 ]
 
@@ -321,7 +321,7 @@ const Results = ({
         let status = ''
         if (
           data[`${name}`] === 'Withheld' ||
-          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Cancelled' ||
           data[`${name}`] === 'Absent'
         ) {
           status = data[`${name}`]
@@ -339,7 +339,7 @@ const Results = ({
         let status = ''
         if (
           data[`${name}`] === 'Withheld' ||
-          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Cancelled' ||
           data[`${name}`] === 'Absent'
         ) {
           status = data[`${name}`]
@@ -375,7 +375,7 @@ const Results = ({
         let status = ''
         if (
           data[`${name}`] === 'Withheld' ||
-          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Cancelled' ||
           data[`${name}`] === 'Absent'
         ) {
           status = data[`${name}`]
@@ -393,7 +393,7 @@ const Results = ({
         let status = ''
         if (
           data[`${name}`] === 'Withheld' ||
-          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Cancelled' ||
           data[`${name}`] === 'Absent'
         ) {
           status = data[`${name}`]
