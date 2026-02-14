@@ -12,7 +12,7 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { deleteCookie } from 'cookies-next'
 import { signOut as signOutNextAuth } from 'next-auth/react'
 import Link from 'next/link'
@@ -82,13 +82,13 @@ const Header = () => {
             </DropdownTrigger>
           </NavbarItem>
           <DropdownMenu aria-label='Results & Results analysis pages'>
-            <DropdownItem>
-              <Link href='/results' className=''>
+            <DropdownItem key='results'>
+              <Link href='/results' className="w-full flex">
                 Student Results
               </Link>
             </DropdownItem>
-            <DropdownItem>
-              <Link href='/results/analyse'>Results Analysis</Link>
+            <DropdownItem key='analysis'>
+              <Link href='/results/analyse' className="w-full flex">Results Analysis</Link>
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
@@ -105,12 +105,12 @@ const Header = () => {
             </Button>
           </DropdownTrigger>
           <DropdownMenu aria-label='User & Logout'>
-            <DropdownItem>
+            <DropdownItem key='achilles'>
               <Link href='https://solomonhagan.netlify.app' target='_blank'>
                 Achilles-Dev
               </Link>
             </DropdownItem>
-            <DropdownItem onPress={signOut}>Logout</DropdownItem>
+            <DropdownItem key='logout' onPress={signOut}>Logout</DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </NavbarItem>

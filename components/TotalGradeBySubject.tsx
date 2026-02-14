@@ -6,7 +6,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useMemo } from 'react'
 
 const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
@@ -19,7 +19,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
       let values = {
         totalCandidates: maleFemale,
         absent: maleFemale,
-        canceled: maleFemale,
+        cancelled: maleFemale,
         withheld: maleFemale,
         A1: maleFemale,
         B2: maleFemale,
@@ -138,12 +138,12 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
                 },
               }
               break
-            case 'Canceled':
+            case 'Cancelled':
               values = {
                 ...values,
-                canceled: {
-                  ...values.canceled,
-                  male: values.canceled.male + 1,
+                cancelled: {
+                  ...values.cancelled,
+                  male: values.cancelled.male + 1,
                 },
               }
               break
@@ -262,12 +262,12 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
                 },
               }
               break
-            case 'Canceled':
+            case 'Cancelled':
               values = {
                 ...values,
-                canceled: {
-                  ...values.canceled,
-                  female: values.canceled.female + 1,
+                cancelled: {
+                  ...values.cancelled,
+                  female: values.cancelled.female + 1,
                 },
               }
               break
@@ -300,7 +300,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
       <Table aria-label="Total grade by subject'/s table">
         <TableHeader>
           <TableColumn key='no' className='!px-0 border-x-1'>
-            <div className='flex flex-col py-2 items-center min-w-[70px]'>
+            <div className='flex flex-col py-2 items-center min-w-[50px]'>
               <span>No.</span>
             </div>
           </TableColumn>
@@ -310,9 +310,9 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
             </div>
           </TableColumn>
           <TableColumn key='totalCandidates' className='!px-0 border-x-1'>
-            <div className='flex flex-col py-2 items-center min-w-[70px] w-[150px] px-2'>
+            <div className='flex flex-col py-2 items-center min-w-[70px] w-[100px] px-2'>
               <span className='flex w-full text-center'>
-                No. of Candidates
+                Candidates
                 <br />
                 Presented
               </span>
@@ -324,7 +324,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
           </TableColumn>
           <TableColumn key='absent' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <span>No. Absent</span>
+              <span>Absent</span>
               <div className='flex w-full pt-2 text-center'>
                 <span className='w-[50%] border-e-2'>M</span>
                 <span className='w-[50%]'>F</span>
@@ -333,7 +333,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
           </TableColumn>
           <TableColumn key='cancelled' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <span>No. Cancelled</span>
+              <span>Cancelled</span>
               <div className='flex w-full pt-2 text-center'>
                 <span className='w-[50%] border-e-2'>M</span>
                 <span className='w-[50%]'>F</span>
@@ -342,7 +342,7 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
           </TableColumn>
           <TableColumn key='withheld' className='!px-0 border-x-1'>
             <div className='flex flex-col py-2 items-center min-w-[70px] px-1'>
-              <span>Results WithHeld</span>
+              <span>WithHeld</span>
               <div className='flex w-full pt-2 text-center'>
                 <span className='w-[50%] border-e-2'>M</span>
                 <span className='w-[50%]'>F</span>
@@ -461,10 +461,10 @@ const TotalGradeBySubject = ({ subjects }: { subjects: any[] }) => {
               <TableCell className='border-x-1 !px-0'>
                 <div className='flex w-full pt-2 text-center'>
                   <span className='w-[50%] border-e-2'>
-                    {subject.values.canceled.male}
+                    {subject.values.cancelled.male}
                   </span>
                   <span className='w-[50%]'>
-                    {subject.values.canceled.female}
+                    {subject.values.cancelled.female}
                   </span>
                 </div>
               </TableCell>

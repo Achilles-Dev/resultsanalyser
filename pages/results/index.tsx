@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
   getKeyValue,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import * as yup from 'yup'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
@@ -21,10 +21,11 @@ import { Student, Subject } from '@/libs/models'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { addStudentGrades, fetchStudent } from '@/libs/api'
+import { addStudentGrades, fetchStudent, fetchStudents } from '@/libs/api'
 import CreateModal from '@/components/CreateModal'
 import EditModal from '@/components/EditModal'
 import { getCookie } from 'cookies-next'
+import { FaArrowCircleDown } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const yearGroup = getCookie('year', { req, res }) as string
@@ -66,7 +67,7 @@ const grades = [
   { value: 'E8', name: 'E8' },
   { value: 'F9', name: 'F9' },
   { value: 'Withheld', name: 'Withheld' },
-  { value: 'Canceled', name: 'Canceled' },
+  { value: 'Cancelled', name: 'Cancelled' },
   { value: 'Absent', name: 'Absent' },
 ]
 
@@ -94,6 +95,8 @@ const Results = ({
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
   const [filterValue, setFilterValue] = useState('')
   const [gradeAddStatus, setGradeAddStatus] = useState(false)
+  const [status, setStatus] = useState('');
+  const [isReloading, setIsReloading] = useState<boolean>(false)
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -217,9 +220,18 @@ const Results = ({
     </Button>
   )
 
+
   let list: AsyncListData<any> = useAsyncList({
     async load({ signal }) {
-      const myStudents = students.map((student: any) => ({
+      let data
+      if (!isReloading && students) {
+        data = students
+      } else {
+        const {response} = await fetchStudents(yearGroup, false, true)
+        data = response        
+        setIsReloading(false)
+      }
+      const myStudents = data.map((student: any) => ({
         ...student,
         name: nameButton(student),
         subjects: subjectWithResults(student.Subjects),
@@ -253,6 +265,9 @@ const Results = ({
       }
     },
   })
+
+  console.log("List:", list.items)
+
 
   const filteredItems = useMemo(() => {
     let filteredStudents = [...list.items]
@@ -306,7 +321,7 @@ const Results = ({
         let status = ''
         if (
           data[`${name}`] === 'Withheld' ||
-          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Cancelled' ||
           data[`${name}`] === 'Absent'
         ) {
           status = data[`${name}`]
@@ -324,7 +339,7 @@ const Results = ({
         let status = ''
         if (
           data[`${name}`] === 'Withheld' ||
-          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Cancelled' ||
           data[`${name}`] === 'Absent'
         ) {
           status = data[`${name}`]
@@ -360,7 +375,7 @@ const Results = ({
         let status = ''
         if (
           data[`${name}`] === 'Withheld' ||
-          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Cancelled' ||
           data[`${name}`] === 'Absent'
         ) {
           status = data[`${name}`]
@@ -378,7 +393,7 @@ const Results = ({
         let status = ''
         if (
           data[`${name}`] === 'Withheld' ||
-          data[`${name}`] === 'Canceled' ||
+          data[`${name}`] === 'Cancelled' ||
           data[`${name}`] === 'Absent'
         ) {
           status = data[`${name}`]
@@ -405,6 +420,30 @@ const Results = ({
     reset()
   }
 
+  const handleUploadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    setStatus('Uploading...');
+
+    formData.append("yearGroup",yearGroup)
+
+    const res = await fetch('/api/uploads/results', {
+      method: 'POST',
+      body: formData,
+    });
+    const {response} = await res.json();
+    // console.log("data:", response)
+
+    setStatus(res.ok ? `Success: ${response.length} rows imported` : `Error: ${response.error}`);
+    setIsReloading(true)
+  };
+
+  useEffect(() => {
+    if (isReloading) {
+      list.reload();
+    }
+  }, [isReloading, list])
+
   useEffect(() => {
     if (Object.keys(student).length > 0 && subjects.length < 8) {
       const sortedSubjects = student.Subjects.sort((a: any, b: any) => {
@@ -420,7 +459,7 @@ const Results = ({
       })
       setSubjects([...subjects, ...sortedSubjects])
     }
-  }, [student])
+  }, [student, subjects])
 
   useEffect(() => {
     if (!editOpen) {
@@ -445,11 +484,31 @@ const Results = ({
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
             Student Results{' '}
-            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
+            {yearGroup ? `(${yearGroup})` : ''}
           </p>
         </CardHeader>
         <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
-          <div className='flex justify-end'>
+          <div className='flex justify-between'>
+             <div className=" flex max-w-md">
+                <form onSubmit={handleUploadSubmit} className="flex items-center justify-center gap-3 w-100">
+                  <Input
+                    type="file"
+                    name="file"
+                    accept=".xlsx,.xls"
+                    required
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  <Button
+                    color='primary'
+                    type='submit'
+                    startContent={<FaArrowCircleDown />}
+                    className='mt-0'
+                  >
+                    Upload
+                  </Button>
+                </form>
+                {status && <p className="mt-4 p-2 bg-gray-100 rounded">{status}</p>}
+              </div>
             <form className='flex'>
               <Input
                 classNames={{

@@ -5,7 +5,7 @@ import {
   TableColumn,
   TableRow,
   TableCell,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useMemo, useState } from 'react'
 
 const BestSixSubjects = ({ students }: { students: any[] }) => {
@@ -24,6 +24,9 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
       bestSix36: maleFemale,
       bestSixOver36: maleFemale,
       allFail: maleFemale,
+      absent: maleFemale,
+      cancelled: maleFemale,
+      withheld: maleFemale
     }
     let count = 0
     students.forEach((student) => {
@@ -33,10 +36,10 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
       student.Subjects.forEach((subject: any) => {
         //Best 3 core subject grades including Maths and English
         if (subject.type === 'core') {
-          if (subject.name === 'English Language' && subject.Grade.grade) {
+          if (subject.name === 'English Lang' && subject.Grade.grade) {
             studBest += Number(subject.Grade.grade.charAt(1))
           } else if (
-            subject.name === 'Mathematics (Core)' &&
+            subject.name === 'Mathematics(Core)' &&
             subject.Grade.grade
           ) {
             studBest += Number(subject.Grade.grade.charAt(1))
@@ -61,13 +64,85 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
               elective.unshift(Number(subject.Grade.grade.charAt(1)))
           }
         }
+
       })
+
+      // Get Absent students and students with all results cancelled or withheld
+      const allWithheld = student.Subjects.filter(
+        (subject: any) =>
+          subject.Grade.grade === "" && (subject.Grade.status === "Withheld")
+      ).length
+      const allAbsent = student.Subjects.filter(
+        (subject: any) =>
+          subject.Grade.grade === "" && (subject.Grade.status === "Absent")
+      ).length
+      const allCancelled = student.Subjects.filter(
+        (subject: any) =>
+          subject.Grade.grade === "" && (subject.Grade.status === "Cancelled")
+      ).length
+      if (allAbsent === 8) {
+        if (student.sex === 'male') {
+          bestSix = {
+            ...bestSix,
+            absent: {
+              ...bestSix.absent,
+              male: bestSix.absent.male + 1,
+            },
+          }
+        } else {
+          bestSix = {
+            ...bestSix,
+            absent: {
+              ...bestSix.absent,
+              female: bestSix.absent.female + 1,
+            },
+          }
+        }
+      }
+      if (allCancelled === 8) {
+        if (student.sex === 'male') {
+          bestSix = {
+            ...bestSix,
+            cancelled: {
+              ...bestSix.cancelled,
+              male: bestSix.cancelled.male + 1,
+            },
+          }
+        } else {
+          bestSix = {
+            ...bestSix,
+            cancelled: {
+              ...bestSix.cancelled,
+              female: bestSix.cancelled.female + 1,
+            },
+          }
+        }
+      }
+      if (allWithheld === 8) {
+        if (student.sex === 'male') {
+          bestSix = {
+            ...bestSix,
+            withheld: {
+              ...bestSix.withheld,
+              male: bestSix.withheld.male + 1,
+            },
+          }
+        } else {
+          bestSix = {
+            ...bestSix,
+            withheld: {
+              ...bestSix.withheld,
+              female: bestSix.withheld.female + 1,
+            },
+          }
+        }
+      }
       //Check if all Results are Recorded
       const noResults = student.Subjects.find(
         (subject: any) => subject.Grade.grade === null
       )
       if (noResults) {
-        console.log(student)
+        console.log("No Results:",student)
         count += 1
         setMessage(
           `${
@@ -79,9 +154,12 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
       //Failed all subjects
       let allFail = student.Subjects.filter(
         (subject: any) =>
-          subject.Grade.grade && Number(subject.Grade.grade.charAt(1)) > 6
-      ).length
-      if (allFail === 8) {
+          (subject.Grade.grade && Number(subject.Grade.grade.charAt(1)) > 6) || 
+        (subject.Grade.grade === "" && (subject.Grade.status === "Withheld" || subject.Grade.status === "Cancelled" || 
+          subject.Grade.status === "Absent"))).length
+      
+      if (allFail === 8 && allWithheld < 8 && allCancelled < 8 && allAbsent < 8) {
+        // console.log("Student", student)
         if (student.sex === 'male') {
           bestSix = {
             ...bestSix,
@@ -195,7 +273,9 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
           </TableRow>
           <TableRow>
             <TableCell className='py-4 text-[16px]'>
-              Candidates with best 6 subjects less than or equals to 24
+              {/* Candidates with best 6 subjects less than or equals to 24 */}
+                Candidates who obtained (Aggregate 6 - 24)
+              
             </TableCell>
             <TableCell className='py-4'>
               {bestSubjects.bestSix24.male}
@@ -209,7 +289,8 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
           </TableRow>
           <TableRow>
             <TableCell className='py-4 text-[16px]'>
-              Candidates with best 6 subjects less than or equals to 36
+              {/* Candidates with best 6 subjects less than or equals to 36 */}
+              Candidates who obtained (Aggregate 6 - 36)
             </TableCell>
             <TableCell className='py-4'>
               {bestSubjects.bestSix36.male}
@@ -223,7 +304,8 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
           </TableRow>
           <TableRow>
             <TableCell className='py-4 text-[16px]'>
-              Candidates with best 6 subjects greater than 36
+              {/* Candidates with best 6 subjects greater than 36 */}
+              Cnadidates who obtained (More than Aggregate 36)
             </TableCell>
             <TableCell className='py-4'>
               {bestSubjects.bestSixOver36.male}
@@ -238,7 +320,7 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
           </TableRow>
           <TableRow>
             <TableCell className='py-4 text-[16px]'>
-              Candidates who failed in all subjects
+              Candidates who (failed in all subjects)
             </TableCell>
             <TableCell className='py-4'>{bestSubjects.allFail.male}</TableCell>
             <TableCell className='py-4'>
@@ -246,6 +328,42 @@ const BestSixSubjects = ({ students }: { students: any[] }) => {
             </TableCell>
             <TableCell className='py-4'>
               {bestSubjects.allFail.male + bestSubjects.allFail.female}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className='py-4 text-[16px]'>
+              Candidates who had (entire results Cancelled)
+            </TableCell>
+            <TableCell className='py-4'>{bestSubjects.cancelled.male}</TableCell>
+            <TableCell className='py-4'>
+              {bestSubjects.cancelled.female}
+            </TableCell>
+            <TableCell className='py-4'>
+              {bestSubjects.cancelled.male + bestSubjects.cancelled.female}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className='py-4 text-[16px]'>
+              Candidates who were (Absent in all subjects)
+            </TableCell>
+            <TableCell className='py-4'>{bestSubjects.absent.male}</TableCell>
+            <TableCell className='py-4'>
+              {bestSubjects.absent.female}
+            </TableCell>
+            <TableCell className='py-4'>
+              {bestSubjects.absent.male + bestSubjects.absent.female}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className='py-4 text-[16px]'>
+              Candidates who had (entire results Withheld)
+            </TableCell>
+            <TableCell className='py-4'>{bestSubjects.withheld.male}</TableCell>
+            <TableCell className='py-4'>
+              {bestSubjects.withheld.female}
+            </TableCell>
+            <TableCell className='py-4'>
+              {bestSubjects.withheld.male + bestSubjects.withheld.female}
             </TableCell>
           </TableRow>
         </TableBody>

@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import IndexImage from '@/public/images/illustration.svg'
-import { Button, Card, CardBody, CardHeader, Input } from '@nextui-org/react'
+import { Button, Card, CardBody, CardHeader, Input } from "@heroui/react"
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import { signIn } from 'next-auth/react'

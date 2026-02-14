@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import IndexImage from '@/public/images/illustration.svg'
-import { Button, Card, CardBody, CardHeader, Input } from '@nextui-org/react'
+import { Button, Card, CardBody, CardHeader, Input } from "@heroui/react"
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
