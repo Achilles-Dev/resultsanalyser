@@ -5,6 +5,7 @@ import TotalGradeBySubject from '@/components/TotalGradeBySubject'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { Student, Subject } from '@/libs/models'
 import { getCookie } from 'cookies-next'
+import SubjectsPassedExtended from "@/components/SubjectsPassedExtended";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const yearGroup = getCookie('year', { req, res }) as string
@@ -60,6 +61,7 @@ const ResultsAnalysisPage = ({
           <div className='flex flex-col gap-10'>
             <BestSixSubjects students={students} />
             <SubjectsPassed students={students} />
+            <SubjectsPassedExtended students={students} />
             <TotalGradeBySubject subjects={subjects} />
           </div>
         </CardBody>

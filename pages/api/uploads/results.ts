@@ -80,29 +80,54 @@ export default async function handler(
       const processedRows: any[] = [];
       
       for (const row of rows) {
-        if (row.length < 4 || !row[0] || !row[1] || !row[2] || !row[3]) continue;
+        if (row.length < 4 || !row[0] || !row[1] || !row[2] || !row[3]) continue; 
         
         const indexNo = row[0].toString().trim();
         const results = row[3].toString().trim();
 
         const wassceResults = convertWassceResults(results)
-
+        // console.log("wassceResults:", wassceResults)
         const student: any = await Student.findOne({
           where: {
-            indexNo: `0${indexNo}`
+            indexNo: `${indexNo}`,
+            yearGroup: "2026"
           },
           include: { model: Subject },
         })
 
+        // console.log("Student:", student)
         const subjects = student.Subjects
         // console.log("Subjects:", [...subjects])
-
+        // console.log("Subjects", subjects.map((s: any) => s.name))
         const gradesArray: any = []
+
+        const normalize = (str: string) => {
+          return str
+            .toLowerCase()
+            .replace(/\./g, '')                    // remove dots
+            .replace(/[^a-z0-9]/g, '')            // remove remaining non-alphanumeric
+            // Specific standardizations
+            .replace(/prinofcostaccts|principleofcostaccounting|principlesofcostaccounting/g, 'prinofcostaccts')
+            .replace(/buildingconst|buildingconstruction/g, 'buildingconst')
+            .replace(/genknowinart|generalknowledgeinart/g, 'genknowinart')
+            .replace(/mgtinliving|managementinliving/g, 'mgtinliving')
+            .replace(/foodsandnutrition|foodsnutrition/g, 'foodsnutrition')
+            .replace(/clothingandtextiles|clothingtextiles/g, 'clothingtextiles')
+            .replace(/christianrelstud|christianreligiousstudies/g, 'christianrelstud')
+            .replace(/litinenglish|literatureinenglish/g, 'litinenglish')
+            .replace(/englishlang|englishlanguage/g, 'englishlang')
+            .replace(/mathematicselective|mathematicselect/g, 'mathematicselective')
+            .replace(/twi|twiasante/g, 'twi')
+            .trim();
+        };
+        
         for (const subject of subjects) {
           const subResult = wassceResults.find(([result]: any) => 
-            result.trim().toUpperCase() === subject.name.trim().toUpperCase()
+            // result.trim().toUpperCase() === subject.name.trim().toUpperCase()
+            normalize(result) === normalize(subject.name)
           )
           if (subResult) {
+            if (subResult[0] === normalize("Mathematics (Elective)")) console.log("Subject Name:",subResult[0])
             let status = ''
             let grade = subResult[1];
             const studentId = student.id
@@ -134,9 +159,9 @@ export default async function handler(
               }
             )
             
-            // if (response === null || response === undefined) {
-            //   return res.status(400).json({ error: 'Could not update student grade' });
-            // }
+            if (response === null || response === undefined) {
+              return res.status(400).json({ error: 'Could not update student grade' });
+            }
             gradesArray.push({
               studentId: student.id,
               subjectId: subject.id,

@@ -38,7 +38,26 @@ function convertWassceResults(inputString: string) {
 }
 
 function getCourseWithSubjectIds(myElectives: string[], courses: any) {
-  const normalize = (str: string) => str.trim().toLowerCase().replace(/\s+/g, ' ');
+  // const normalize = (str: string) => str.trim().toLowerCase().replace(/\s+/g, ' ');
+const normalize = (str: string) => {
+  return str
+    .toLowerCase()
+    .replace(/\./g, '')                    // remove dots
+    .replace(/\(.*?\)/g, '')               // remove anything in parentheses
+    .replace(/[^a-z0-9]/g, '')            // remove remaining non-alphanumeric
+     // Specific standardizations
+    .replace(/elective|elect/g, 'elect')
+    .replace(/prinofcostaccts|principleofcostaccounting|principlesofcostaccounting/g, 'prinofcostaccts')
+    .replace(/buildingconst|buildingconstruction/g, 'buildingconst')
+    .replace(/genknowinart|generalknowledgeinart/g, 'genknowinart')
+    .replace(/mgtinliving|managementinliving/g, 'mgtinliving')
+    .replace(/foodsandnutrition|foodsnutrition/g, 'foodsnutrition')
+    .replace(/clothingandtextiles|clothingtextiles/g, 'clothingtextiles')
+    .replace(/christianrelstud|christianreligiousstudies/g, 'christianrelstud')
+    .replace(/litinenglish|literatureinenglish/g, 'litinenglish')
+    .replace(/twi|twiasante/g, 'twi')
+    .trim();
+};
 
   // Normalize your elective subjects for comparison
   const myElectiveNames = myElectives.map((s: any) => 
@@ -46,16 +65,18 @@ function getCourseWithSubjectIds(myElectives: string[], courses: any) {
   );
 
   const result = [];
-
   for (const course of courses) {
     // Create a map: normalized name → original subject object (for ID access)
     const subjectMap = new Map();
     for (const sub of course.Subjects) {
+      // console.log("Subject:", sub.name)
       subjectMap.set(normalize(sub.name), sub);
     }
-
     // Check if ALL your electives exist in this course
+    // console.log("Electives:", myElectiveNames)
+    // console.log("Subject Map:", subjectMap)
     const missing = myElectiveNames.some(elective => !subjectMap.has(elective));
+    // console.log("Course:", course.name, "Missing:", missing)
     if (missing) continue; // Skip this course if any elective is missing
 
     // All electives found → collect their IDs
@@ -68,7 +89,7 @@ function getCourseWithSubjectIds(myElectives: string[], courses: any) {
       subjectIds: matchedIds
     });
   }
-
+  // console.log("Result:", result)
   return result;
 }
 
@@ -122,13 +143,15 @@ export default async function handler(
       const name = row[1].toString().trim();
       const sex = row[2].toString().trim();
       const results = row[3].toString().trim();
-
+      // console.log("Results:", results)
       const wassceResults = convertWassceResults(results)
 
+      // console.log("wassceResults:", wassceResults)
+      console.log("Name:", name)
       const electives = [wassceResults[4][0], wassceResults[5][0], wassceResults[6][0], wassceResults[7][0]]
-
+      // console.log("electives:", electives)
       const course = getCourseWithSubjectIds(electives, courses) 
-
+      console.log("course:", course)
       // Name manipulation
       const nameParts = name.split(' ').filter(part => part.length > 0);
       // console.log("nameParts:", nameParts)
@@ -138,7 +161,7 @@ export default async function handler(
 
       processedRows.push({
         id: uuidv4(),
-        indexNo: `0${indexNo}`,
+        indexNo: `${indexNo}`,
         firstName: firstName,
         lastName: lastName,
         otherName: otherName,

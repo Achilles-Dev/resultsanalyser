@@ -424,7 +424,7 @@ const Results = ({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     setStatus('Uploading...');
-
+    console.log("yearGroup",yearGroup);
     formData.append("yearGroup",yearGroup)
 
     const res = await fetch('/api/uploads/results', {
