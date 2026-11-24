@@ -1,6 +1,6 @@
 import Header from '@/components/Header'
 import '@/styles/globals.css'
-import { NextUIProvider } from '@nextui-org/react'
+import { HeroUIProvider } from "@heroui/react"
 import NextProgress from 'next-progress'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
@@ -23,7 +23,7 @@ export default function App({
 
   return (
     <SessionProvider session={session}>
-      <NextUIProvider>
+      <HeroUIProvider>
         <>
           <Head>
             <title>Results Analyser</title>
@@ -48,7 +48,7 @@ export default function App({
             options={{ showSpinner: false }}
           />
         </>
-      </NextUIProvider>
+      </HeroUIProvider>
     </SessionProvider>
   )
 }

@@ -6,6 +6,10 @@ import {
   CardHeader,
   Chip,
   Input,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Spinner,
   Table,
   TableBody,
@@ -14,14 +18,15 @@ import {
   TableHeader,
   TableRow,
   getKeyValue,
-} from '@nextui-org/react'
+  useDisclosure,
+} from "@heroui/react"
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
-import { FaPlus } from 'react-icons/fa'
+import { FaArrowCircleDown, FaPlus } from 'react-icons/fa'
 import { AsyncListData, useAsyncList } from '@react-stately/data'
 import CreateModal from '@/components/CreateModal'
-import { createStudent, fetchStudent, updateStudent } from '@/libs/api'
+import { createStudent, deleteAllStudents, deleteStudent, fetchStudent, fetchStudents, updateStudent } from '@/libs/api'
 import { useRouter } from 'next/router'
 import EditModal from '@/components/EditModal'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
@@ -31,6 +36,7 @@ import { getCookie } from 'cookies-next'
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const yearGroup = getCookie('year', { req, res }) as string
+  // console.log(yearGroup)
   if (yearGroup) {
     const students = JSON.stringify(
       await Student.findAll({
@@ -93,6 +99,11 @@ const Students = ({
   const [saveUpdateStatus, setSaveUpdateStatus] = useState<string>('idle')
   const [initialCourse, setInitialCourse] = useState()
   const [filterValue, setFilterValue] = useState('')
+  const [status, setStatus] = useState('');
+  const [isReloading, setIsReloading] = useState<boolean>(false)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
+  const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false)
+  const { onOpenChange } = useDisclosure()
   const router = useRouter()
 
   const handleEdit = async (id: string) => {
@@ -118,10 +129,32 @@ const Students = ({
     setIsLoading(false)
   }
 
+  const handleDelete = async (id: string) => {
+    router.push({
+      pathname: router.pathname,
+      query: { id },
+    })
+    setIsLoading(true)
+    const { response } = await fetchStudent(id)
+    setStudent(response)
+    const stud = response
+    const yearGroup = stud.yearGroup;
+    const subjectIds = stud.Subjects.map((val: any) => val.id);
+    // console.log(subjectIds)
+    await deleteStudent({id, yearGroup, subjectIds})
+    // setIsFetched(true)
+    setIsLoading(false)
+  }
+
+
   const editDelete = (id: string) => (
-    <div>
-      <Button onPress={() => handleEdit(id)} color='primary' isLoading={false}>
+    <div className='flex gap-2 items-center'>
+      <Button size='sm' onPress={() => handleEdit(id)} color='primary' isLoading={false}>
         Edit
+      </Button> 
+      <span>/</span>
+      <Button size='sm' onPress={() => handleDelete(id)} color='danger' isLoading={false}>
+        Delete
       </Button>
     </div>
   )
@@ -144,7 +177,15 @@ const Students = ({
 
   let list: AsyncListData<any> = useAsyncList({
     async load({ signal }) {
-      const myStudents = students.map((student: any) => ({
+      let data
+      setIsReloading(false)
+      if (!isReloading && students) {
+        data = students
+      } else {
+        const {response} = await fetchStudents(yearGroup, true, true)
+        data = response        
+      }
+      const myStudents = data.map((student: any) => ({
         ...student,
         name: `${student.lastName.toUpperCase()} ${student.firstName.toUpperCase()} ${
           (student.otherName !== undefined && student.otherName !== null) ? student.otherName.toUpperCase() : ''
@@ -184,6 +225,7 @@ const Students = ({
     },
   })
 
+
   const filteredItems = useMemo(() => {
     let filteredStudents = [...list.items]
     if (!isNaN(Number(filterValue))) {
@@ -202,6 +244,8 @@ const Students = ({
 
     return filteredStudents
   }, [list.items, filterValue])
+
+  console.log("Students:", list.items)
 
   const studentSchema = yup.object().shape({
     year: yup.string().required('Select student year of completion'),
@@ -264,7 +308,6 @@ const Students = ({
 
   const handleEditStudent = async (data: studentsProps) => {
     const subjectIds = data.subjects ? data.subjects.split(',') : []
-    console.log(subjectIds)
     setSaveUpdateStatus('loading')
     await updateStudent({
       id: student.id,
@@ -294,6 +337,48 @@ const Students = ({
     reset()
   }
 
+  const handleUploadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.currentTarget);
+    setStatus('Uploading...');
+    formData.append("yearGroup", yearGroup)
+
+    const res = await fetch('/api/uploads/students', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (res.ok) {
+      const res2 = await fetch('/api/uploads/results', {
+      method: 'POST',
+      body: formData,
+    });
+    const {response} = await res2.json();
+
+    setStatus(res2.ok ? `Success: ${response.length} rows imported` : `Error: ${response.error}`);
+    setIsReloading(true)
+    }
+  };
+  
+
+  const handleDeleteAllStudents = async (students: any[]) => {
+    setIsDeleting(true)
+    if (students.length > 0) {
+      await deleteAllStudents({students})
+      setIsReloading(true)
+      setIsDeleting(false)
+    } else {
+      setIsDeleting(false)
+    }
+  }
+
+  useEffect(() => {
+    if (isReloading) {
+      list.reload();
+    }
+  }, [isReloading, list])
+  
   useEffect(() => {
     if (selectedCourse) {
       const course = courses.find((course: any) => course.id === selectedCourse)
@@ -326,19 +411,50 @@ const Students = ({
         <CardHeader className='border-b-1 py-2'>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
             Students{' '}
-            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
+            {yearGroup ? `(${yearGroup})` : ''}
           </p>
+          <Button
+            color='danger'
+            onPress={() => 
+              setIsDeleteOpen(true)
+            }
+            isLoading={isDeleting}
+            isDisabled={isDeleting}
+          >
+            Delete All Students
+          </Button>
         </CardHeader>
-        <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-4'>
+        <CardBody className='py-5 px-1 md:px-3 flex flex-col gap-5'>
           <div className='flex flex-col md:flex-row md:justify-between gap-2 justify-end'>
-            <div className='flex justify-end'>
+            <div className='flex justify-end gap-3'>
               <Button
                 color='primary'
-                onPress={(e) => setOpen(true)}
+                onPress={() => setOpen(true)}
                 startContent={<FaPlus />}
               >
                 Add Student
               </Button>
+              <div className=" flex max-w-md mx-auto">
+                <form onSubmit={handleUploadSubmit} className="flex items-center justify-center gap-3 w-100">
+                  <Input
+                    type="file"
+                    name="file"
+                    accept=".xlsx,.xls"
+                    required
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  <Button
+                    color='primary'
+                    type='submit'
+                    startContent={<FaArrowCircleDown />}
+                    className='mt-0'
+                  >
+                    Upload
+                  </Button>
+                </form>
+                {status && <p className="mt-4 p-2 bg-gray-100 rounded">{status}</p>}
+              </div>
+              
             </div>
             <form className='flex'>
               <Input
@@ -349,7 +465,7 @@ const Students = ({
                     'md:min-w-[500px]',
                   ],
                 }}
-                onChange={(e) => setFilterValue(e.target.value)}
+                onChange={(e: any) => setFilterValue(e.target.value)}
                 placeholder='Search for a student (Name | Index No.)'
               />
             </form>
@@ -412,6 +528,36 @@ const Students = ({
         setSelectedCourse={setSelectedCourse}
         saveStatus={saveUpdateStatus}
       />
+      <Modal isOpen={isDeleteOpen} onOpenChange={onOpenChange} hideCloseButton>
+        <ModalContent>
+          <>
+            <ModalHeader className='flex flex-col gap-1'>
+              Are you sure you want to DELETE all Students
+            </ModalHeader>
+            <ModalFooter>
+              <Button
+                color='primary'
+                onPress={() => {
+                  setIsDeleteOpen(false)
+                }}
+              >
+                Cancel
+              </Button>
+                <Button
+                  color='danger'
+                  type='submit'
+                  className='mt-0'
+                  onPress={() => {
+                  setIsDeleteOpen(false)
+                  handleDeleteAllStudents(list.items)
+                }}
+                >
+                  Delete
+                </Button>
+            </ModalFooter>
+          </>
+        </ModalContent>
+      </Modal>
       {isFetched && (
         <EditModal
           open={editOpen}

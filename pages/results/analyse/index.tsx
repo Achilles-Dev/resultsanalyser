@@ -1,10 +1,11 @@
-import { Card, CardBody, CardHeader } from '@nextui-org/react'
+import { Card, CardBody, CardHeader } from "@heroui/react"
 import BestSixSubjects from '@/components/BestSixSubjects'
 import SubjectsPassed from '@/components/SubjectsPassed'
 import TotalGradeBySubject from '@/components/TotalGradeBySubject'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { Student, Subject } from '@/libs/models'
 import { getCookie } from 'cookies-next'
+import SubjectsPassedExtended from "@/components/SubjectsPassedExtended";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const yearGroup = getCookie('year', { req, res }) as string
@@ -53,13 +54,14 @@ const ResultsAnalysisPage = ({
         <CardHeader>
           <p className='uppercase text-center w-full md:text-[36px] font-bold'>
             Results Analysis{' '}
-            {yearGroup ? `(${yearGroup}/${Number(yearGroup) + 1})` : ''}
+            {yearGroup ? `(${yearGroup})` : ''}
           </p>
         </CardHeader>
         <CardBody className='p-2 md:p-5'>
           <div className='flex flex-col gap-10'>
             <BestSixSubjects students={students} />
             <SubjectsPassed students={students} />
+            <SubjectsPassedExtended students={students} />
             <TotalGradeBySubject subjects={subjects} />
           </div>
         </CardBody>
